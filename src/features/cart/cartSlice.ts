@@ -1,4 +1,4 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { createSlice, nanoid, PayloadAction } from '@reduxjs/toolkit'
 import { RootState } from '../../app/store'
 
 export interface CartState {
@@ -10,11 +10,10 @@ export interface CartState {
 // TODO: define interface for Play/Event
 export interface Ticket {
     eventName: string,
-    eventId: number,
-    participantId: number,
     participantName: string,
     concessions: boolean,
     datetime: Date
+    id: string
 }
 
 export interface Donation {
@@ -33,13 +32,27 @@ const cartSlice = createSlice({
     name: 'cart',
     initialState,
     reducers: {
-        addTicket: (state, action: PayloadAction<Ticket>) => {
-            state.tickets.push(action.payload)
+        addTicket: {
+            reducer(state, action: PayloadAction<Ticket>) {
+                // TODO: check doesn't already exist in state.tickets
+                state.tickets.push(action.payload)
+            },
+            prepare(ename: string, pname: string, concessions: boolean, date: Date) {
+                return {
+                    payload: {
+                        id: nanoid(),
+                        eventName: ename,
+                        participantName: pname,
+                        concessions,
+                        datetime: date
+                    }
+                }
+            }
         },
     },
 })
 
-export const { addTicket } = cartSlice.actions
+export const { addTicket, removeTicket } = cartSlice.actions
 
 export const selectContents = (state: RootState) => ({
     tickets: [...state.cart.tickets],

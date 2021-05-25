@@ -1,25 +1,24 @@
 import { appSelector, useAppDispatch } from '../../app/hooks'
-import { selectContents, Ticket, addTicket } from './cartSlice'
+import { selectContents, addTicket } from './cartSlice'
 
 import Button from '@material-ui/core/Button';
 import TicketSummary from '../ticketPurchase/TicketSummary'
 
 const Cart = () => {
     const contents = appSelector(selectContents)
-
     const dispatch = useAppDispatch()
 
     const handleAddTicket = () => {
-        const ticketData: Ticket = {
-            eventName: 'Fundraiser',
-            eventId: 1,
-            participantId: 1,
-            participantName: 'Jane Doe',
-            concessions: true,
-            datetime: new Date(Date.now())
-        }
+        const eventName = 'Fundraiser'
+        const participantName = 'Jane Doe'
+        const concessions = true
 
-        dispatch(addTicket(ticketData))
+        dispatch(addTicket(
+            eventName,
+            participantName,
+            concessions,
+            new Date(Date.now())
+        ))
     }
 
     return (
@@ -27,7 +26,7 @@ const Cart = () => {
             <h1>Cart</h1>
             {contents.tickets.map(ticket => 
                 <TicketSummary
-                    key={ticket.eventId.toString() + ticket.participantId.toString()}
+                    key={ticket.id}
                     {...ticket} />
             )}
             <Button
