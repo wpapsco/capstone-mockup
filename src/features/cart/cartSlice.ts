@@ -11,6 +11,7 @@ export interface CartState {
 export interface Ticket {
     eventName: string,
     eventId: number,
+    participantId: number,
     participantName: string,
     concessions: boolean,
     datetime: Date

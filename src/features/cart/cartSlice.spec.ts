@@ -19,6 +19,7 @@ describe('counter reducer', () => {
         const newTicket: Ticket = {
             eventName: 'Fundraiser',
             eventId: 1,
+            participantId: 1,
             participantName: 'Jane Doe',
             concessions: true,
             datetime: new Date(Date.now())
