@@ -2,14 +2,16 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 
 export interface CartState {
     tickets: Ticket[],
-    concessions: number[],
-    donation: Donation[],
+    donation: Donation | null | undefined,
 }
 
+// TODO: define interface for Play/Event
 export interface Ticket {
     eventName: string,
-    quantity: number,
-    date: Date
+    eventId: number,
+    participantName: string,
+    concessions: boolean,
+    datetime: Date
 }
 
 export interface Donation {
@@ -20,8 +22,7 @@ export interface Donation {
 
 const initialState: CartState = {
     tickets: [],
-    concessions: [],
-    donation: []
+    donation: null
 }
 
 const cartSlice = createSlice({
