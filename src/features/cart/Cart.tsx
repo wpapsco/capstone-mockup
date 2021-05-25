@@ -2,6 +2,7 @@ import { appSelector, useAppDispatch } from '../../app/hooks'
 import { selectContents, Ticket, addTicket } from './cartSlice'
 
 import Button from '@material-ui/core/Button';
+import TicketSummary from '../ticketPurchase/TicketSummary'
 
 const Cart = () => {
     const contents = appSelector(selectContents)
@@ -37,15 +38,5 @@ const Cart = () => {
     )
 }
 
-export const TicketSummary = (data: Ticket) => {
-    return (
-        <article>
-            <h2>{data.eventName}</h2>
-            <h4>{data.participantName}</h4>
-            <p>Concessions: {data.concessions ? 'Yes' : 'No'}</p>
-            <p>{data.datetime.toDateString}</p>
-        </article>
-    )
-} 
 
 export default Cart
