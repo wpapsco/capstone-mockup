@@ -1,4 +1,4 @@
-import { createSlice } from '@reduxjs/toolkit'
+import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 
 export interface CartState {
     tickets: Ticket[],
@@ -6,13 +6,13 @@ export interface CartState {
     donation: Donation[],
 }
 
-interface Ticket {
+export interface Ticket {
     eventName: string,
     quantity: number,
     date: Date
 }
 
-interface Donation {
+export interface Donation {
     donor: string,
     amount: number,
     message: string
@@ -28,13 +28,12 @@ const cartSlice = createSlice({
     name: 'cart',
     initialState,
     reducers: {
-        addTickets: (state, action: { type: string, payload: Ticket}) => {
-            const res = [...state.tickets];
-            res.push(action.payload)
-            state.tickets = res
+        addTicket: (state, action: PayloadAction<Ticket>) => {
+            state.tickets.push(action.payload)
         },
     },
 })
 
+export const { addTicket } = cartSlice.actions
+
 export default cartSlice.reducer
-export const { addTickets } = cartSlice.actions
