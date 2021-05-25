@@ -52,7 +52,7 @@ const cartSlice = createSlice({
     },
 })
 
-export const { addTicket, removeTicket } = cartSlice.actions
+export const { addTicket } = cartSlice.actions
 
 export const selectContents = (state: RootState) => ({
     tickets: [...state.cart.tickets],

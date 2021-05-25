@@ -16,19 +16,25 @@ describe('counter reducer', () => {
     });
 
     it('should handle add ticket', () => {
-        const newTicket: Ticket = {
+        let newTicket: Ticket = {
             eventName: 'Fundraiser',
-            eventId: 1,
-            participantId: 1,
             participantName: 'Jane Doe',
             concessions: true,
-            datetime: new Date(Date.now())
+            datetime: new Date(Date.now()),
+            id: ''
         }
+        
+        const newstate = cartReducer(
+            initialState,
+            addTicket('Fundraiser', 'Jane Doe', true, new Date(Date.now())))
+        
+        expect(newstate.tickets.length).toEqual(1)
 
-        expect(cartReducer(initialState, addTicket(newTicket)))
-            .toEqual({
-                tickets: [newTicket],
-                donation: null
-            })
+        // Get auto generated ticket ID
+        const id = newstate.tickets[0].id
+        expect(newstate).toEqual({
+            tickets: [{...newTicket, id}],
+            donation: null
+        })
     })
 })
