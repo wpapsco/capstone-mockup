@@ -1,8 +1,10 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { RootState } from '../../app/store'
 
 export interface CartState {
     tickets: Ticket[],
     donation: Donation | null | undefined,
+    // status: 'pending' | 'loading' | 'failed' | 'success'
 }
 
 // TODO: define interface for Play/Event
@@ -22,7 +24,8 @@ export interface Donation {
 
 const initialState: CartState = {
     tickets: [],
-    donation: null
+    donation: null,
+    // status: 'pending'
 }
 
 const cartSlice = createSlice({
@@ -36,5 +39,10 @@ const cartSlice = createSlice({
 })
 
 export const { addTicket } = cartSlice.actions
+
+export const selectContents = (state: RootState) => ({
+    tickets: [...state.cart.tickets],
+    donation: state.cart.donation
+})
 
 export default cartSlice.reducer
