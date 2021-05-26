@@ -78,11 +78,11 @@ export default function EditOrderPage() {
                 <Select
                     labelId="concessions-label"
                     id="concessions-select"
-                    value={boughtConcessions}
+                    value={boughtConcessions ? 'Yes' : 'No'}
                     onChange={handleConcessionsChange}
                 >
                     <MenuItem value='Yes'>Yes</MenuItem>
-                    <MenuItem value={'No'}>No</MenuItem>
+                    <MenuItem value='No'>No</MenuItem>
                 </Select>
                 
                 <Button variant='contained' color='primary' onClick={() => handleAddTicket()}>
