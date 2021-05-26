@@ -58,37 +58,44 @@ export default function EditOrderPage() {
         <section>
             <h1>Edit Order</h1>
             <FormControl className={classes.formControl}>
-                <InputLabel id="show-label">Shows</InputLabel>
-                <Select
-                    labelId="show-label"
-                    id="show-select"
-                    value={eventName}
-                    onChange={handleEventChange}
-                >
-                    {showNames.map(name => <MenuItem value={name}>{name}</MenuItem>)}
-                </Select>
-
-                <TextField
-                    id='fullname'
-                    label='Full Name'
-                    value={fullname}
-                    onChange={e => setFullname(e.target.value)} />
-
-                <InputLabel id="concessions-label">Concessions</InputLabel>
-                <Select
-                    labelId="concessions-label"
-                    id="concessions-select"
-                    value={boughtConcessions ? 'Yes' : 'No'}
-                    onChange={handleConcessionsChange}
-                >
-                    <MenuItem value='Yes'>Yes</MenuItem>
-                    <MenuItem value='No'>No</MenuItem>
-                </Select>
+                <FormControl className={classes.formControl}>
+                    <InputLabel id="show-label">Shows</InputLabel>
+                    <Select
+                        labelId="show-label"
+                        id="show-select"
+                        value={eventName}
+                        onChange={handleEventChange}
+                    >
+                        {showNames.map(name => <MenuItem value={name}>{name}</MenuItem>)}
+                    </Select>
+                </FormControl>
                 
-                <Button variant='contained' color='primary' onClick={() => handleAddTicket()}>
-                    Add Ticket
-                </Button>
+                <FormControl className={classes.formControl}>
+                    <TextField
+                        id='fullname'
+                        label='Full Name'
+                        value={fullname}
+                        onChange={e => setFullname(e.target.value)} />
+                </FormControl>
+
+                <FormControl className={classes.formControl}>
+                    <InputLabel id="concessions-label">Concessions</InputLabel>
+                    <Select
+                        labelId="concessions-label"
+                        id="concessions-select"
+                        value={boughtConcessions ? 'Yes' : 'No'}
+                        onChange={handleConcessionsChange}
+                    >
+                        <MenuItem value='Yes'>Yes</MenuItem>
+                        <MenuItem value='No'>No</MenuItem>
+                    </Select>
+                    
+                    <Button variant='contained' color='primary' onClick={() => handleAddTicket()}>
+                        Add Ticket
+                    </Button>
+                </FormControl>
             </FormControl>
+            
             <Cart />
         </section>
     )
