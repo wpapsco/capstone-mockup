@@ -4,15 +4,14 @@ import ShowingsPage from "./components/ShowingsPage";
 import DoorList from "./components/DoorList";
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Button from '@material-ui/core/Button';
-import Cart from './features/cart/Cart';
 import Navbar from './app/Navbar';
-
 import {
      BrowserRouter as Router,
      Switch,
      Route,
      Redirect,
 } from 'react-router-dom';
+import EditOrderPage from "./features/ticketPurchase/EditOrderPage";
 
 function App() {
 
@@ -36,8 +35,8 @@ function App() {
                             <Button variant="contained" color="primary" onClick={() => setDoorList(false)}>Back</Button>
                         ]}
                     </Route>
-                    <Route path="/cart">
-                        <Cart />
+                    <Route path="/order">
+                        <EditOrderPage />
                     </Route>
                     <Redirect to="/" />
                 </Switch>
