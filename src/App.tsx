@@ -12,6 +12,7 @@ import {
      Redirect,
 } from 'react-router-dom';
 import EditOrderPage from "./features/ticketPurchase/EditOrderPage";
+import Cart from './features/cart/Cart';
 
 function App() {
 
@@ -37,6 +38,9 @@ function App() {
                     </Route>
                     <Route path="/order">
                         <EditOrderPage />
+                    </Route>
+                    <Route path="/cart">
+                        <Cart />
                     </Route>
                     <Redirect to="/" />
                 </Switch>
