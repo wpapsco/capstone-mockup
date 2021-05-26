@@ -1,19 +1,31 @@
 import { createSlice, nanoid, PayloadAction } from '@reduxjs/toolkit'
 import { RootState } from '../../app/store'
 
-export interface CartState {
-    tickets: Ticket[],
-    donation: Donation | null | undefined,
-    // status: 'pending' | 'loading' | 'failed' | 'success'
+export interface CartState<T extends Ticket | Donation | Discount> {
+    items: CartItem<T>[],
+    status: 'pending' | 'loading' | 'failed' | 'success',
+}
+
+const initialState: CartState<Ticket | Donation | Discount> = {
+    items: [],
+    status: 'pending',
+}
+
+type CartItemType = 'donation' | 'discount' | 'ticket'
+export interface CartItem<T extends Ticket | Donation | Discount> {
+    id: string,
+    type: CartItemType,
+    data: T,
 }
 
 // TODO: define interface for Play/Event
 export interface Ticket {
-    eventName: string,
-    participantName: string,
+    id: string,
+    eventId: string,
+    participant: string,
     concessions: boolean,
-    datetime: Date
-    id: string
+    unitPrice: number,
+    showDate: Date
 }
 
 export interface Donation {
@@ -22,41 +34,53 @@ export interface Donation {
     message: string
 }
 
-const initialState: CartState = {
-    tickets: [],
-    donation: null,
-    // status: 'pending'
+export interface Discount {
+    discountCode: string,
+    discountType: 'dollar' | 'percent',
+    amount: number
 }
 
 const cartSlice = createSlice({
     name: 'cart',
-    initialState,
+    initialState, 
     reducers: {
         addTicket: {
-            reducer(state, action: PayloadAction<Ticket>) {
-                // TODO: check doesn't already exist in state.tickets
-                state.tickets.push(action.payload)
-            },
-            prepare(ename: string, pname: string, concessions: boolean, date: Date) {
-                return {
-                    payload: {
-                        id: nanoid(),
-                        eventName: ename,
-                        participantName: pname,
-                        concessions,
-                        datetime: date
-                    }
+            reducer(
+                state,
+                action: PayloadAction<Ticket, string, { id: string }>
+            ) {
+                const newItem: CartItem<Ticket> = {
+                    id: action.meta.id,
+                    type: 'ticket',
+                    data: { ...action.payload }
+
                 }
+                state.items.push(newItem)
+            },
+            prepare(payload: Ticket) {
+                return { payload, meta: {id: nanoid()} }
             }
-        },
+        }
     },
+        // removeTicket: (state, action: PayloadAction<string>) => {
+        //     const qry = action.payload
+        //     const ticketIndex = state.tickets.findIndex(t => t.id === qry)
+        //     console.log('ticket index', ticketIndex)
+        //     console.log('pre splice', state.tickets)
+
+        //     if (ticketIndex > 0) {
+        //         state.tickets.splice(ticketIndex, 1)
+        //         console.log('post splice', state.tickets)
+        //     }
+        // },
+        // editTicket: (state) => {
+        //     console.log('not yet implemented')
+        // }
 })
 
 export const { addTicket } = cartSlice.actions
 
-export const selectContents = (state: RootState) => ({
-    tickets: [...state.cart.tickets],
-    donation: state.cart.donation
-})
+export const selectContents = (state: RootState) => state.cart
+export const selectItemsByType = (state: RootState, type: string) => state.cart.items.filter(i=>i.type===type)
 
 export default cartSlice.reducer

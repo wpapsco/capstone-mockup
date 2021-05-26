@@ -11,6 +11,7 @@ import FormControl from '@material-ui/core/FormControl';
 import { useAppDispatch } from '../../app/hooks'
 import { addTicket } from '../cart/cartSlice'
 import Cart from '../cart/Cart'
+import { Ticket } from '../cart/cartSlice'
 
 const showNames = ['BBQ Fundraiser', 'Play1', 'Play2']
 
@@ -36,15 +37,20 @@ export default function EditOrderPage() {
     const dispatch = useAppDispatch()
 
     const handleAddTicket = () => {
-        dispatch(addTicket(
-            eventName,
-            fullname,
-            boughtConcessions,
-            new Date(Date.now())
-        ))
+        const newTicket: Ticket = {
+            id: '',
+            eventId: '123',
+            participant: fullname,
+            concessions: boughtConcessions,
+            unitPrice: 12.99,
+            showDate: new Date(Date.now())
+        };
+
+        dispatch(addTicket(newTicket))
     }
 
     const handleEventChange = (event: React.ChangeEvent<{ value: unknown }>) => {
+        event.preventDefault()
         if (typeof event.target.value === 'string')
             selectEvent(event.target.value)
     }
@@ -72,6 +78,7 @@ export default function EditOrderPage() {
                 
                 <FormControl className={classes.formControl}>
                     <TextField
+                        required={true}
                         id='fullname'
                         label='Full Name'
                         value={fullname}
@@ -90,7 +97,12 @@ export default function EditOrderPage() {
                         <MenuItem value='No'>No</MenuItem>
                     </Select>
                     
-                    <Button variant='contained' color='primary' onClick={() => handleAddTicket()}>
+                    <Button
+                        variant='contained'
+                        color='primary'
+                        type='submit'
+                        onClick={() => handleAddTicket()}
+                    >
                         Add Ticket
                     </Button>
                 </FormControl>
