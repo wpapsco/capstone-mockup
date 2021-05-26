@@ -47,10 +47,10 @@ const cartSlice = createSlice({
         addTicket: {
             reducer(
                 state,
-                action: PayloadAction<Ticket, string, { id: string }>
+                action: PayloadAction<Ticket, string>
             ) {
                 const newItem: CartItem<Ticket> = {
-                    id: action.meta.id,
+                    id: nanoid(),
                     type: 'ticket',
                     data: { ...action.payload }
 
@@ -58,7 +58,8 @@ const cartSlice = createSlice({
                 state.items.push(newItem)
             },
             prepare(payload: Ticket) {
-                return { payload, meta: {id: nanoid()} }
+                const newTicket: Ticket = {...payload, id: nanoid() }
+                return { payload: newTicket }
             }
         }
     },

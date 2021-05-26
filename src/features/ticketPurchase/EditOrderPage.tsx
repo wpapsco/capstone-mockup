@@ -13,7 +13,7 @@ import { addTicket } from '../cart/cartSlice'
 import Cart from '../cart/Cart'
 import { Ticket } from '../cart/cartSlice'
 
-const showNames = ['BBQ Fundraiser', 'Play1', 'Play2']
+import TestData from '../events/testEvents'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -31,7 +31,7 @@ const useStyles = makeStyles((theme: Theme) =>
 export default function EditOrderPage() {
     const classes = useStyles()
     const [fullname, setFullname] = useState('')
-    const [eventName, selectEvent] = useState('')
+    const [selectedEventID, selectEvent] = useState('')
     const [boughtConcessions, setConsessions] = useState(false)
 
     const dispatch = useAppDispatch()
@@ -39,7 +39,7 @@ export default function EditOrderPage() {
     const handleAddTicket = () => {
         const newTicket: Ticket = {
             id: '',
-            eventId: '123',
+            eventId: selectedEventID,
             participant: fullname,
             concessions: boughtConcessions,
             unitPrice: 12.99,
@@ -69,10 +69,10 @@ export default function EditOrderPage() {
                     <Select
                         labelId="show-label"
                         id="show-select"
-                        value={eventName}
+                        value={selectedEventID}
                         onChange={handleEventChange}
                     >
-                        {showNames.map(name => <MenuItem value={name}>{name}</MenuItem>)}
+                        {TestData.map(event => <MenuItem value={event.id}>{event.name}</MenuItem>)}
                     </Select>
                 </FormControl>
                 

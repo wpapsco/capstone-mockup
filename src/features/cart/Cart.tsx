@@ -9,7 +9,7 @@ const Cart = () => {
     const ticketItems = tickets.map(item => item.data as Ticket).map(ticket => {
         return (
             <TicketSummary  key={ticket.id}
-                            eventId={ticket.id}
+                            eventId={ticket.eventId}
                             participant={ticket.participant}
                             concessions={ticket.concessions}
                             showDate={ticket.showDate} />
