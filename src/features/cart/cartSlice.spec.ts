@@ -1,13 +1,15 @@
+import { nanoid } from '@reduxjs/toolkit';
 import cartReducer, {
     CartState,
     addTicket,
-    Ticket
+    Ticket,
+    Donation
 } from './cartSlice'
 
 describe('counter reducer', () => {
-    const initialState: CartState = {
-        tickets: [],
-        donation: null
+    const initialState: CartState<Ticket> = {
+        items: [],
+        status: 'pending'
     }
 
     it('should handle initial state', () => {
@@ -16,25 +18,19 @@ describe('counter reducer', () => {
     });
 
     it('should handle add ticket', () => {
-        let newTicket: Ticket = {
-            eventName: 'Fundraiser',
-            participantName: 'Jane Doe',
-            concessions: true,
-            datetime: new Date(Date.now()),
-            id: ''
-        }
-        
         const newstate = cartReducer(
             initialState,
-            addTicket('Fundraiser', 'Jane Doe', true, new Date(Date.now())))
+            addTicket({
+                eventId: nanoid(),
+                participant: 'Jane Doe',
+                unitPrice: 7.99,
+                showDate: new Date(Date.now()),
+                concessions: true,
+                id:''
+            })
+        )
         
-        expect(newstate.tickets.length).toEqual(1)
-
-        // Get auto generated ticket ID
-        const id = newstate.tickets[0].id
-        expect(newstate).toEqual({
-            tickets: [{...newTicket, id}],
-            donation: null
-        })
+        expect(newstate.items.length).toEqual(1)
+        // TODO: Check correctness of state contents
     })
 })

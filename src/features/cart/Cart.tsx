@@ -1,19 +1,26 @@
 import { appSelector } from '../../app/hooks'
-import { selectContents } from './cartSlice'
+import { selectItemsByType } from './cartSlice'
+import { Ticket } from '../cart/cartSlice'
 
 import TicketSummary from '../ticketPurchase/TicketSummary'
 
 const Cart = () => {
-    const contents = appSelector(selectContents)
+    const tickets = appSelector((state, type='ticket') => selectItemsByType(state, type))
+    const ticketItems = tickets.map(item => item.data as Ticket).map(ticket => {
+        return (
+            <TicketSummary  key={ticket.id}
+                            eventId={ticket.id}
+                            participant={ticket.participant}
+                            concessions={ticket.concessions}
+                            showDate={ticket.showDate} />
+        )
+    })
 
-    const numTickets = contents.tickets.length
     return (
         <div>
             <h2>Cart</h2>
             <h3>Tickets</h3>
-            {numTickets===0 && <p>No tickets</p>}
-            {numTickets > 0 &&
-                contents.tickets.map(ticket => <TicketSummary key={ticket.id} {...ticket} /> )}
+            {tickets.length>0 ? ticketItems : <p>No tickets</p>}
         </div>
     )
 }
