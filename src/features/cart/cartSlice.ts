@@ -49,10 +49,24 @@ const cartSlice = createSlice({
                 }
             }
         },
+        removeTicket: (state, action: PayloadAction<string>) => {
+            const qry = action.payload
+            const ticketIndex = state.tickets.findIndex(t => t.id === qry)
+            console.log('ticket index', ticketIndex)
+            console.log('pre splice', state.tickets)
+
+            if (ticketIndex > 0) {
+                state.tickets.splice(ticketIndex, 1)
+                console.log('post splice', state.tickets)
+            }
+        },
+        editTicket: (state) => {
+            console.log('not yet implemented')
+        }
     },
 })
 
-export const { addTicket } = cartSlice.actions
+export const { addTicket, removeTicket, editTicket } = cartSlice.actions
 
 export const selectContents = (state: RootState) => ({
     tickets: [...state.cart.tickets],
