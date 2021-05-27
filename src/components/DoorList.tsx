@@ -1,20 +1,20 @@
-import { DataGrid, GridColDef, GridCellParams } from '@material-ui/data-grid';
+import { DataGrid } from '@material-ui/data-grid';
 import Checkbox from '@material-ui/core/Checkbox';
 import Typography from '@material-ui/core/Typography';
 
 export default function DoorList() {
 
-    const renderCheckbox = (params: GridCellParams) => (
+    const renderCheckbox = ((params: any) => (
         <Checkbox checked={(params.value as boolean)} />
-    )
+    ))
 
-    const columns: GridColDef[] = [
+    const columns = [
         { field: "name", headerName: "Name", width: 150},
         { field: "vip", headerName: "VIP", width: 100, renderCell: renderCheckbox},
         { field: "donor", headerName: "Donor", width: 150, renderCell: renderCheckbox},
         { field: "accomodations", headerName: "Seating Accomodations", width: 240, renderCell: renderCheckbox},
         { field: "num_tickets", headerName: "Tickets", width: 150},
-        { field: "arrived", headerName: "Arrived", width: 150, renderCell: params => (
+        { field: "arrived", headerName: "Arrived", width: 150, renderCell: (params: any) => (
             <Checkbox color="primary" defaultChecked={(params.value as boolean)} />
         )}
     ]

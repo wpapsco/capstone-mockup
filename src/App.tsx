@@ -1,28 +1,52 @@
-import {Component} from "react";
+import { useState } from "react";
 import "./App.css";
 import ShowingsPage from "./components/ShowingsPage";
 import DoorList from "./components/DoorList";
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Button from '@material-ui/core/Button';
+import Navbar from './app/Navbar';
+import {
+     BrowserRouter as Router,
+     Switch,
+     Route,
+     Redirect,
+} from 'react-router-dom';
+import EditOrderPage from "./features/ticketPurchase/EditOrderPage";
+import Cart from './features/cart/Cart';
 
-class App extends Component {
+function App() {
 
-    public state = {
-        doorList: false
-    }
+    const [doorList, setDoorList] = useState(false);
 
-    public render() {
-        return (
+    const showings = <ShowingsPage showingSelected={() => setDoorList(!doorList)} />;
+
+    return (
+        <Router>
+            <Navbar />
             <div id="maincontainer">
-                <CssBaseline />
-                {!this.state.doorList && <ShowingsPage showingSelected={() => this.setState({doorList: true})} />}
-                {this.state.doorList && [
-                    <DoorList />,
-                    <Button variant="contained" color="primary" onClick={() => this.setState({doorList: false})}>Back</Button>
-                ]}
+                <Switch>
+                    <Route
+                        exact
+                        path="/"
+                    >
+                        <CssBaseline />
+                        {!doorList && showings}
+                        {doorList && [
+                            <DoorList />,
+                            <Button variant="contained" color="primary" onClick={() => setDoorList(false)}>Back</Button>
+                        ]}
+                    </Route>
+                    <Route path="/order">
+                        <EditOrderPage />
+                    </Route>
+                    <Route path="/cart">
+                        <Cart />
+                    </Route>
+                    <Redirect to="/" />
+                </Switch>
             </div>
-        );
-    }
+        </Router>
+    );
 }
 
 export default App;
