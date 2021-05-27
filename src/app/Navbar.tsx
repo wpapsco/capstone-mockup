@@ -6,6 +6,7 @@ export default function Navbar()  {
             <NavLink activeClassName="active" to='/'>Home</NavLink>
             <NavLink to='/cart'>Cart</NavLink>
             <NavLink to='/order'>Current Order</NavLink>
+            <NavLink to='/event'>Test Event Page</NavLink>
         </nav>
     )
 }

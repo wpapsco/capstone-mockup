@@ -13,6 +13,7 @@ import {
 } from 'react-router-dom';
 import EditOrderPage from "./features/ticketPurchase/EditOrderPage";
 import Cart from './features/cart/Cart';
+import EventPage from './features/events/EventPage'
 
 function App() {
 
@@ -35,6 +36,9 @@ function App() {
                             <DoorList />,
                             <Button variant="contained" color="primary" onClick={() => setDoorList(false)}>Back</Button>
                         ]}
+                    </Route>
+                    <Route path="/event">
+                        <EventPage />
                     </Route>
                     <Route path="/order">
                         <EditOrderPage />
