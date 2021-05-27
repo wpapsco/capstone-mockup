@@ -14,6 +14,7 @@ import {
 import EditOrderPage from "./features/ticketPurchase/EditOrderPage";
 import Cart from './features/cart/Cart';
 import EventPage from './features/events/EventPage'
+import { Container } from "@material-ui/core";
 
 function App() {
 
@@ -22,34 +23,36 @@ function App() {
     const showings = <ShowingsPage showingSelected={() => setDoorList(!doorList)} />;
 
     return (
-        <Router>
-            <Navbar />
-            <div id="maincontainer">
-                <Switch>
-                    <Route
-                        exact
-                        path="/"
-                    >
-                        <CssBaseline />
-                        {!doorList && showings}
-                        {doorList && [
-                            <DoorList />,
-                            <Button variant="contained" color="primary" onClick={() => setDoorList(false)}>Back</Button>
-                        ]}
-                    </Route>
-                    <Route path="/event">
-                        <EventPage {...testEvent} />
-                    </Route>
-                    <Route path="/order">
-                        <EditOrderPage />
-                    </Route>
-                    <Route path="/cart">
-                        <Cart />
-                    </Route>
-                    <Redirect to="/" />
-                </Switch>
-            </div>
-        </Router>
+        <Container maxWidth="md">
+            <Router>
+                <Navbar />
+                <div id="maincontainer">
+                    <Switch>
+                        <Route
+                            exact
+                            path="/"
+                        >
+                            <CssBaseline />
+                            {!doorList && showings}
+                            {doorList && [
+                                <DoorList />,
+                                <Button variant="contained" color="primary" onClick={() => setDoorList(false)}>Back</Button>
+                            ]}
+                        </Route>
+                        <Route path="/event">
+                            <EventPage {...testEvent} />
+                        </Route>
+                        <Route path="/order">
+                            <EditOrderPage />
+                        </Route>
+                        <Route path="/cart">
+                            <Cart />
+                        </Route>
+                        <Redirect to="/" />
+                    </Switch>
+                </div>
+            </Router>
+        </Container>
     );
 }
 
