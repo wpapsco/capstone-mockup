@@ -1,17 +1,53 @@
-export default function() {
+/* * * * * * * * EVENT PAGE DATA * * * * * * * * 
+ *
+ * How pretty can I get away with making this page?
+ * 
+ * HEADER DATA
+ * - Title
+ * - Show day, date & time
+ * - Address
+ * - Main Image
+ * 
+ * MAIN BODY
+ * - Description
+ * - Concessions description
+ * - Location Map
+ * - Contact Information
+ * - Optional Additional Images
+ * 
+ * * * * * * * * * * * * * * * * * * * * * * * */ 
+type Props = {
+    title: string,
+    showdate: Date,
+    address: string,
+    headerImageUrl: string,
+    bodySections: { heading: string, contents: string }[]
+}
+
+const days = ['sun','mon','tue','wed','thu','fri','sat']
+const months = ['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec']
+
+export default function(data: Props) {
+    const {title, showdate, address, bodySections, headerImageUrl} = data
+    const showtime = `${days[showdate.getDay()]} ${months[showdate.getMonth()]}, ${showdate.getDate()+1}`
+
     return (
         <article>
             <header>
-                <h1>Event Title</h1>
-                <h2>Subheading: Date & Time</h2>
-                <p>Location</p>
+                <img src={headerImageUrl} />
+                <h1>{title}</h1>
+                <h2>{showtime}</h2>
+                <p>{address}</p>
             </header>
             <main>
-                <h3>Description Heading</h3>
-                <p>Description: Lorem ipsum dolor sit amet consectetur adipisicing elit. Laboriosam, repudiandae voluptatum sint sunt natus praesentium? Consequatur vel corporis voluptas quisquam ut maiores debitis, quos officiis. Quam exercitationem reiciendis corrupti! Mollitia?</p>
-
-                <h3>Contacting us</h3>
-                <p>If you need to contact us Lorem ipsum dolor, sit amet consectetur adipisicing elit. Hic ad ratione asperiores perferendis illo ab labore! Suscipit libero saepe possimus quam magnam voluptatem, ducimus aperiam. Facilis dignissimos quos accusamus perferendis.</p>
+                {bodySections.map(d => {
+                    return (
+                        <section>
+                            <h3>{d.heading}</h3>
+                            <p>{d.contents}</p>
+                        </section>
+                    )
+                })}
             </main>
         </article>
     )
