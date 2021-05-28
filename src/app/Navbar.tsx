@@ -9,7 +9,7 @@ export default function Navbar()  {
         <Paper square>
             <Tabs>
                 <Tab label="Doorlist" component={NavLink} to="/" />
-                <Tab label="Event (Test)" component={NavLink} to="/event/4" />
+                <Tab label="Events" component={NavLink} to="/events" />
                 <Tab label="Order" component={NavLink} to="/order" />
             </Tabs>
         </Paper>

@@ -13,6 +13,7 @@ import {
 import EditOrderPage from "./features/checkout/EditOrderPage";
 import Cart from './features/cart/Cart';
 import EventPage from './features/events/EventPage'
+import AllEventsPage from "./features/events/AllEventsPage";
 import { Container } from "@material-ui/core";
 
 function App() {
@@ -26,8 +27,12 @@ function App() {
             <Navbar />
             <div id="maincontainer">
                 <Switch>
-                    <Route path="/event/:id">
+                    <Route path="/events/:id">
                         <EventPage />
+                    </Route>
+
+                    <Route path="/events">
+                        <AllEventsPage />
                     </Route>
 
                     <Route path="/order">

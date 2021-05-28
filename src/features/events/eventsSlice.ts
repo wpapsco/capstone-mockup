@@ -34,7 +34,7 @@ const eventsSlice = createSlice({
 
 // TODO: Create thunk for fetching events from server
 export const { CreateEvent } = eventsSlice.actions
-export const selectEvents = (state: RootState) => state.events.data
+export const selectAllEvents = (state: RootState) => state.events.data
 export const selectEventById =
     (state: RootState, id: string): EventDetails | undefined => state.events.data.find(ev=>ev.id===id)
 

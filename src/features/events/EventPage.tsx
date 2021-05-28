@@ -29,8 +29,7 @@ import CardActions from '@material-ui/core/CardActions'
 import Button from '@material-ui/core/Button'
 import TextField from '@material-ui/core/TextField'
 
-const days = ['sun','mon','tue','wed','thu','fri','sat']
-const months = ['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec']
+import Showtime from '../../components/Showtime'
 
 const useStyles = makeStyles((theme) => ({
     cardRoot: {
@@ -77,7 +76,6 @@ export default function EventPage() {
 
     const {name: eventName, date, address, pageSections, imgUrl} = eventData
     const sections = pageSections.map(data => <EventBodySection {...data} />)
-    const showtime = `${days[date.getDay()]} ${months[date.getMonth()]}, ${date.getDate()+1}`
 
     return (
         <article>
@@ -85,8 +83,9 @@ export default function EventPage() {
                 <CardMedia className={classes.heroImage} image={imgUrl}/>
                 <CardContent className={classes.cardContents}>
                     <Typography component="h1" variant="h3" align="center" gutterBottom>{eventName}</Typography>
-                    <Typography variant="subtitle1" align="center">{showtime}</Typography>
+                    <Showtime date={date} />
                     <Typography variant="subtitle2" align="center">{address}</Typography>
+
                     <CardActions className={classes.cardActions}>
                         <TextField
                             className={classes.qtyField}
@@ -96,6 +95,7 @@ export default function EventPage() {
                         />
                         <Button color="primary" variant="contained">Get Tickets</Button>
                     </CardActions>
+                    
                 </CardContent>
             </Card>
             <main> {sections !== undefined && sections} </main>
