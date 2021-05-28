@@ -1,9 +1,7 @@
-import { EventDetails, selectAllEvents } from './eventsSlice'
+import { selectAllEvents } from './eventsSlice'
 import { appSelector } from '../../app/hooks'
 
-import { Link } from 'react-router-dom'
-import Showtime from '../../components/Showtime'
-import { Card, CardActionArea } from '@material-ui/core'
+import { Typography } from '@material-ui/core'
 import EventRow from './EventRow'
 
 export default function AllEventsPage() {
@@ -17,7 +15,7 @@ export default function AllEventsPage() {
 
     return (
         <section>
-            <h1>Upcoming Events</h1>
+            <Typography variant='h4' component='h1'>Upcoming Events</Typography>
             {eventCards}
         </section>
     )
