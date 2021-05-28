@@ -9,19 +9,19 @@ const TestData: EventDetails[] = [
         address: '123 Fake St, Portland, OR',
         date: new Date('2021-05-23'),
         pageSections: [
-            { heading: "It's BBQ Time!", contents: 'We are hosting a BBQ beause we want your money!' },
+            { heading: "It's BBQ Time", contents: 'Join us for a BBQ at <place>. Lorem ipsum dolor sit amet consectetur adipisicing elit' },
             { heading: 'Concessions Tickets', contents: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quibusdam unde iure modi nisi, culpa alias aliquid dicta, quas voluptate placeat dolor. Unde, quis! Sit suscipit illo quos, quasi officia nostrum.' },
         ]
     },
     {
         id: '2',
-        name: 'This is a Play!',
+        name: 'This is a Play',
         shortDesc: 'Friday night showing of "This is a Play!"',
         imgUrl: 'https://www.tripsavvy.com/thmb/WaV9kZkbvvia0SQ1pd4PN7qgb3k=/1500x1000/filters:no_upscale():max_bytes(150000):strip_icc()/Lakewood-Theatre-Company-Godspell-5942d71e5f9b58d58a85bda5.jpg',
         address: '123 Fake St, Portland, OR',
         date: new Date('2021-05-24'),
         pageSections: [
-            { heading: 'About "This is a Play!"', contents: "Lorem ipsum donor"},
+            { heading: 'Event Details', contents: "Lorem ipsum donor"},
             { heading: 'Concessions Tickets', contents: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quibusdam unde iure modi nisi, culpa alias aliquid dicta, quas voluptate placeat dolor. Unde, quis! Sit suscipit illo quos, quasi officia nostrum.' },
         ],
     },
