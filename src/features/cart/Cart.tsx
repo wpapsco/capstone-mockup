@@ -2,7 +2,7 @@ import { appSelector } from '../../app/hooks'
 import { selectItemsByType } from './cartSlice'
 import { Ticket } from '../cart/cartSlice'
 
-import TicketSummary from '../ticketPurchase/TicketSummary'
+import TicketSummary from '../checkout/TicketSummary'
 
 const Cart = () => {
     const tickets = appSelector((state, type='ticket') => selectItemsByType(state, type))
