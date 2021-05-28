@@ -35,7 +35,7 @@ export default function EventRow(props: EventDetails) {
             <Card className={classes.root}>
                 <CardContent className={classes.cardContents}>
                     <Typography variant='h5' component='h2'>{props.name}</Typography>
-                    <Showtime date={props.date} />
+                    <Showtime align='left' date={props.date} />
                     <Typography variant='body1'>{props.shortDesc}</Typography>
                     <Link to={`/events/${props.id}`}>View Event</Link>
                 </CardContent>

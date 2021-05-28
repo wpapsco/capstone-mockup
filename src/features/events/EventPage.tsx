@@ -52,6 +52,9 @@ const useStyles = makeStyles((theme) => ({
     },  
     qtyField: {
         maxWidth: '100px',
+    },
+    showtime: {
+        textAlign: 'center'
     }
 }))
 
@@ -84,7 +87,7 @@ export default function EventPage() {
                 <CardMedia className={classes.heroImage} image={imgUrl}/>
                 <CardContent className={classes.cardContents}>
                     <Typography component="h1" variant="h3" align="center" gutterBottom>{eventName}</Typography>
-                    <Showtime date={date} />
+                    <Showtime align='center' date={date} />
                     <Typography variant="subtitle2" align="center">{address}</Typography>
 
                     <CardActions className={classes.cardActions}>
