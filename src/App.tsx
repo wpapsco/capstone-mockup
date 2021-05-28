@@ -1,6 +1,7 @@
 import { useState } from "react";
 import "./App.css";
 import ShowingsPage from "./components/ShowingsPage";
+import CompleteOrder from "./components/CompleteOrder";
 import DoorList from "./components/DoorList";
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Button from '@material-ui/core/Button';
@@ -23,18 +24,18 @@ function App() {
     return (
         <Router>
             <Navbar />
-            <div id="maincontainer">
                 <Switch>
                     <Route
                         exact
-                        path="/"
-                    >
+                        path="/">
+                    <div id="maincontainer">
                         <CssBaseline />
                         {!doorList && showings}
                         {doorList && [
                             <DoorList />,
                             <Button variant="contained" color="primary" onClick={() => setDoorList(false)}>Back</Button>
                         ]}
+                    </div>
                     </Route>
                     <Route path="/order">
                         <EditOrderPage />
@@ -42,9 +43,11 @@ function App() {
                     <Route path="/cart">
                         <Cart />
                     </Route>
+                    <Route path="/completeorder">
+                        <CompleteOrder />
+                    </Route>
                     <Redirect to="/" />
                 </Switch>
-            </div>
         </Router>
     );
 }

@@ -16,6 +16,8 @@ export interface CartItem<T extends Ticket | Donation | Discount> {
     id: string,
     type: CartItemType,
     data: T,
+    // TODO: add price to here instead of in the data variable
+    // also other stuff that might be shared between cart items like name, description, etc etc
 }
 
 // TODO: define interface for Play/Event
