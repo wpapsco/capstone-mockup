@@ -40,7 +40,7 @@ function App() {
                             ]}
                         </Route>
                         <Route path="/event">
-                            <EventPage {...testEvent} />
+                        <EventPage eventId="4" />
                         </Route>
                         <Route path="/order">
                             <EditOrderPage />
@@ -57,16 +57,3 @@ function App() {
 }
 
 export default App;
-
-
-const testEvent = {
-    title: 'The Nutcracker',
-    showdate: new Date('2021-03-07'),
-    address: '123 Fake St, Portland, OR',
-    headerImageUrl: 'https://www.tripsavvy.com/thmb/WaV9kZkbvvia0SQ1pd4PN7qgb3k=/1500x1000/filters:no_upscale():max_bytes(150000):strip_icc()/Lakewood-Theatre-Company-Godspell-5942d71e5f9b58d58a85bda5.jpg',
-    bodySections: [
-        { heading: 'Show Description', contents: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quibusdam unde iure modi nisi, culpa alias aliquid dicta, quas voluptate placeat dolor. Unde, quis! Sit suscipit illo quos, quasi officia nostrum.' },
-        { heading: 'Concessions Tickets', contents: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quibusdam unde iure modi nisi, culpa alias aliquid dicta, quas voluptate placeat dolor. Unde, quis! Sit suscipit illo quos, quasi officia nostrum.' },
-        { heading: 'Contacting Us', contents: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quibusdam unde iure modi nisi, culpa alias aliquid dicta, quas voluptate placeat dolor. Unde, quis!' },
-    ]
-}
