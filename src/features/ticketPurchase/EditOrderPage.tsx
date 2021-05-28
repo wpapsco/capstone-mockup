@@ -96,16 +96,16 @@ export default function EditOrderPage() {
                         <MenuItem value='Yes'>Yes</MenuItem>
                         <MenuItem value='No'>No</MenuItem>
                     </Select>
-                    
-                    <Button
-                        variant='contained'
-                        color='primary'
-                        type='submit'
-                        onClick={() => handleAddTicket()}
-                    >
-                        Add Ticket
-                    </Button>
                 </FormControl>
+                    
+                <Button
+                    variant='contained'
+                    color='primary'
+                    type='submit'
+                    onClick={() => handleAddTicket()}
+                >
+                    Add Ticket
+                </Button>
             </FormControl>
             
             <Cart />
