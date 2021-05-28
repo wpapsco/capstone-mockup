@@ -28,6 +28,8 @@ import CardContent from '@material-ui/core/CardContent'
 import CardActions from '@material-ui/core/CardActions'
 import Button from '@material-ui/core/Button'
 import TextField from '@material-ui/core/TextField'
+import { ThemeProvider } from '@material-ui/core/styles'
+import { theme } from '../../theme'
 
 import Showtime from '../../components/Showtime'
 
@@ -41,6 +43,7 @@ const useStyles = makeStyles((theme) => ({
         display: 'flex',
         justifyContent: 'center',
         flexDirection: 'column',
+        flex: 'auto',
     },
     heroImage: {
         width: '500px',
@@ -82,7 +85,7 @@ export default function EventPage() {
     const sections = pageSections.map(data => <EventBodySection {...data} />)
 
     return (
-        <article>
+        <ThemeProvider theme={theme}>
             <Card className={classes.cardRoot}>
                 <CardMedia className={classes.heroImage} image={imgUrl}/>
                 <CardContent className={classes.cardContents}>
@@ -99,11 +102,10 @@ export default function EventPage() {
                         />
                         <Button color="primary" variant="contained">Get Tickets</Button>
                     </CardActions>
-                    
                 </CardContent>
             </Card>
             <main> {sections !== undefined && sections} </main>
-        </article>
+        </ThemeProvider>
     )
 }
 
