@@ -6,7 +6,6 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 import Button from '@material-ui/core/Button';
 import Navbar from './app/Navbar';
 import {
-     BrowserRouter as Router,
      Switch,
      Route,
      Redirect,
@@ -24,34 +23,32 @@ function App() {
 
     return (
         <Container maxWidth="md">
-            <Router>
-                <Navbar />
-                <div id="maincontainer">
-                    <Switch>
-                        <Route
-                            exact
-                            path="/"
-                        >
-                            <CssBaseline />
-                            {!doorList && showings}
-                            {doorList && [
-                                <DoorList />,
-                                <Button variant="contained" color="primary" onClick={() => setDoorList(false)}>Back</Button>
-                            ]}
-                        </Route>
-                        <Route path="/event">
+            <Navbar />
+            <div id="maincontainer">
+                <Switch>
+                    <Route
+                        exact
+                        path="/"
+                    >
+                        <CssBaseline />
+                        {!doorList && showings}
+                        {doorList && [
+                            <DoorList />,
+                            <Button variant="contained" color="primary" onClick={() => setDoorList(false)}>Back</Button>
+                        ]}
+                    </Route>
+                    <Route path="/event">
                         <EventPage eventId="4" />
-                        </Route>
-                        <Route path="/order">
-                            <EditOrderPage />
-                        </Route>
-                        <Route path="/cart">
-                            <Cart />
-                        </Route>
-                        <Redirect to="/" />
-                    </Switch>
-                </div>
-            </Router>
+                    </Route>
+                    <Route path="/order">
+                        <EditOrderPage />
+                    </Route>
+                    <Route path="/cart">
+                        <Cart />
+                    </Route>
+                    <Redirect to="/" />
+                </Switch>
+            </div>
         </Container>
     );
 }
