@@ -19,7 +19,7 @@ const useStyles = makeStyles({
         display: 'flex',
         justifyContent: 'space-between',
         height: '300px',
-        margin: '10px 0px',
+        margin: '15px 0px',
         textDecoration: 'none',
     },
     cardContents: {
@@ -38,12 +38,12 @@ export default function EventRow(props: EventDetails) {
 
     return (
             <Card className={classes.root}>
-                <div className={classes.cardContents}>
-                    <h2>{props.name}</h2>
+                <CardContent className={classes.cardContents}>
+                    <Typography variant='h5' component='h2'>{props.name}</Typography>
                     <Showtime date={props.date} />
+                    <Typography variant='body1'>{props.shortDesc}</Typography>
                     <Link to={`/events/${props.id}`}>View Event</Link>
-                    <p>{props.shortDesc}</p>
-                </div>
+                </CardContent>
 
                 <CardMedia
                     className={classes.media}

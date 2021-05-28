@@ -35,6 +35,7 @@ const useStyles = makeStyles((theme) => ({
     cardRoot: {
         display: 'flex',
         height: '400px',
+        marginBottom: 40,
     },
     cardContents: {
         display: 'flex',
