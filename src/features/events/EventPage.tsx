@@ -16,8 +16,11 @@
  * - Optional Additional Images
  * 
  * * * * * * * * * * * * * * * * * * * * * * * */ 
-import Typography from '@material-ui/core/Typography';
+import { appSelector } from '../../app/hooks'
+import { useParams } from 'react-router-dom'
+import { selectEventById } from './eventsSlice'
 
+import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/styles'
 import Card from '@material-ui/core/Card';
 import CardMedia from '@material-ui/core/CardMedia'
@@ -25,27 +28,22 @@ import CardContent from '@material-ui/core/CardContent'
 import CardActions from '@material-ui/core/CardActions'
 import Button from '@material-ui/core/Button'
 import TextField from '@material-ui/core/TextField'
+import { ThemeProvider } from '@material-ui/core/styles'
+import { theme } from '../../theme'
 
-type Props = {
-    title: string,
-    showdate: Date,
-    address: string,
-    headerImageUrl: string,
-    bodySections: { heading: string, contents: string }[]
-}
-
-const days = ['sun','mon','tue','wed','thu','fri','sat']
-const months = ['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec']
+import Showtime from '../../components/Showtime'
 
 const useStyles = makeStyles((theme) => ({
     cardRoot: {
         display: 'flex',
         height: '400px',
+        marginBottom: 40,
     },
     cardContents: {
         display: 'flex',
         justifyContent: 'center',
         flexDirection: 'column',
+        flex: 'auto',
     },
     heroImage: {
         width: '500px',
@@ -57,31 +55,44 @@ const useStyles = makeStyles((theme) => ({
     },  
     qtyField: {
         maxWidth: '100px',
+    },
+    showtime: {
+        textAlign: 'center'
     }
 }))
 
-export default function(data: Props) {
-    const classes = useStyles()
-    const {title, showdate, address, bodySections, headerImageUrl} = data
-    const showtime = `${days[showdate.getDay()]} ${months[showdate.getMonth()]}, ${showdate.getDate()+1}`
+interface BodySectionProps { heading: string, contents: string }
+function EventBodySection(props: BodySectionProps) {
+    return (
+        <section>
+            <Typography component="h2" variant="h4" gutterBottom>{props.heading}</Typography>
+            <Typography variant="body1" paragraph>{props.contents}</Typography>
+        </section>
+    )
+}
 
-    const sections = bodySections.map(d => {
-        return (
-            <section>
-                <Typography component="h2" variant="h4" gutterBottom>{d.heading}</Typography>
-                <Typography variant="body1" paragraph>{d.contents}</Typography>
-            </section>
-        )
-    })
+type EventPageProps = { id: string }
+export default function EventPage() {
+    const { id } = useParams<EventPageProps>()
+    const eventData = appSelector(state => selectEventById(state, id))
+    const classes = useStyles()
+
+    if (eventData === undefined) {
+        return <p>Whoops! Event not found</p>
+    }
+
+    const {name: eventName, date, address, pageSections, imgUrl} = eventData
+    const sections = pageSections.map(data => <EventBodySection {...data} />)
 
     return (
-        <article>
+        <ThemeProvider theme={theme}>
             <Card className={classes.cardRoot}>
-                <CardMedia className={classes.heroImage} image={headerImageUrl}/>
+                <CardMedia className={classes.heroImage} image={imgUrl}/>
                 <CardContent className={classes.cardContents}>
-                    <Typography component="h1" variant="h3" align="center" gutterBottom>{title}</Typography>
-                    <Typography variant="subtitle1" align="center">{showtime}</Typography>
+                    <Typography component="h1" variant="h3" align="center" gutterBottom>{eventName}</Typography>
+                    <Showtime align='center' date={date} />
                     <Typography variant="subtitle2" align="center">{address}</Typography>
+
                     <CardActions className={classes.cardActions}>
                         <TextField
                             className={classes.qtyField}
@@ -93,7 +104,8 @@ export default function(data: Props) {
                     </CardActions>
                 </CardContent>
             </Card>
-            <main> {sections} </main>
-        </article>
+            <main> {sections !== undefined && sections} </main>
+        </ThemeProvider>
     )
 }
+
