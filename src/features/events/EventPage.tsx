@@ -17,6 +17,7 @@
  * 
  * * * * * * * * * * * * * * * * * * * * * * * */ 
 import { appSelector } from '../../app/hooks'
+import { useParams } from 'react-router-dom'
 import { selectEventById } from './eventsSlice'
 
 import Typography from '@material-ui/core/Typography';
@@ -64,9 +65,10 @@ function EventBodySection(props: BodySectionProps) {
     )
 }
 
-interface EventPageProps { eventId: string }
-export default function EventPage(data: EventPageProps) {
-    const eventData = appSelector(state => selectEventById(state, data.eventId))
+type EventPageProps = { id: string }
+export default function EventPage() {
+    const { id } = useParams<EventPageProps>()
+    const eventData = appSelector(state => selectEventById(state, id))
     const classes = useStyles()
 
     if (eventData === undefined) {

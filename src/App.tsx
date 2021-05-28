@@ -26,6 +26,18 @@ function App() {
             <Navbar />
             <div id="maincontainer">
                 <Switch>
+                    <Route path="/event/:id">
+                        <EventPage />
+                    </Route>
+
+                    <Route path="/order">
+                        <EditOrderPage />
+                    </Route>
+
+                    <Route path="/cart">
+                        <Cart />
+                    </Route>
+
                     <Route
                         exact
                         path="/"
@@ -37,15 +49,7 @@ function App() {
                             <Button variant="contained" color="primary" onClick={() => setDoorList(false)}>Back</Button>
                         ]}
                     </Route>
-                    <Route path="/event">
-                        <EventPage eventId="4" />
-                    </Route>
-                    <Route path="/order">
-                        <EditOrderPage />
-                    </Route>
-                    <Route path="/cart">
-                        <Cart />
-                    </Route>
+
                     <Redirect to="/" />
                 </Switch>
             </div>
