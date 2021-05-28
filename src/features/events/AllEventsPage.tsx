@@ -11,12 +11,10 @@ export default function AllEventsPage() {
         return <div>No events to show. Please check again later.</div>
     }
 
-    const eventCards = allEvents.map(details => <EventRow {...details} />)
-
     return (
         <section>
             <Typography variant='h4' component='h1'>Upcoming Events</Typography>
-            {eventCards}
+            {allEvents.map(details => <EventRow {...details} />)}
         </section>
     )
 }
