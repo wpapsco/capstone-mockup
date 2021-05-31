@@ -14,14 +14,14 @@ const TicketSummary = (props: TicketSummaryProps) => {
         return <p>No matching event</p>
     }
     
-    const { name, description, date } = eventInfo
+    const { name, date, shortDesc } = eventInfo
     return (
         <article>
             <h2>{name}</h2>
             <h4>{props.participant}</h4>
             <p>Concessions: {props.concessions ? 'Yes' : 'No'}</p>
             <p>{date.toDateString}</p>
-            <p>{description}</p>
+            <p>{shortDesc}</p>
         </article>
     )
 }

@@ -8,8 +8,8 @@ export default function Navbar()  {
     return (
         <Paper square>
             <Tabs>
-                <Tab label="Home" component={NavLink} to="/" />
-                <Tab label="Event (Test)" component={NavLink} to="/event" />
+                <Tab label="Doorlist" component={NavLink} to="/" />
+                <Tab label="Events" component={NavLink} to="/events" />
                 <Tab label="Order" component={NavLink} to="/order" />
                 <Tab label="Complete Order" component={NavLink} to="/completeorder"/>
             </Tabs>

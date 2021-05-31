@@ -16,7 +16,7 @@ export interface CartItem<T extends Ticket | Donation | Discount> {
     id: string,
     type: CartItemType,
     data: T,
-    // TODO: add price to here instead of in the data variable
+    unitPrice: number
     // also other stuff that might be shared between cart items like name, description, etc etc
 }
 
@@ -26,20 +26,16 @@ export interface Ticket {
     eventId: string,
     participant: string,
     concessions: boolean,
-    unitPrice: number,
     showDate: Date
 }
 
 export interface Donation {
     donor: string,
-    amount: number,
     message: string
 }
 
 export interface Discount {
     discountCode: string,
-    discountType: 'dollar' | 'percent',
-    amount: number
 }
 
 const cartSlice = createSlice({
@@ -49,19 +45,19 @@ const cartSlice = createSlice({
         addTicket: {
             reducer(
                 state,
-                action: PayloadAction<Ticket, string>
+                action: PayloadAction<Ticket, string, { unitPrice: number } >
             ) {
                 const newItem: CartItem<Ticket> = {
                     id: nanoid(),
                     type: 'ticket',
-                    data: { ...action.payload }
-
+                    data: { ...action.payload },
+                    unitPrice: action.meta.unitPrice
                 }
                 state.items.push(newItem)
             },
-            prepare(payload: Ticket) {
+            prepare(payload: Ticket, unitPrice: number) {
                 const newTicket: Ticket = {...payload, id: nanoid() }
-                return { payload: newTicket }
+                return { payload: newTicket, meta: { unitPrice } }
             }
         }
     },
