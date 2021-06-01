@@ -11,7 +11,6 @@ import FormControl from '@material-ui/core/FormControl'
 import { useAppDispatch } from '../../app/hooks'
 import { addTicket } from '../cart/cartSlice'
 import Cart from '../cart/Cart'
-import { Ticket } from '../cart/cartSlice'
 
 import TestData from '../events/testEvents'
 
@@ -27,7 +26,7 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 )
 
-export default function EditOrderPage() {
+export default function EditOrderForm() {
     const classes = useStyles()
     const [fullname, setFullname] = useState('')
     const [selectedEventID, selectEvent] = useState('')
@@ -35,14 +34,25 @@ export default function EditOrderPage() {
 
     const dispatch = useAppDispatch()
 
-    const handleAddTicket = () => {
-        dispatch(addTicket({
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault()
+
+        const ticketData = {
             id: '',
             eventId: selectedEventID,
             participant: fullname,
             concessions: boughtConcessions,
             showDate: new Date(Date.now())
-        }, 12.99))
+        }
+
+        const cartData = {
+            unitPrice: 12.99,
+            quantity: 1,
+            description: 'description',
+            name: 'new ticket'
+        }
+
+        dispatch(addTicket(ticketData, cartData))
     }
 
     const handleEventChange = (event: React.ChangeEvent<{ value: unknown }>) => {
@@ -57,8 +67,8 @@ export default function EditOrderPage() {
     }
 
     return (
-        <section>
-            <h1>Edit Order</h1>
+        <form onSubmit={e => handleSubmit(e)}>
+            <h1>New Ticket</h1>
             <FormControl className={classes.formControl}>
                 <FormControl className={classes.formControl}>
                     <InputLabel id="show-label">Shows</InputLabel>
@@ -98,13 +108,12 @@ export default function EditOrderPage() {
                     variant='contained'
                     color='primary'
                     type='submit'
-                    onClick={() => handleAddTicket()}
                 >
                     Add Ticket
                 </Button>
             </FormControl>
             
             <Cart />
-        </section>
+        </form>
     )
 }

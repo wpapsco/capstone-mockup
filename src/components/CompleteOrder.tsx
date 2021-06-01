@@ -7,12 +7,17 @@ import Grid from '@material-ui/core/Grid';
 import Checkbox from '@material-ui/core/Checkbox';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 
+import { appSelector } from '../app/hooks'
+import { selectCartItems } from '../features/cart/cartSlice'
+
 export default function CompleteOrder() {
+    const cartItems = appSelector(selectCartItems)
+
     return <div style={{display: "flex", height: "100vh", width: "100%"}}>
         <Paper style={{minWidth: "20%", flexGrow: 2, height: "100%", margin: "10px", paddingLeft: "2%", paddingRight: "2%", paddingTop: "50px"}} variant="outlined">
             <Typography variant="h4">Your order</Typography>
-            <CartItem/>
-            <CartItem/>
+            {cartItems.map(data => <CartItem {...data} />)}
+
             <Button color="primary" variant="contained" style={{width: "100%"}}>Add more items</Button>
             <Divider style={{marginBottom: "30px", marginTop: "30px"}}/>
             <div style={{display: "flex", justifyContent: "space-between"}}>
@@ -78,13 +83,14 @@ export default function CompleteOrder() {
     </div>
 }
 
-function CartItem() {
+export type CartItemProps = { name: string, description: string, quantity: number, unitPrice: number }
+function CartItem(props: CartItemProps) {
     return <div style={{paddingBottom: "10px"}}>
-        <Typography variant="body1" color="textPrimary">Event Name</Typography>
-        <Typography variant="body2" color="textSecondary">Short description</Typography>
+        <Typography variant="body1" color="textPrimary">{props.name}</Typography>
+        <Typography variant="body2" color="textSecondary">{props.description}</Typography>
         <div style={{display: "flex", justifyContent: "space-between"}}>
-            <Typography variant="body2" color="textSecondary">Quantity: N</Typography>
-            <Typography variant="body2" color="textSecondary">$X.XX</Typography>
+            <Typography variant="body2" color="textSecondary">Quantity: {props.quantity}</Typography>
+            <Typography variant="body2" color="textSecondary">${props.unitPrice}</Typography>
         </div>
     </div>
 }
