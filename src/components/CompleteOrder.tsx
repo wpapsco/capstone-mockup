@@ -9,9 +9,19 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 
 import { appSelector } from '../app/hooks'
 import { selectCartItems } from '../features/cart/cartSlice'
+import { useEffect, useState } from 'react';
+
+const toDollar = (x: number) => `$${(Math.round(x * 100) / 100).toFixed(2)}`
 
 export default function CompleteOrder() {
     const cartItems = appSelector(selectCartItems)
+    const [subtotal, setSubtotal] = useState(0)
+
+    useEffect(() => {
+        setSubtotal(
+            cartItems.reduce((tot, curItem) => tot += curItem.quantity * curItem.unitPrice, 0)
+        )
+    }, [cartItems])
 
     return <div style={{display: "flex", height: "100vh", width: "100%"}}>
         <Paper style={{minWidth: "20%", flexGrow: 2, height: "100%", margin: "10px", paddingLeft: "2%", paddingRight: "2%", paddingTop: "50px"}} variant="outlined">
@@ -22,7 +32,7 @@ export default function CompleteOrder() {
             <Divider style={{marginBottom: "30px", marginTop: "30px"}}/>
             <div style={{display: "flex", justifyContent: "space-between"}}>
                 <Typography variant="body1">Subtotal</Typography>
-                <Typography variant="body2" color="textSecondary">$X.XX</Typography>
+                <Typography variant="body2" color="textSecondary">{toDollar(subtotal)}</Typography>
             </div>
             <div style={{display: "flex", justifyContent: "space-between"}}>
                 <Typography variant="body2">Discount</Typography>
