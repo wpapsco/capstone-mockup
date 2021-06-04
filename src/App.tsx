@@ -48,10 +48,7 @@ function App() {
                         <CompleteOrder />
                     </Route>
 
-                    <Route
-                        exact
-                        path="/"
-                    >
+                    <Route exact path="/" >
                         <CssBaseline />
                         {!doorList && showings}
                         {doorList && [

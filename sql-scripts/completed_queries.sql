@@ -41,3 +41,7 @@ select play.name, count(tix.TicketNo)
 from Ticket as tix join Showtime as shwtm on tix.eventID = shwtm.ID
 join Plays as play on shwtm.playID = play.ID
 where play.active = true and shwtm.eventDate between @day1 and @day2;
+
+--Query to count the tickets sold by show
+select count(ticket.TicketNo)
+from Ticket ticket join Showtime showtime on ticket.EventID = showtime.ID
