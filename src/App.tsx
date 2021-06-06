@@ -3,6 +3,7 @@ import "./App.css";
 import ShowingsPage from "./components/ShowingsPage";
 import CompleteOrder from "./components/CompleteOrder";
 import DoorList from "./components/DoorList";
+import Newsletter from "./components/Newsletter";
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Button from '@material-ui/core/Button';
 import Navbar from './app/Navbar';
@@ -46,6 +47,10 @@ function App() {
 
                     <Route path="/completeorder">
                         <CompleteOrder />
+                    </Route>
+
+                    <Route path="/newsletter">
+                        <Newsletter />
                     </Route>
 
                     <Route exact path="/" >
