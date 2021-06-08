@@ -3,7 +3,6 @@ import "./App.css";
 import ShowingsPage from "./components/ShowingsPage";
 import CompleteOrder from "./components/CompleteOrder";
 import DoorList from "./components/DoorList";
-import Newsletter from "./components/Newsletter";
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Button from '@material-ui/core/Button';
 import Navbar from './app/Navbar';
@@ -16,6 +15,7 @@ import EditOrderPage from "./features/checkout/EditOrderPage";
 import Cart from './features/cart/Cart';
 import EventPage from './features/events/EventPage'
 import AllEventsPage from "./features/events/AllEventsPage";
+import NewsletterPage from "./features/newsletter/NewsletterPage";
 import { Container } from "@material-ui/core";
 
 function App() {
@@ -50,7 +50,7 @@ function App() {
                     </Route>
 
                     <Route path="/newsletter">
-                        <Newsletter />
+                        <NewsletterPage />
                     </Route>
 
                     <Route exact path="/" >
