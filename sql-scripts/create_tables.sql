@@ -95,13 +95,12 @@ create table plays (
 )
 
 -- Create Showtime table
-create type showStatus as enum('open', 'closed')
 create table showtimes (
     id serial,
     playId integer,
     eventDate date,
     startTime time,
-    saleStatus showStatus,
+    saleStatus boolean,
     totalSeats integer,
     availableSeats integer,
     purchaseURI varchar(255),
