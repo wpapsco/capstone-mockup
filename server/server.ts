@@ -1,8 +1,11 @@
 // import bodyParser from 'body-parser';
 import express from 'express';
-import {Request, Response} from 'express';
 import {pool} from './db';
 import cors from 'cors';
+import Stripe from "stripe"
+import { CartItem, TicketData } from "../src/features/cart/cartSlice"
+
+let stripe = new Stripe(process.env.PRIVATE_STRIPE_KEY, {apiVersion: "2020-08-27"})
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -34,6 +37,30 @@ app.get('/api/doorlist', async (req, res) => {
     catch(err) {
         console.error(err.message);
     }
+});
+
+app.post('/api/checkout', async (req, res) => {
+    console.log(req.body)
+    const data: CartItem<TicketData>[] = req.body;
+    console.log(data)
+    const session = await stripe.checkout.sessions.create({
+        payment_method_types: ['card'],
+        line_items: data.map(item => ({
+            price_data: {
+                currency: "usd",
+                product_data: {
+                    name: item.name,
+                    description: item.description
+                },
+                unit_amount: item.unitPrice * 100
+            },
+            quantity: item.quantity
+        })),
+        mode: "payment",
+        success_url: "http://localhost:3000/success",
+        cancel_url: "http://localhost:3000",
+    })
+    res.json({id: session.id})
 });
 
 // tslint:disable-next-line:no-console
