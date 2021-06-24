@@ -4,6 +4,7 @@ import ShowingsPage from "./components/ShowingsPage";
 import CompleteOrder from "./components/CompleteOrder";
 import DoorList from "./components/DoorList";
 import CreateEvents from "./components/CreateEvents";
+import DeleteEvents from "./components/DeleteEvents";
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Button from '@material-ui/core/Button';
 import Navbar from './app/Navbar';
@@ -59,6 +60,10 @@ function App() {
 
                     <Route path="/CreateEvents">
                         <CreateEvents />
+                    </Route>
+
+                    <Route path="/DeleteEvents">
+                        <DeleteEvents />
                     </Route>
 
                     <Route path="/newsletter">
