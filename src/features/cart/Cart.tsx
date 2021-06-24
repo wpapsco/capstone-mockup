@@ -1,29 +1,24 @@
 import { appSelector } from '../../app/hooks'
-import { selectItemsByType } from './cartSlice'
-import { Ticket } from '../cart/cartSlice'
-
-import TicketSummary from '../checkout/TicketSummary'
+import { selectCartItems } from '../cart/cartSlice'
 
 const Cart = () => {
-    const tickets = appSelector((state, type='ticket') => selectItemsByType(state, type))
-    const ticketItems = tickets.map(item => item.data as Ticket).map(ticket => {
-        return (
-            <TicketSummary  key={ticket.id}
-                            eventId={ticket.eventId}
-                            participant={ticket.participant}
-                            concessions={ticket.concessions}
-                            showDate={ticket.showDate} />
-        )
-    })
+    const items = appSelector(selectCartItems)
+    const cartItems = items.map(item => (
+        <div>
+            <p>{item.name}</p>
+            <p>{item.description}</p>
+            <p>{item.quantity} x {item.unitPrice}</p>
+        </div>
+    ))
+
+    const placeholder = <p>Nothing in your cart</p>
 
     return (
         <div>
             <h2>Cart</h2>
-            <h3>Tickets</h3>
-            {tickets.length>0 ? ticketItems : <p>No tickets</p>}
+            {items.length>0 ? cartItems : placeholder}
         </div>
     )
 }
-
 
 export default Cart

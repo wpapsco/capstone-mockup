@@ -49,25 +49,29 @@ create table reservation (
     foreign key(custId) references customers(id)
 )
 
--- Create TicketLevel
-create table ticketLevel (
-    typeID integer,
-    nameType varchar(100),
+-- Create TicketType
+create table ticketType (
+    id integer,
+    name varchar(100),
+    isSeason boolean,
+    seasonId integer,
     price money,
-    fees money,
-    primary key(typeID)
+    concessions money,
+    primary key(id)
+    foreign key(seasonId) references seasons(id)
 )
 
--- Create TicketList table
-create table ticketList (
+-- Create Tickets table
+create table tickets (
     ticketNo serial,
-    ticketType integer,
+    type integer,
     eventId integer,
     custId integer,
     paid boolean,
     active boolean,
+    passcode varchar(10),
     primary key(ticketNo),
-    foreign key(ticketType) references ticketLevel(typeID),
+    foreign key(type) references ticketType(id),
     foreign key(eventId) references showtimes(id),
     foreign key(custId) references customers(id)
 )
@@ -75,12 +79,10 @@ create table ticketList (
 -- Create Seasons table
 create table seasons (
     id serial,
-    ticketType integer,
-    startDate datetime,
-    endDate datetime,
-    active boolean,
-    primary key(id),
-    foreign key(ticketType) references ticketLevel(typeID)
+    name varchar(100),
+    startDate timestamp,
+    endDate timestamp,
+    primary key(id)
 )
 
 -- Create Plays table
@@ -95,13 +97,12 @@ create table plays (
 )
 
 -- Create Showtime table
-create type showStatus as enum('open', 'closed')
 create table showtimes (
     id serial,
     playId integer,
     eventDate date,
     startTime time,
-    saleStatus showStatus,
+    saleStatus boolean,
     totalSeats integer,
     availableSeats integer,
     purchaseURI varchar(255),

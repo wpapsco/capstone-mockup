@@ -15,7 +15,7 @@ import Grid from '@material-ui/core/Grid';
 import Checkbox from '@material-ui/core/Checkbox';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 
-export default function Newsletter()
+export default function NewsletterPage()
 {
    return (
       <div style={{display: "flex", height: "100vh", width: "100%"}}>
