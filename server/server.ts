@@ -40,11 +40,14 @@ app.get('/api/doorlist', async (req, res) => {
 });
 
 app.post('/api/checkout', async (req, res) => {
-    console.log(req.body)
+    // TODO: NOT DO IT THIS WAY!!!
+    // right now it gets the price info from the request made by the client.
+    // THIS IS WRONG it needs to look up the price in the database given
+    // the id of the show/event/whatever. PRICES CANNOT COME FROM CLIENTS!!
     const data: CartItem<TicketData>[] = req.body;
-    console.log(data)
     const session = await stripe.checkout.sessions.create({
         payment_method_types: ['card'],
+        //this is the offending area
         line_items: data.map(item => ({
             price_data: {
                 currency: "usd",
@@ -56,6 +59,7 @@ app.post('/api/checkout', async (req, res) => {
             },
             quantity: item.quantity
         })),
+
         mode: "payment",
         success_url: "http://localhost:3000/success",
         cancel_url: "http://localhost:3000",
