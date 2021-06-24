@@ -11,7 +11,7 @@ create table customers (
     seatingAccom varchar(100),
     vip boolean default false,
     primary key(id)
-)
+);
 
 -- Create Donations table
 create type freq as enum('one-time', 'weekly', 'monthly', 'yearly');
@@ -26,7 +26,7 @@ create table donations (
     donoDate date,
     primary key(donationId),
     foreign key(donorId) references customers(id)
-)
+);
 
 -- Create Discounts
 create table discounts (
@@ -34,7 +34,7 @@ create table discounts (
     code varchar(255),
     amount money,
     primary key(id)
-)
+);
 
 -- Create Reservation table
 create table reservation (
@@ -47,7 +47,16 @@ create table reservation (
     numTickets integer,
     primary key(transNo),
     foreign key(custId) references customers(id)
-)
+);
+
+-- Create Seasons table
+create table seasons (
+    id serial,
+    name varchar(100),
+    startDate timestamp,
+    endDate timestamp,
+    primary key(id)
+);
 
 -- Create TicketType
 create table ticketType (
@@ -57,33 +66,9 @@ create table ticketType (
     seasonId integer,
     price money,
     concessions money,
-    primary key(id)
+    primary key(id),
     foreign key(seasonId) references seasons(id)
-)
-
--- Create Tickets table
-create table tickets (
-    ticketNo serial,
-    type integer,
-    eventId integer,
-    custId integer,
-    paid boolean,
-    active boolean,
-    passcode varchar(10),
-    primary key(ticketNo),
-    foreign key(type) references ticketType(id),
-    foreign key(eventId) references showtimes(id),
-    foreign key(custId) references customers(id)
-)
-
--- Create Seasons table
-create table seasons (
-    id serial,
-    name varchar(100),
-    startDate timestamp,
-    endDate timestamp,
-    primary key(id)
-)
+);
 
 -- Create Plays table
 create table plays (
@@ -94,7 +79,7 @@ create table plays (
     active boolean,
     primary key(id),
     foreign key(seasonId) references seasons(id)
-)
+);
 
 -- Create Showtime table
 create table showtimes (
@@ -108,4 +93,17 @@ create table showtimes (
     purchaseURI varchar(255),
     primary key(id),
     foreign key(playId) references plays(id)
-)
+);
+-- Create Tickets table
+create table tickets (
+    ticketNo serial,
+    type integer,
+    eventId integer,
+    custId integer,
+    paid boolean,
+    active boolean,
+    primary key(ticketNo),
+    foreign key(type) references ticketType(id),
+    foreign key(eventId) references showtimes(id),
+    foreign key(custId) references customers(id)
+);
