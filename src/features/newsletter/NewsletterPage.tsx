@@ -22,8 +22,17 @@ export default function NewsletterPage()
          <Paper style={{flexGrow: 8, height: "100%", margin: "10px", paddingLeft: "5%", paddingTop: "50px", paddingRight: "10%"}} variant="outlined">
             <Typography variant="h3">Newsletter!</Typography>
             <form>
+               <TextField id="first-name" label="First Name" variant="outlined" fullWidth/>
+               <TextField id="last-name" label="Last Name" variant="outlined" fullWidth/>
                <TextField id="email" label="Email" variant="outlined" fullWidth/>
-               <Button variant="contained" color="primary" style={{width: "100%"}}>Sign-up</Button>
+               <FormControlLabel control={<Checkbox />} label="Playhouse Newsletter"/>
+               <FormControlLabel control={<Checkbox />} label="Volunteer List"/>
+               <TextField id="address" label="Street Address" variant="outlined" fullWidth/>
+               <TextField id="city" label="City" variant="outlined" fullWidth/>
+               <TextField id="state" label="State" variant="outlined" fullWidth/>
+               <TextField id="zip" label="Zip Code" variant="outlined" fullWidth/>
+               <TextField id="phone" label="Phone" variant="outlined" fullWidth/>
+               <Button variant="contained" color="primary" style={{width: "50%"}}>Sign-up</Button>
             </form>
          </Paper>
       </div>
