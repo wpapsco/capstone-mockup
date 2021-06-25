@@ -3,15 +3,6 @@ import { RootState } from '../../app/store'
 
 import TestData from './testEvents'
 
-export interface EventsState {
-    data: EventDetails[],
-    status: 'pending' | 'loading' | 'success' | 'failed'
-}
-
-const initialState: EventsState = {
-    data: TestData,
-    status: 'pending'
-}
 export interface EventDetails {
     id: string,
     name: string,
@@ -20,6 +11,16 @@ export interface EventDetails {
     date: Date,
     pageSections: { heading: string, contents: string }[],
     address: string,
+}
+
+export interface EventsState {
+    data: EventDetails[],
+    status: 'pending' | 'loading' | 'success' | 'failed'
+}
+
+const initialState: EventsState = {
+    data: TestData,
+    status: 'pending'
 }
 
 const eventsSlice = createSlice({
