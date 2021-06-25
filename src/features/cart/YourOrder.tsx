@@ -4,13 +4,14 @@ import Paper from '@material-ui/core/Paper'
 import Typography from '@material-ui/core/Typography'
 import Divider from '@material-ui/core/Divider';
 import Button from '@material-ui/core/Button'
-import { selectCartItems } from './cartSlice'
+import { selectCartItems, selectDonation } from './cartSlice'
 import CartItem from './CartItem'
 
 const toDollar = (x: number) => `$${(Math.round(x * 100) / 100).toFixed(2)}`
 
 const YourOrder = () => {
     const cartItems = appSelector(selectCartItems)
+    const donation = appSelector(selectDonation)
     const [subtotal, setSubtotal] = useState(0)
 
     useEffect(() => {
@@ -39,12 +40,12 @@ const YourOrder = () => {
             </div>
             <div style={{display: "flex", justifyContent: "space-between"}}>
                 <Typography variant="body2">Donation</Typography>
-                <Typography variant="body2" color="textSecondary">$X.XX</Typography>
+                <Typography variant="body2" color="textSecondary">{toDollar(donation)}</Typography>
             </div>
             <Divider style={{marginBottom: "30px", marginTop: "30px"}}/>
             <div style={{display: "flex", justifyContent: "space-between"}}>
                 <Typography variant="body1">Total</Typography>
-                <Typography variant="body1" color="textSecondary">$X.XX</Typography>
+                <Typography variant="body1" color="textSecondary">{toDollar(donation+subtotal)}</Typography>
             </div>
         </Paper>
     )

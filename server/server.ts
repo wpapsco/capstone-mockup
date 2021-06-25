@@ -4,6 +4,7 @@ import {pool} from './db';
 import cors from 'cors';
 import Stripe from "stripe"
 import { CartItem, TicketData } from "../src/features/cart/cartSlice"
+import { CheckoutFormInfo } from "../src/components/CompleteOrderForm"
 
 let stripe = new Stripe(process.env.PRIVATE_STRIPE_KEY, {apiVersion: "2020-08-27"})
 
@@ -49,8 +50,21 @@ app.post('/api/checkout', async (req, res) => {
     // the id of the show/event/whatever. PRICES CANNOT COME FROM CLIENTS!!
     const data: CartItem<TicketData>[] = req.body.cartItems;
     // TODO: submit form data to DB
-    const formData = req.body.formData;
+    const formData: CheckoutFormInfo = req.body.formData;
     console.log(formData);
+    const donation: number = req.body.donation
+    const donationItem = {
+        price_data: {
+            currency: "usd",
+            product_data: {
+                name: "Donation",
+                description: "A generous donation"
+            },
+            // the price here needs to be fetched from the DB instead
+            unit_amount: donation * 100
+        },
+        quantity: 1
+    }
     const session = await stripe.checkout.sessions.create({
         payment_method_types: ['card'],
         //this is the offending area all this stuff needs to be replaced by info from DB based on play ID or something
@@ -65,7 +79,7 @@ app.post('/api/checkout', async (req, res) => {
                 unit_amount: item.unitPrice * 100
             },
             quantity: item.quantity
-        })),
+        })).concat(donationItem),
         mode: "payment",
         success_url: "http://localhost:3000/success",
         cancel_url: "http://localhost:3000",

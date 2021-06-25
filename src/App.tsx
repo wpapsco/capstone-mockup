@@ -1,7 +1,7 @@
 import { useState } from "react";
 import "./App.css";
 import ShowingsPage from "./components/ShowingsPage";
-import CompleteOrder from "./components/CompleteOrder";
+import CheckoutPage from "./components/CheckoutPage";
 import DoorList from "./components/DoorList";
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Button from '@material-ui/core/Button';
@@ -20,7 +20,7 @@ import CheckoutSuccess from "./components/CheckoutSuccess";
 import { Container } from "@material-ui/core";
 import Snackbar from "@material-ui/core/Snackbar";
 import { useAppDispatch, appSelector } from './app/hooks'
-import { openSnackbar, closeSnackbar, selectSnackbar } from "./features/snackbarSlice"
+import { closeSnackbar, selectSnackbar } from "./features/snackbarSlice"
 
 function App() {
 
@@ -61,7 +61,7 @@ function App() {
                     </Route>
 
                     <Route path="/completeorder">
-                        <CompleteOrder />
+                        <CheckoutPage/>
                     </Route>
 
                     <Route path="/newsletter">

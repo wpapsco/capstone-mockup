@@ -24,22 +24,23 @@ export interface CartItem<T extends TicketData> {
 export interface CartState {
     items: CartItem<TicketData>[],
     status: 'pending' | 'loading' | 'failed' | 'success',
+    donation: number
 }
 
 const initialState: CartState = {
     items: [],
     status: 'pending',
+    donation: 0
 }
 
 type CartItemProps = { unitPrice: number, quantity: number, description: string, name: string }
 
-//we can talk about this but this syntax makes 1000% more sense in my brain.
 const cartSlice = createSlice({
     name: 'cart',
     initialState, 
     reducers: {
         addTicket: {
-            reducer: (state, action: PayloadAction<TicketData, string, CartItemProps>) =>  {
+            reducer: (state, action: PayloadAction<TicketData, string, CartItemProps>) => {
                 const newItem: CartItem<TicketData> = {
                     id: nanoid(),
                     ...action.meta,
@@ -51,6 +52,9 @@ const cartSlice = createSlice({
                 const newTicket: TicketData = {...payload, id: nanoid() }
                 return { payload: newTicket, meta: cartData }
             }
+        },
+        setDonation: (state, action: PayloadAction<number>) => {
+            return { ...state, donation: action.payload }
         }
     },
         // removeTicket: (state, action: PayloadAction<string>) => {
@@ -69,8 +73,9 @@ const cartSlice = createSlice({
         // }
 })
 
-export const { addTicket } = cartSlice.actions
+export const { addTicket, setDonation } = cartSlice.actions
 
 export const selectCartItems = (state: RootState) => state.cart.items
+export const selectDonation = (state: RootState) => state.cart.donation
 
 export default cartSlice.reducer
