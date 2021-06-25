@@ -8,14 +8,13 @@ import { useAppDispatch } from "../app/hooks"
 import { useState } from "react";
 import InputAdornment  from "@material-ui/core/InputAdornment"
 
-
 export default function DonationPage({onNext}: {onNext: () => any}) {
     const dispatch = useAppDispatch()
     const donation = appSelector(selectDonation)
     const [amount, setAmount] = useState(donation)
     return(
         <Grid container spacing={3} alignItems="flex-end">
-            <Typography variant="h4">Please consider making a donation</Typography>
+            <Typography variant="h3">Please consider making a donation</Typography>
             <Grid item xs={9}>
                 <TextField label="donation amount" 
                     onChange={e => setAmount(+e.target.value)} 
