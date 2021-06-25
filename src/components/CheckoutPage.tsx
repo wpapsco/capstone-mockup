@@ -36,7 +36,6 @@ export default function CheckoutPage() {
     return (
         <div style={{display: "flex", height: "100vh", width: "100%"}}>
             <YourOrder />
-            <p>ayylmao</p>
             <Paper style={{flexGrow: 8, height: "100%", margin: "10px", paddingLeft: "5%", paddingTop: "50px", paddingRight: "10%"}} variant="outlined">
                 {checkoutStep == "donation" && <DonationPage onNext={() => setCheckoutStep("form")}/>}
                 {checkoutStep == "form" && <CompleteOrderForm onSubmit={doCheckout} onBack={() => setCheckoutStep("donation")}/>}
