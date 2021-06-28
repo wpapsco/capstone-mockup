@@ -50,6 +50,17 @@ app.post('/api/checkout', async (req, res) => {
     // the id of the show/event/whatever. PRICES CANNOT COME FROM CLIENTS!!
     const data: CartItem<TicketData>[] = req.body.cartItems;
     // TODO: submit form data to DB
+    // Adding a customer to the customer table based on form data:
+    // I'm defaulting donor badge and seating accom columns to false, but I'm not sure
+    // where else we would be asking for seating accommodations other than checkout...
+    try {
+        const addedCust = await pool.query(
+        "INSERT INTO customers (custname, email, phone, custaddress, newsletter, donorbadge, seatingaccom) values ($1, $2, $3, $4, $5, $6, $7)",
+        [req.body.formData["first-name"] + " " + req.body.formData["last-name"], req.body.formData.email,
+         req.body.formData.phone, req.body.formData["street-address"], req.body.formData["opt-in"], false, false])
+    } catch (error) {
+        console.log(error);
+    }
     const formData: CheckoutFormInfo = req.body.formData;
     console.log(formData);
     const donation: number = req.body.donation
