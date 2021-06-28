@@ -10,7 +10,6 @@ export default function Navbar()  {
             <Tabs>
                 <Tab label="Doorlist" component={NavLink} to="/" />
                 <Tab label="Events" component={NavLink} to="/events" />
-                <Tab label="Order" component={NavLink} to="/order" />
                 <Tab label="Complete Order" component={NavLink} to="/completeorder"/>
                 <Tab label="Create Events" component={NavLink} to="/CreateEvents"/>
             </Tabs>

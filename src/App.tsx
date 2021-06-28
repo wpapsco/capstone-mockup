@@ -61,10 +61,6 @@ function App() {
                         <AllEventsPage />
                     </Route>
 
-                    <Route path="/order">
-                        <EditOrderPage />
-                    </Route>
-
                     <Route path="/cart">
                         <Cart />
                     </Route>
