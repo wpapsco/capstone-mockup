@@ -25,8 +25,6 @@ export default function NewsletterPage()
       var volunteer_opt = true;
 
       // Check if email is already with us
-      
-
       var email_exists = false;
       try
       {
@@ -56,7 +54,8 @@ export default function NewsletterPage()
             const response = await fetch("http://localhost:5000/api/newsletter/update",
                {
                   method: 'POST',
-                  headers: {
+                  headers:
+                  {
                      'Content-Type': 'application/json',
                   },
                   body: JSON.stringify(data),
@@ -89,7 +88,8 @@ export default function NewsletterPage()
             const response = await fetch("http://localhost:5000/api/newsletter/insert",
                {
                   method: 'POST',
-                  headers: {
+                  headers:
+                  {
                      'Content-Type': 'application/json',
                   },
                   body: JSON.stringify(data),
@@ -107,19 +107,21 @@ export default function NewsletterPage()
    return (
       <div style={{display: "flex", height: "100vh", width: "100%"}}>
          <Paper style={{flexGrow: 8, height: "100%", margin: "10px", paddingLeft: "5%", paddingTop: "50px", paddingRight: "10%"}} variant="outlined">
-            <Typography variant="h3">Newsletter!</Typography>
+            <Typography variant="h3">Newsletter Sign-up!</Typography>
             <form>
-               <TextField id="first-name" label="First Name" variant="outlined" fullWidth/>
-               <TextField id="last-name" label="Last Name" variant="outlined" fullWidth/>
-               <TextField id="email" label="Email" variant="outlined" fullWidth/>
-               <FormControlLabel control={<Checkbox />} label="Playhouse Newsletter"/>
-               <FormControlLabel control={<Checkbox />} label="Volunteer List"/>
-               <TextField id="address" label="Street Address" variant="outlined" fullWidth/>
-               <TextField id="city" label="City" variant="outlined" fullWidth/>
-               <TextField id="state" label="State" variant="outlined" fullWidth/>
-               <TextField id="zip" label="Zip Code" variant="outlined" fullWidth/>
-               <TextField id="phone" label="Phone" variant="outlined" fullWidth/>
-               <Button variant="contained" color="primary" onClick={() => {submit()}} style={{width: "50%"}}>Sign-up</Button>
+               <Grid container spacing={1}>
+               <Grid item xs={6}><TextField id="first-name" label="First Name" variant="outlined" fullWidth/> </Grid>
+               <Grid item xs={6}><TextField id="last-name" label="Last Name" variant="outlined" fullWidth/> </Grid>
+               <Grid item xs={12}><TextField id="email" label="Email" variant="outlined" fullWidth/> </Grid>
+               <Grid item xs={6}><Checkbox id="newsletter-opt" /> Playhouse Newsletter </Grid>
+               <Grid item xs={6}><Checkbox id="volunteer-opt" /> Volunteer List </Grid>
+               <Grid item xs={12}><TextField id="address" label="Street Address" variant="outlined" fullWidth/> </Grid>
+               <Grid item xs={6}><TextField id="city" label="City" variant="outlined" fullWidth/> </Grid>
+               <Grid item xs={6}><TextField id="state" label="State" variant="outlined" fullWidth/> </Grid>
+               <Grid item xs={6}><TextField id="zip" label="Zip Code" variant="outlined" fullWidth/> </Grid>
+               <Grid item xs={6}><TextField id="phone" label="Phone" variant="outlined" fullWidth/> </Grid>
+               <Grid item xs={6}><Button variant="contained" color="primary" onClick={() => {submit()}} style={{width: "50%"}}>Sign-up</Button> </Grid>
+               </Grid>
             </form>
          </Paper>
       </div>
