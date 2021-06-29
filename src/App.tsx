@@ -1,8 +1,10 @@
 import { useState } from "react";
 import "./App.css";
 import ShowingsPage from "./components/ShowingsPage";
-import CompleteOrder from "./components/CompleteOrder";
+import CheckoutPage from "./components/CheckoutPage";
 import DoorList from "./components/DoorList";
+import CreateEvents from "./components/CreateEvents";
+import DeleteEvents from "./components/DeleteEvents";
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Button from '@material-ui/core/Button';
 import Navbar from './app/Navbar';
@@ -16,11 +18,22 @@ import Cart from './features/cart/Cart';
 import EventPage from './features/events/EventPage'
 import AllEventsPage from "./features/events/AllEventsPage";
 import NewsletterPage from "./features/newsletter/NewsletterPage";
+import CheckoutSuccess from "./components/CheckoutSuccess";
 import { Container } from "@material-ui/core";
+import Snackbar from "@material-ui/core/Snackbar";
+import { useAppDispatch, appSelector } from './app/hooks'
+import { closeSnackbar, selectSnackbar } from "./features/snackbarSlice"
 
 function App() {
 
     const [doorList, setDoorList] = useState(false);
+    const dispatch = useAppDispatch()
+    const snackbarState = appSelector(selectSnackbar)
+
+    const onSnackbarClose = (_: React.SyntheticEvent | React.MouseEvent, reason?: string) => {
+        if (reason === 'clickaway') return;
+        dispatch(closeSnackbar())
+    }
 
     const showings = <ShowingsPage showingSelected={() => setDoorList(!doorList)} />;
 
@@ -31,6 +44,17 @@ function App() {
                 <Switch>
                     <Route path="/events/:id">
                         <EventPage />
+                    </Route>
+                    <Route path="/events/:id">
+                        <EventPage />
+                    </Route>
+
+                    <Route path="/events/:id">
+                        <EventPage />
+                    </Route>
+
+                    <Route path="/success">
+                        <CheckoutSuccess/>
                     </Route>
 
                     <Route path="/events">
@@ -46,7 +70,15 @@ function App() {
                     </Route>
 
                     <Route path="/completeorder">
-                        <CompleteOrder />
+                        <CheckoutPage/>
+                    </Route>
+
+                    <Route path="/CreateEvents">
+                        <CreateEvents />
+                    </Route>
+
+                    <Route path="/DeleteEvents">
+                        <DeleteEvents />
                     </Route>
 
                     <Route path="/newsletter">
@@ -64,6 +96,15 @@ function App() {
                     <Redirect to="/" />
                 </Switch>
             </div>
+            <Snackbar
+                anchorOrigin={{
+                  vertical: 'bottom',
+                  horizontal: 'left',
+                }}
+                open={snackbarState.shown}
+                autoHideDuration={6000}
+                onClose={onSnackbarClose}
+                message={snackbarState.message}/>
         </Container>
     );
 }

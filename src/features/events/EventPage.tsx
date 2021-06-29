@@ -16,6 +16,9 @@
  * - Optional Additional Images
  * 
  * * * * * * * * * * * * * * * * * * * * * * * */ 
+import React, { useState } from 'react'
+import { addTicket } from '../cart/cartSlice'
+import { useAppDispatch } from '../../app/hooks'
 import { appSelector } from '../../app/hooks'
 import { useParams } from 'react-router-dom'
 import { selectEventById } from './eventsSlice'
@@ -30,6 +33,7 @@ import Button from '@material-ui/core/Button'
 import TextField from '@material-ui/core/TextField'
 import { ThemeProvider } from '@material-ui/core/styles'
 import { theme } from '../../theme'
+import { openSnackbar } from '../snackbarSlice'
 
 import Showtime from '../../components/Showtime'
 
@@ -73,16 +77,34 @@ function EventBodySection(props: BodySectionProps) {
 
 type EventPageProps = { id: string }
 export default function EventPage() {
+
     const { id } = useParams<EventPageProps>()
     const eventData = appSelector(state => selectEventById(state, id))
     const classes = useStyles()
-
-    if (eventData === undefined) {
-        return <p>Whoops! Event not found</p>
-    }
-
+    const dispatch = useAppDispatch()
+    const [amount, setAmount] = useState(0)
+    if (eventData === undefined) return <p>Whoops! Event not found</p> 
     const {name: eventName, date, address, pageSections, imgUrl} = eventData
     const sections = pageSections.map(data => <EventBodySection {...data} />)
+
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault()
+        const ticketData = {
+            id: '',
+            eventId: id,
+            participant: "nobody",
+            concessions: false,
+            showDate: eventData.date
+        }
+        const cartData = {
+            unitPrice: 12.99,
+            quantity: amount,
+            description: eventData.shortDesc,
+            name: eventData.name
+        }
+        dispatch(addTicket(ticketData, cartData))
+        dispatch(openSnackbar(`Added ${amount} ticket${amount == 1 ? "" : "s"} to cart!`))
+    }
 
     return (
         <ThemeProvider theme={theme}>
@@ -97,10 +119,12 @@ export default function EventPage() {
                         <TextField
                             className={classes.qtyField}
                             required
+                            value={amount || undefined}
+                            onChange={(e) => setAmount(+e.target.value)}
                             label="Quantity"
                             type="number"
                         />
-                        <Button color="primary" variant="contained">Get Tickets</Button>
+                        <Button disabled={!amount} color="primary" variant="contained" onClick={handleSubmit}>Get Tickets</Button>
                     </CardActions>
                 </CardContent>
             </Card>
