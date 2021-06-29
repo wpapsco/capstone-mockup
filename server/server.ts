@@ -70,7 +70,7 @@ app.post('/api/newsletter/insert', async (req, res) => {
         var body = req.body;
         var values = [body.custname, body.email,
                       body.phone, body.custaddress, body.news_opt,
-                      body.donorbadge, body.seatingaccom, body.vip, body.volunteer_opt];
+                      false, false, false, body.volunteer_opt];
         const emails = await pool.query("INSERT INTO public.customers(\
             custname, email, phone, custaddress, newsletter, donorbadge, seatingaccom, vip, \"volunteer list\")\
             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9);", values);
