@@ -10,8 +10,6 @@ export default function CreateEvents(props: {}) {
   const [eventTime, setEventTime] = useState(eventDate.getTime()); // Use React datetime??
 
   const eventCreate = async () => {
-    console.log("EventName: ", eventName);
-
     const data = {
       eventName: eventName,
       eventDesc: eventDesc,
@@ -67,30 +65,6 @@ export default function CreateEvents(props: {}) {
           <TextField type="time" id="eventtime" variant="outlined" fullWidth />
         </Grid>
       </Grid>
-      {/*       
-      <TextField id="EventDay" label="Event Day" variant="outlined" fullWidth />
-      <h3>Enter Month</h3>
-      <TextField
-        id="EventMonth"
-        label="Event Month"
-        variant="outlined"
-        fullWidth
-      />
-      <h3>Enter Year</h3>
-      <TextField
-        id="EventYear"
-        label="Event Year"
-        variant="outlined"
-        fullWidth
-      />
-      <h3>Enter Season Name</h3>
-      <TextField
-        id="SeasonName"
-        label="Season Name"
-        variant="outlined"
-        fullWidth
-      /> */}
-
       <h3>Enter Number of Tickets Available</h3>
       <TextField
         id="NumTicketsAvailable"

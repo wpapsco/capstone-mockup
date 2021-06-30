@@ -90,8 +90,9 @@ app.post("/api/checkout", async (req, res) => {
   res.json({ id: session.id });
 });
 
+// End point for the create event page. 
 app.post("/api/create-event", (req, res) => {
-  console.log("Event Name", req.body.eventName);
+    console.log("Event Name", req.body.eventName);
 });
 
 // tslint:disable-next-line:no-console
