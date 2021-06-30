@@ -129,7 +129,7 @@ export default function NewsletterPage()
                <Grid container spacing={1}>
                <Grid item xs={6}><TextField name="first_name" label="First Name" value={form_data.first_name} onChange={form_data_change} variant="outlined" fullWidth/> </Grid>
                <Grid item xs={6}><TextField name="last_name" label="Last Name" value={form_data.last_name} onChange={form_data_change} variant="outlined" fullWidth/> </Grid>
-               <Grid item xs={12}><TextField required error={email_error} name="email" label="Email" value={form_data.email} onChange={form_data_change} variant="outlined" fullWidth/> </Grid>
+               <Grid item xs={12}><TextField type="email" required error={email_error} name="email" label="Email" value={form_data.email} onChange={form_data_change} variant="outlined" fullWidth/> </Grid>
                <Grid item xs={6}><Checkbox name="news_opt" value={form_data.news_opt} onChange={form_data_checkbox_change} />Playhouse Newsletter</Grid>
                <Grid item xs={6}><Checkbox name="volunteer_opt" value={form_data.volunteer_opt} onChange={form_data_checkbox_change} />Volunteer List</Grid>
                <Grid item xs={12}><TextField name="address" value={form_data.address} onChange={form_data_change} label="Street Address" variant="outlined" fullWidth/> </Grid>
