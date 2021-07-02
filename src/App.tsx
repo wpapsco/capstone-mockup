@@ -13,7 +13,6 @@ import {
      Route,
      Redirect,
 } from 'react-router-dom';
-import EditOrderPage from "./features/checkout/EditOrderPage";
 import Cart from './features/cart/Cart';
 import EventPage from './features/events/EventPage'
 import AllEventsPage from "./features/events/AllEventsPage";
