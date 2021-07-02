@@ -23,13 +23,11 @@ export interface CartItem<T extends TicketData> {
 
 export interface CartState {
     items: CartItem<TicketData>[],
-    status: 'pending' | 'loading' | 'failed' | 'success',
     donation: number
 }
 
 const initialState: CartState = {
     items: [],
-    status: 'pending',
     donation: 0
 }
 
