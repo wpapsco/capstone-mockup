@@ -5,16 +5,17 @@ import Grid  from '@material-ui/core/Grid';
 import { Form } from 'react-final-form'
 
 export interface CheckoutFormInfo {
-    'opt-in':         boolean,
-    'first-name':     string,
-    'last-name':      string,
-    'street-address': string,
-    'postal-code':    string,
-    country:          string,
-    phone:            string,
-    email:            string,
-    'visit-source':   string,
-    comments:         string
+    'opt-in':                boolean,
+    'first-name':            string,
+    'last-name':             string,
+    'street-address':        string,
+    'postal-code':           string,
+    country:                 string,
+    phone:                   string,
+    email:                   string,
+    'visit-source':          string,
+    'seating-accommodation': string,
+    comments:                string
 }
 
 type CompleteOrderFormProps = {
@@ -58,6 +59,9 @@ export default function CompleteOrderForm({onSubmit, onBack}: CompleteOrderFormP
                         </Grid>
                         <Grid item xs={6}>
                             <Checkboxes name="opt-in" data={{ label: 'Email opt-in', value: true }} />
+                        </Grid>
+                        <Grid item xs={12}>
+                            <Checkboxes name="seating-accommodation" data={{ label: 'I Need Seating Accommodations', value: true }} />
                         </Grid>
                         <Grid item xs={12}>
                             <TextField name="comments" label="Comments" variant="outlined" fullWidth multiline/>
