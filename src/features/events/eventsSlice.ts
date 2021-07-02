@@ -1,8 +1,29 @@
-import { createSlice } from '@reduxjs/toolkit'
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { RootState } from '../../app/store'
 
-import TestData from './testEvents'
+// TODO: pre-process response before shoving into Redux
+// Sample shape:
+export const fetchEventData = createAsyncThunk(
+    'events/fetchAll',
+    async () => {
+        try {
+            const res = await fetch('/api/event-list')
+            console.log(res)
+            return await res.json()
+        } catch (err) {
+            console.error(err.message)
+        }
+    }
+    )
 
+// Date interger ranging 1-31
+export interface Showing {
+    month: 'Jan'|'Feb'|'Mar'|'Apr'|'May'|'Jun'|'Jul'|'Aug'|'Sep'|'Oct'|'Nov'|'Dec',
+    weekday: 'Mon'|'Tue'|'Wed'|'Thu'|'Fri'|'Sat'|'Sun',
+    date: number,
+    civilianTime: string,
+}
+// TODO: replace date prop with calendarDate & civilianTime
 export interface EventDetails {
     id: string,
     name: string,
@@ -15,12 +36,12 @@ export interface EventDetails {
 
 export interface EventsState {
     data: EventDetails[],
-    status: 'pending' | 'loading' | 'success' | 'failed'
+    status: 'idle' | 'loading' | 'success' | 'failed'
 }
 
 const initialState: EventsState = {
-    data: TestData,
-    status: 'pending'
+    data: [],
+    status: 'idle'
 }
 
 const eventsSlice = createSlice({
@@ -30,6 +51,19 @@ const eventsSlice = createSlice({
         CreateEvent: () => {
             console.log('Not implemented')
         }
+    },
+    extraReducers: (builder) => {
+        builder
+            .addCase(fetchEventData.pending, (state) => {
+                state.status = 'loading'
+            })
+            .addCase(fetchEventData.fulfilled, (state, action) => {
+                state.status = 'idle'
+                state.data = action.payload
+            })
+            .addCase(fetchEventData.rejected, (state) => {
+                state.status = 'failed'
+            })
     }
 })
 
