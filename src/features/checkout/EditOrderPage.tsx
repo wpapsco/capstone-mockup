@@ -38,21 +38,16 @@ export default function EditOrderForm() {
         e.preventDefault()
 
         const ticketData = {
-            id: '',
             eventId: selectedEventID,
-            participant: fullname,
             concessions: boughtConcessions,
-            showDate: new Date(Date.now())
-        }
-
-        const cartData = {
+            // showing: new Date(Date.now()),
             unitPrice: 12.99,
             quantity: 1,
             description: 'description',
-            name: 'new ticket'
+            name: 'new ticket',
         }
 
-        dispatch(addTicket(ticketData, cartData))
+        dispatch(addTicket(ticketData))
     }
 
     const handleEventChange = (event: React.ChangeEvent<{ value: unknown }>) => {

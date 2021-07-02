@@ -19,6 +19,7 @@ const useStyles = makeStyles((theme: Theme) =>
             alignItems: 'center',
             justifyContent: 'space-between',
             padding: '10px 15px',
+            margin: '10px 0',
         },
         itemDescriptors: {
             width: '33%',
@@ -33,52 +34,44 @@ const useStyles = makeStyles((theme: Theme) =>
 
 interface CartItemProps {
     name: string,
-    desc: string,
+    description: string,
     unitPrice: number,
-    qty: number,
+    quantity: number,
 }
 const CartItem = (props: CartItemProps) => {
     const classes = useStyles(theme)
-    const [qty, setQty] = useState(1)
-    const [cost, setCost] = useState(0)
+    const [qty, setQty] = useState(props.quantity)
+    const [cost, setCost] = useState(props.unitPrice * qty)
 
     useEffect(() => {
-        setCost(props.unitPrice * qty)
+        setCost(qty * props.unitPrice)
     }, [qty])
-
+    
     return (
         <Paper elevation={1} className={classes.cartItem}>
             <span className={classes.itemDescriptors}>
                 <h4>{props.name}</h4>
-                <p>{props.desc}</p>
+                <p>{props.description}</p>
             </span>
             <div className={classes.itemDescriptors}>
                 <button onClick={() => setQty(qty - 1)}>-</button>
                 <span className={classes.qty}>{qty}</span>
                 <button onClick={() => setQty(qty + 1)}>+</button>
             </div>
+
             {toDollarAmount(cost)}
-            <button>Remove</button>
+
+            <Button>
+                Remove
+            </Button>
         </Paper>
     )
 }
 
 const Cart = () => {
-    const testData = [
-        {
-            name: 'Tickets for "A Christmas Carol"',
-            desc: 'General admission',
-            unitPrice: 15.99,
-            qty: 1,
-        }, {
-            name: 'Tickets for "A Christmas Carol"',
-            desc: 'General admission',
-            unitPrice: 15.99,
-            qty: 1,
-        }
-    ]
-
-    const cartItems = testData.map(item => <CartItem {...item} />)
+    const items = appSelector((state) => selectCartItems(state))
+    const cartItems = items.map(item => <CartItem {...item} />)
+    
     // TODO: Add better call to action for empty cart state
     return (
         <section>

@@ -81,28 +81,25 @@ export default function EventPage() {
     const { id } = useParams<EventPageProps>()
     const eventData = appSelector(state => selectEventById(state, id))
     const classes = useStyles()
-    const dispatch = useAppDispatch()
+    const dispatch = useAppDispatch() 
     const [amount, setAmount] = useState(0)
     if (eventData === undefined) return <p>Whoops! Event not found</p> 
     const {name: eventName, date, address, pageSections, imgUrl} = eventData
-    const sections = pageSections.map(data => <EventBodySection {...data} />)
+    const sections = pageSections.map(data => <EventBodySection key={data.heading} {...data} />)
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault()
         const ticketData = {
-            id: '',
             eventId: id,
-            participant: "nobody",
+            // showing: eventData.date,
             concessions: false,
-            showDate: eventData.date
-        }
-        const cartData = {
-            unitPrice: 12.99,
+            // unitPrice: 12.99,
             quantity: amount,
             description: eventData.shortDesc,
-            name: eventData.name
+            name: 'Ticket(s) for ' + eventData.name,
         }
-        dispatch(addTicket(ticketData, cartData))
+        // dispatch(addTicket(ticketData, cartData))
+        dispatch(addTicket(ticketData))
         dispatch(openSnackbar(`Added ${amount} ticket${amount == 1 ? "" : "s"} to cart!`))
     }
 
