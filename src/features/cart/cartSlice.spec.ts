@@ -1,36 +1,26 @@
-import { nanoid } from '@reduxjs/toolkit';
 import cartReducer, {
     CartState,
-    addTicket,
-    TicketData,
 } from './cartSlice'
 
-describe('counter reducer', () => {
+describe('Cart reducer', () => {
     const initialState: CartState = {
         items: [],
-        status: 'pending'
+        donation: 0,
     }
 
     it('should handle initial state', () => {
-        expect(cartReducer(undefined, { type: 'unknown' }))
-            .toEqual(initialState)
+        expect(false).toBe(true)
     });
 
-    it('should handle add ticket', () => {
-        console.log('Needs to be updated')
-    //     const newstate = cartReducer(
-    //         initialState,
-    //         addTicket({
-    //             eventId: nanoid(),
-    //             participant: 'Jane Doe',
-    //             unitPrice: 7.99,
-    //             showDate: new Date(Date.now()),
-    //             concessions: true,
-    //             id:''
-    //         })
-    //     )
-        
-    //     expect(newstate.items.length).toEqual(1)
-    //     // TODO: Check correctness of state contents
+    it('should handle adding an item', () => {
+        expect(false).toBe(true)
+    })
+
+    it('should handle removing an item', () => {
+        expect(false).toBe(true)
+    })
+
+    it('should handle editing item quantity', () => {
+        expect(false).toBe(true)
     })
 })

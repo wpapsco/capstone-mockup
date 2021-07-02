@@ -4,6 +4,7 @@ import { selectCartItems } from '../cart/cartSlice'
 import Paper from '@material-ui/core/Paper'
 import { Theme, createStyles, makeStyles } from '@material-ui/core/styles'
 import { theme } from '../../theme'
+import Button from '@material-ui/core/Button'
 
 import React, { useState, useEffect } from 'react'
 
