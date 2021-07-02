@@ -3,7 +3,7 @@ import express from 'express';
 import {pool} from './db';
 import cors from 'cors';
 import Stripe from "stripe"
-import { CartItem, TicketData } from "../src/features/cart/cartSlice"
+import { CartItem } from "../src/features/cart/cartSlice"
 import { CheckoutFormInfo } from "../src/components/CompleteOrderForm"
 
 let stripe = new Stripe(process.env.PRIVATE_STRIPE_KEY, {apiVersion: "2020-08-27"})
@@ -48,7 +48,7 @@ app.post('/api/checkout', async (req, res) => {
     // right now it gets the price info from the request made by the client.
     // THIS IS WRONG it needs to look up the price in the database given
     // the id of the show/event/whatever. PRICES CANNOT COME FROM CLIENTS!!
-    const data: CartItem<TicketData>[] = req.body.cartItems;
+    const data: CartItem[] = req.body.cartItems;
     // TODO: submit form data to DB
     const formData: CheckoutFormInfo = req.body.formData;
     console.log(formData);
