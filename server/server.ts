@@ -49,18 +49,35 @@ app.post('/api/checkout', async (req, res) => {
     // THIS IS WRONG it needs to look up the price in the database given
     // the id of the show/event/whatever. PRICES CANNOT COME FROM CLIENTS!!
     const data: CartItem<TicketData>[] = req.body.cartItems;
+    
     // TODO: submit form data to DB
     // Adding a customer to the customer table based on form data:
     // I'm defaulting donor badge and seating accom columns to false, but I'm not sure
     // where else we would be asking for seating accommodations other than checkout...
     try {
         const addedCust = await pool.query(
-        "INSERT INTO customers (custname, email, phone, custaddress, newsletter, donorbadge, seatingaccom) values ($1, $2, $3, $4, $5, $6, $7)",
+        `INSERT INTO customers (custname, email, phone, custaddress, newsletter, donorbadge, seatingaccom) 
+        values ($1, $2, $3, $4, $5, $6, $7)`,
         [req.body.formData["first-name"] + " " + req.body.formData["last-name"], req.body.formData.email,
          req.body.formData.phone, req.body.formData["street-address"], req.body.formData["opt-in"], false, false])
     } catch (error) {
         console.log(error);
     }
+    // storing the customer id for later processing on succesful payments.
+    // if we cant find the custid something went wrong
+    var customerID = null;
+    
+    try {
+            customerID = await pool.query(
+            `SELECT id
+            FROM customers
+            WHERE custname = $1`,
+            [req.body.formData["first-name"] + " " + req.body.formData["last-name"]]
+        )
+    } catch (error) {
+        console.log(error);
+    }
+    customerID = customerID.rows[0].id;
     const formData: CheckoutFormInfo = req.body.formData;
     console.log(formData);
     const donation: number = req.body.donation
@@ -95,6 +112,21 @@ app.post('/api/checkout', async (req, res) => {
         success_url: "http://localhost:3000/success",
         cancel_url: "http://localhost:3000",
     })
+    const eventnum = req.body.cartItems[0].itemData.eventId;
+    // inserting successful orders into tickets db
+    // currently this isnt checking if the payment is successfully processed on the stripe page
+    // we will eventually change this to process after a successful stripe payment
+    // using payment_status = "unpaid" as a test. We will change this later.
+    if((session.payment_status == "unpaid") || (session.payment_status == "paid")){
+        try{
+            const addedTicket = await pool.query(
+            `INSERT INTO tickets(type, eventid, custid, paid, active) 
+            values ($1,$2,$3,$4,$5)`,
+            [0, eventnum, customerID, true, true])
+        } catch (error) {
+            console.log(error);
+        }
+    }
     res.json({id: session.id})
 });
 
