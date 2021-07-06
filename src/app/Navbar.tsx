@@ -34,8 +34,11 @@ export default function Navbar()  {
             <Tabs>
                 <Tab label="Doorlist" component={NavLink} to="/" />
                 <Tab label="Events" component={NavLink} to="/events" />
-                <Tab label="Complete Order" component={NavLink} to="/completeorder" />
-                <Tab label="Create Events" component={NavLink} to="/CreateEvents" />
+                <Tab label="Complete Order" component={NavLink} to="/completeorder"/>
+                <Tab label="Create Events" component={NavLink} to="/CreateEvents"/>
+                
+                // TODO: This should only show if user is logged in!!
+                <Tab label="Admin" component={NavLink} to="/admin/admin-panel" />
             </Tabs>
             <NavLink to="/cart"><ShoppingCartIcon /></NavLink>
         </Paper>
