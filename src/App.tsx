@@ -17,7 +17,8 @@ import EditOrderPage from "./features/checkout/EditOrderPage";
 import Cart from './features/cart/Cart';
 import EventPage from './features/events/EventPage'
 import AllEventsPage from "./features/events/AllEventsPage";
-import NewsletterPage from "./features/newsletter/NewsletterPage";
+import NewsletterCreate from "./features/newsletter/NewsletterCreate";
+import NewsletterSignup from "./features/newsletter/NewsletterSignup";
 import CheckoutSuccess from "./components/CheckoutSuccess";
 import { Container } from "@material-ui/core";
 import Snackbar from "@material-ui/core/Snackbar";
@@ -81,8 +82,11 @@ function App() {
                         <DeleteEvents />
                     </Route>
 
-                    <Route path="/newsletter">
-                        <NewsletterPage />
+                    <Route path="/newsletter_create">
+                        <NewsletterCreate />
+                    </Route>
+                    <Route path="/newsletter_signup">
+                        <NewsletterSignup />
                     </Route>
 
                     <Route exact path="/" >

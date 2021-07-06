@@ -11,7 +11,7 @@ import Grid from '@material-ui/core/Grid';
 import Checkbox from '@material-ui/core/Checkbox';
 import {useState} from 'react';
 
-export default function NewsletterPage()
+export default function NewsletterSignup()
 {
    const [email_error, set_email_error] = useState(false);
    const [form_data, set_form_data] = useState(
@@ -125,6 +125,7 @@ export default function NewsletterPage()
       <div style={{display: "flex", height: "100vh", width: "100%"}}>
          <Paper style={{flexGrow: 8, height: "100%", margin: "10px", paddingLeft: "5%", paddingTop: "50px", paddingRight: "10%"}} variant="outlined">
             <Typography variant="h3">Newsletter Sign-up!</Typography>
+            <hr/>
             <form onSubmit={submit}>
                <Grid container spacing={1}>
                <Grid item xs={6}><TextField name="first_name" label="First Name" value={form_data.first_name} onChange={form_data_change} variant="outlined" fullWidth/> </Grid>
