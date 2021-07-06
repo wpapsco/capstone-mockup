@@ -1,13 +1,13 @@
 import cartReducer, {
-    CartState,
+    ShopState,
     addItem,
     removeItem,
     editQty,
 } from './cartSlice'
 
 describe('Cart reducer', () => {
-    const initialState: CartState = {
-        contents: [],
+    const initialState: ShopState = {
+        cart: [],
         donation: 0,
     }
 
