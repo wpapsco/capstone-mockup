@@ -16,7 +16,6 @@ export interface CartItem {
 // TODO: Auto-apply misc. fees (ex: tax)
 // TODO: Should concessions be a prop of TicketData or a separate Cart Item type?
 export interface TicketItem extends CartItem {
-    // type: 'ticket',
     eventId: string,
     concessions: boolean,
     // showing: Date,
@@ -31,8 +30,6 @@ const INITIAL_STATE: ShopState = {
     cart: [], // { itemId, name, desc, unitPrice, qty }
     donation: 0,  // { custId, message, amount, date }
 }
-
-type ItemId = string
 
 const cartSlice = createSlice({
     name: 'cart',
