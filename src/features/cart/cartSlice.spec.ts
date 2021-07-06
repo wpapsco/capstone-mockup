@@ -1,15 +1,19 @@
 import cartReducer, {
     CartState,
+    addItem,
+    removeItem,
+    editQty,
 } from './cartSlice'
 
 describe('Cart reducer', () => {
     const initialState: CartState = {
-        items: [],
+        contents: [],
         donation: 0,
     }
 
     it('should handle initial state', () => {
-        expect(false).toBe(true)
+        const result = cartReducer(undefined, { type: 'unknown' })
+        expect(result).toEqual(initialState)
     });
 
     it('should handle adding an item', () => {
