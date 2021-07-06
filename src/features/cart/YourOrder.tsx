@@ -4,23 +4,23 @@ import Paper from '@material-ui/core/Paper'
 import Typography from '@material-ui/core/Typography'
 import Divider from '@material-ui/core/Divider';
 import Button from '@material-ui/core/Button'
-import { selectCartItems, selectDonation } from './cartSlice'
-import CartItem from './CartItem'
+import { selectCartContents, selectDonation } from './cartSlice'
+import CartItemRow from './CartItem'
 
 const toDollar = (x: number) => `$${(Math.round(x * 100) / 100).toFixed(2)}`
 
 const YourOrder = () => {
-    const cartItems = appSelector(selectCartItems)
+    const cartItems = appSelector(selectCartContents)
     const donation = appSelector(selectDonation)
     const [subtotal, setSubtotal] = useState(0)
 
     useEffect(() => {
         setSubtotal(
-            cartItems.reduce((tot, curItem) => tot += curItem.quantity * curItem.unitPrice, 0)
+            cartItems.reduce((tot, curItem) => tot += curItem.qty * curItem.unitPrice, 0)
         )
     }, [cartItems])
 
-    const contents = (cartItems.length > 0) ? cartItems.map(data => <CartItem {...data} />)
+    const contents = (cartItems.length > 0) ? cartItems.map(data => <CartItemRow {...data} />)
         : <p>Cart empty</p>
         
     return (

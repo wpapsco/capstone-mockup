@@ -17,7 +17,7 @@
  * 
  * * * * * * * * * * * * * * * * * * * * * * * */ 
 import React, { useState } from 'react'
-import { addTicket } from '../cart/cartSlice'
+import { addItem } from '../cart/cartSlice'
 import { useAppDispatch } from '../../app/hooks'
 import { appSelector } from '../../app/hooks'
 import { useParams } from 'react-router-dom'
@@ -94,12 +94,12 @@ export default function EventPage() {
             // showing: eventData.date,
             concessions: false,
             // unitPrice: 12.99,
-            quantity: amount,
+            qty: amount,
             description: eventData.shortDesc,
             name: 'Ticket(s) for ' + eventData.name,
         }
         // dispatch(addTicket(ticketData, cartData))
-        dispatch(addTicket(ticketData))
+        dispatch(addItem(ticketData))
         dispatch(openSnackbar(`Added ${amount} ticket${amount == 1 ? "" : "s"} to cart!`))
     }
 

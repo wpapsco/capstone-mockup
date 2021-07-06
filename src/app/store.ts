@@ -1,12 +1,12 @@
 import { configureStore } from '@reduxjs/toolkit';
-import cartReducer from '../features/cart/cartSlice';
+import shopReducer from '../features/cart/cartSlice';
 import eventsReducer from '../features/events/eventsSlice';
 import snackbarReducer from '../features/snackbarSlice';
 
 const store = configureStore(
     {
         reducer: {
-            cart: cartReducer,
+            shop: shopReducer,
             events: eventsReducer,
             snackbar: snackbarReducer
         }
