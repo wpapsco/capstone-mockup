@@ -83,7 +83,7 @@ function App() {
                         <DeleteEvents />
                     </Route>
 
-                    <Route path="/newsletter_create">
+                    <Route path="/admin/newsletter_create">
                         <NewsletterCreate />
                     </Route>
                     <Route path="/newsletter_signup">
