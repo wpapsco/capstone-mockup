@@ -14,10 +14,10 @@ export default function AllEventsPage() {
         if (loadStatus === 'idle') {
             dispatch(fetchEventData())
         }
-    }, [loadStatus])
+    }, [dispatch, loadStatus])
 
 
-    if (allEvents.length === 0) {
+    if (allEvents === undefined || allEvents.length === 0) {
         return <div>No events to show. Please check again later.</div>
     }
 
