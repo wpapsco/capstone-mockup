@@ -14,7 +14,7 @@ export default function AllEventsPage() {
         if (loadStatus === 'idle') {
             dispatch(fetchEventData())
         }
-    }, [dispatch, loadStatus])
+    }, [dispatch])
 
 
     if (allEvents === undefined || allEvents.length === 0) {
