@@ -40,7 +40,6 @@ app.get("/api/event-list", async (req, res) => {
     shwtm.eventdate, shwtm.starttime, shwtm.totalseats, shwtm.availableseats \
     from showtimes as shwtm join plays on shwtm.playid = plays.id \
     where plays.active = true");
-    console.log(events);
     res.json(events.rows);
   } catch (err) {
     console.error(err.message);
