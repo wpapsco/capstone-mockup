@@ -14,7 +14,7 @@ export const fetchEventData = createAsyncThunk(
             console.error(err.message)
         }
     }
-    )
+)
 
 // Date interger ranging 1-31
 export interface Showing {
