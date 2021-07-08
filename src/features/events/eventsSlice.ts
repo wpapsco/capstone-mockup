@@ -2,30 +2,16 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { RootState } from '../../app/store'
 
 // TODO: pre-process response before shoving into Redux
-// Sample shape:
-// export interface Event {
-//      id: number,
-//      playname: string,
-//      playdescription?: string,
-//      eventdate: string,
-//      starttime: string,
-//      totalseats: number,
-//      availableseats: number,
-// }
-export type Event = Showing & Omit<Play, 'showings'>
-export interface Showing {
-    id: number,
-    eventdate: string,
-    starttime: string,
-    totalseats: number,
-    availableseats: number,
+export interface Event {
+     id: number,
+     playname: string,
+     playdescription?: string,
+     eventdate: string,
+     starttime: string,
+     totalseats: number,
+     availableseats: number,
 }
-
-export interface Play {
-    playname: string,
-    playdescription?: string,
-    showings: Showing[],
-}
+export type Showing = Omit<Event, "playname"|"playdescription">
 
 interface Item<T = any> {
     [key: string]: T
@@ -46,55 +32,30 @@ function groupByKey<T extends Item>(arr: any[], key: keyof T): ItemGroup<T> {
     }, {})
 }
 
-const getShowing = (e: Event): Showing => {
-    const {id, eventdate, starttime, totalseats, availableseats} = e
-    return {id, eventdate, starttime, totalseats, availableseats}
-}
-
 export const groupPlays = (events: Event[]) =>
-    groupByKey<Play>(events, 'playname')
-        .
+    groupByKey<Event>(events, 'playname')
 
-// Group Plays by name from Event[]
-    // Extract Showing from Event
-    // Group Showings by Play name
-    
 export const fetchEventData = createAsyncThunk(
     'events/fetchAll',
-
-     
     async () => {
         try {
             const res = await fetch('/api/event-list')
             // [{id, playname, playdesc, eventdate, starttime, totalseats, availableseats}]
             const allEvents: Event[] = await res.json()
-            return allEvents
+            return groupPlays(allEvents)
         } catch (err) {
             console.error(err.message)
         }
     }
 )
 
-
-// TODO: replace date prop with calendarDate & civilianTime
-export interface EventDetails {
-    id: string,
-    name: string,
-    shortDesc: string,
-    imgUrl: string,
-    eventdate: string,
-    starttime: string,
-    pageSections: { heading: string, contents: string }[],
-    address: string,
-}
-
 export interface EventsState {
-    data: Play[] | undefined,
+    data: ItemGroup<Event> | undefined,
     status: 'idle' | 'loading' | 'success' | 'failed'
 }
 
 const initialState: EventsState = {
-    data: [],
+    data: {},
     status: 'idle'
 }
 
@@ -121,12 +82,12 @@ const eventsSlice = createSlice({
     }
 })
 
-// TODO: Create thunk for fetching events from server
 export const { CreateEvent } = eventsSlice.actions
 export const selectAllEvents = (state: RootState) => state.events.data
-export const selectEventById =
-    (state: RootState, name: string): Play | undefined => (state.events.data) ?
-        state.events.data.find(ev=>ev.playname===name) :
+// Returns list of showings for the event
+export const selectEventByName =
+    (state: RootState, name: string): Event[] | undefined => (state.events.data) ?
+        state.events.data[name] :
         undefined
 
 export default eventsSlice.reducer
