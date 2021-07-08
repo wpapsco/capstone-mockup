@@ -1,6 +1,8 @@
 import {Button, TextField} from "@material-ui/core";
 import {useState} from "react";
 import {Redirect, useParams} from "react-router";
+import {useAppDispatch} from "../app/hooks";
+import {openSnackbar} from "../features/snackbarSlice";
 
 export default function LoginPage() {
 
@@ -8,6 +10,7 @@ export default function LoginPage() {
     const [password, setPassword] = useState("")
     const [loggedIn, setLoggedIn] = useState(false);
     const { redirect } = useParams<{redirect: string}>()
+    const dispatch = useAppDispatch()
 
     const onSubmit = async () => {
         const result = await fetch('/api/login', {
@@ -20,12 +23,10 @@ export default function LoginPage() {
         })
 
         if (result.status === 200) {
-            // success
             setLoggedIn(true);
-            console.log("successfully logged in");
+            dispatch(openSnackbar("Successfully logged in!"))
         } else {
-            // redirect elsewhere
-            console.log("please try again");
+            dispatch(openSnackbar("Please try again"))
         }
     }
 
