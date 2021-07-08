@@ -45,3 +45,19 @@ where play.active = true and shwtm.eventDate between @day1 and @day2;
 --Query to count the tickets sold by show
 select count(ticket.TicketNo)
 from Ticket ticket join Showtime showtime on ticket.EventID = showtime.ID
+
+
+--Query to get all active events
+select shwtm.id, plays.playname, plays.playdescription, shwtm.eventdate, shwtm.starttime, shwtm.totalseats, shwtm.availableseats
+from showtimes as shwtm join plays on shwtm.playid = plays.id
+where plays.active = true
+
+--New doorlist query to make use of exisitng tables in the database
+select cust.id as "custid", cust.custname as "name", cust.vip, cust.donorbadge, cust.seatingaccom, 
+plays.id as "playid", plays.playname, shwtm.id as \"eventid\", shwtm.eventdate, shwtm.starttime, count(cust.id) as "num_tickets" 
+from showtimes as shwtm left join plays on shwtm.playid = plays.id left join 
+tickets as tix on shwtm.id = tix.eventid left join tickets as tix2 on tix.ticketno = tix2.ticketno 
+join customers as cust on tix.custid = cust.id 
+where shwtm.id = $1 
+group by cust.id, name ,plays.id, plays.playname, shwtm.id, shwtm.eventdate, shwtm.starttime 
+order by name

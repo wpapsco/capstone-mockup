@@ -8,7 +8,7 @@ create table customers (
     custAddress varchar(255),
     newsletter boolean default false,
     donorBadge varchar(100),
-    seatingAccom varchar(100),
+    seatingAccom boolean,
     vip boolean default false,
     primary key(id)
 );
@@ -106,4 +106,10 @@ create table tickets (
     foreign key(type) references ticketType(id),
     foreign key(eventId) references showtimes(id),
     foreign key(custId) references customers(id)
+);
+
+create table users (
+    id serial primary key,
+    username varchar(255),
+    pass_hash varchar(255)
 );
