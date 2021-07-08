@@ -84,7 +84,7 @@ export default function EventPage() {
     const dispatch = useAppDispatch() 
     const [amount, setAmount] = useState(0)
     if (eventData === undefined) return <p>Whoops! Event not found</p> 
-    const {name: eventName, date, address, pageSections, imgUrl} = eventData
+    const {playname: eventName, pageSections, imgUrl} = eventData
     const sections = pageSections.map(data => <EventBodySection key={data.heading} {...data} />)
 
     const handleSubmit = (e: React.FormEvent) => {
@@ -96,21 +96,22 @@ export default function EventPage() {
             // unitPrice: 12.99,
             qty: amount,
             description: eventData.shortDesc,
-            name: 'Ticket(s) for ' + eventData.name,
+            name: 'Ticket(s) for ' + eventData.playname,
         }
         // dispatch(addTicket(ticketData, cartData))
         dispatch(addItem(ticketData))
         dispatch(openSnackbar(`Added ${amount} ticket${amount == 1 ? "" : "s"} to cart!`))
     }
 
+    // TODO: Render showtime & date
     return (
         <ThemeProvider theme={theme}>
             <Card className={classes.cardRoot}>
                 <CardMedia className={classes.heroImage} image={imgUrl}/>
                 <CardContent className={classes.cardContents}>
                     <Typography component="h1" variant="h3" align="center" gutterBottom>{eventName}</Typography>
-                    <Showtime align='center' date={date} />
-                    <Typography variant="subtitle2" align="center">{address}</Typography>
+                    {/* <Showtime align='center' date={date} /> */}
+                    {/* <Typography variant="subtitle2" align="center">{address}</Typography> */}
 
                     <CardActions className={classes.cardActions}>
                         <TextField

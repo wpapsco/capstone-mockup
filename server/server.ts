@@ -40,7 +40,7 @@ app.get("/api/event-list", async (req, res) => {
     shwtm.eventdate, shwtm.starttime, shwtm.totalseats, shwtm.availableseats \
     from showtimes as shwtm join plays on shwtm.playid = plays.id \
     where plays.active = true");
-    console.log(events);
+    // console.log(events);
     res.json(events.rows);
   } catch (err) {
     console.error(err.message);
@@ -129,17 +129,17 @@ app.post('/api/checkout', async (req, res) => {
     console.log(formData);
     const donation: number = req.body.donation
     const donationItem = {
-    price_data: {
-      currency: "usd",
-      product_data: {
-        name: "Donation",
-        description: "A generous donation",
+      price_data: {
+        currency: "usd",
+        product_data: {
+          name: "Donation",
+          description: "A generous donation",
+        },
+        // the price here needs to be fetched from the DB instead
+        unit_amount: donation * 100,
       },
-      // the price here needs to be fetched from the DB instead
-      unit_amount: donation * 100,
-    },
-    quantity: 1,
-  };
+      quantity: 1,
+    };
   const session = await stripe.checkout.sessions.create({
     payment_method_types: ["card"],
     //this is the offending area all this stuff needs to be replaced by info from DB based on play ID or something
@@ -154,9 +154,9 @@ app.post('/api/checkout', async (req, res) => {
           // the price here needs to be fetched from the DB instead
           unit_amount: item.unitPrice * 100,
         },
-        quantity: item.quantity,
-      }))
-      .concat(donationItem),
+        qty: item.qty,
+      })),
+      // .concat(donationItem),
     mode: "payment",
     success_url: "http://localhost:3000/success",
     cancel_url: "http://localhost:3000",
