@@ -23,6 +23,7 @@ import { Container } from "@material-ui/core";
 import Snackbar from "@material-ui/core/Snackbar";
 import { useAppDispatch, appSelector } from './app/hooks'
 import { closeSnackbar, selectSnackbar } from "./features/snackbarSlice"
+import LoginPage from "./components/LoginPage";
 
 function App() {
 
@@ -92,6 +93,9 @@ function App() {
                             <DoorList />,
                             <Button variant="contained" color="primary" onClick={() => setDoorList(false)}>Back</Button>
                         ]}
+                    </Route>
+                    <Route path="/login/:redirect?" >
+                        <LoginPage />
                     </Route>
                     <Redirect to="/" />
                 </Switch>

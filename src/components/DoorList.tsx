@@ -2,6 +2,7 @@ import { DataGrid } from '@material-ui/data-grid';
 import Checkbox from '@material-ui/core/Checkbox';
 import Typography from '@material-ui/core/Typography';
 import {useEffect, useState} from 'react';
+import RequireLogin from './RequireLogin';
 
 export default function DoorList() {
 
@@ -23,7 +24,7 @@ export default function DoorList() {
     const [doorList, setDoorList] = useState([]);
     const getDoorList = async () => {
         try {
-            const response = await fetch('http://localhost:5000/api/doorlist');
+            const response = await fetch('/api/doorlist', {credentials: "include", method: "GET"});
             const jsonData = await response.json();
             setDoorList(jsonData);
         } catch (error) {
@@ -33,10 +34,10 @@ export default function DoorList() {
 
     useEffect(() => { getDoorList();}, []);
     return (
-        <div>
+        <RequireLogin>
             <Typography variant="h2">Showing</Typography>
             <Typography gutterBottom variant="h5">5/21/2021 5:00PM</Typography>
             <DataGrid autoHeight rows={doorList} columns={columns} pageSize={10}/>
-        </div>
+        </RequireLogin>
     );
 }
