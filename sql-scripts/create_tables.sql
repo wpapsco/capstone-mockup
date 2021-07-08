@@ -8,7 +8,7 @@ create table customers (
     custAddress varchar(255),
     newsletter boolean default false,
     donorBadge varchar(100),
-    seatingAccom varchar(100),
+    seatingAccom boolean,
     vip boolean default false,
     primary key(id)
 );

@@ -6,6 +6,7 @@ import DoorList from "./components/DoorList";
 import CreateEvents from "./components/CreateEvents";
 import DeleteEvents from "./components/DeleteEvents";
 import CssBaseline from '@material-ui/core/CssBaseline';
+import AdminPannel from "./features/admin/AdminPanel";
 import Button from '@material-ui/core/Button';
 import Navbar from './app/Navbar';
 import {
@@ -84,6 +85,10 @@ function App() {
 
                     <Route path="/newsletter">
                         <NewsletterPage />
+                    </Route>
+
+                    <Route path="/admin/admin-panel">
+                        <AdminPannel />
                     </Route>
 
                     <Route exact path="/" >
