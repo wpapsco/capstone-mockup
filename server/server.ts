@@ -166,33 +166,45 @@ app.post('/api/newsletter/insert', async (req, res) => {
 
 // TODO: when we add confirmation emails we can do it like this:
 // https://stripe.com/docs/payments/checkout/custom-success-page
-app.post("/api/checkout", async (req, res) => {
-  // TODO: NOT DO IT THIS WAY!!!
-  // right now it gets the price info from the request made by the client.
-  // THIS IS WRONG it needs to look up the price in the database given
-  // the id of the show/event/whatever. PRICES CANNOT COME FROM CLIENTS!!
-  const data: CartItem<TicketData>[] = req.body.cartItems;
-  // TODO: submit form data to DB
-  const formData: CheckoutFormInfo = req.body.formData;
-  console.log(formData);
-  const donation: number = req.body.donation;
-  const donationItem = {
-    price_data: {
-      currency: "usd",
-      product_data: {
-        name: "Donation",
-        description: "A generous donation",
-      },
-      // the price here needs to be fetched from the DB instead
-      unit_amount: donation * 100,
-    },
-    quantity: 1,
-  };
-  const session = await stripe.checkout.sessions.create({
-    payment_method_types: ["card"],
-    //this is the offending area all this stuff needs to be replaced by info from DB based on play ID or something
-    line_items: data
-      .map((item) => ({
+app.post('/api/checkout', async (req, res) => {
+    // TODO: NOT DO IT THIS WAY!!!
+    // right now it gets the price info from the request made by the client.
+    // THIS IS WRONG it needs to look up the price in the database given
+    // the id of the show/event/whatever. PRICES CANNOT COME FROM CLIENTS!!
+    const data: CartItem<TicketData>[] = req.body.cartItems;
+    
+    // TODO: submit form data to DB
+    // Adding a customer to the customer table based on form data:
+    // I'm defaulting donor badge and seating accom columns to false, but I'm not sure
+    // where else we would be asking for seating accommodations other than checkout...
+    try {
+        const addedCust = await pool.query(
+        `INSERT INTO customers (custname, email, phone, custaddress, newsletter, donorbadge, seatingaccom) 
+        values ($1, $2, $3, $4, $5, $6, $7)`,
+        [req.body.formData["first-name"] + " " + req.body.formData["last-name"], req.body.formData.email,
+         req.body.formData.phone, req.body.formData["street-address"], req.body.formData["opt-in"], false, false])
+    } catch (error) {
+        console.log(error);
+    }
+    // storing the customer id for later processing on succesful payments.
+    // if we cant find the custid something went wrong
+    var customerID = null;
+    
+    try {
+            customerID = await pool.query(
+            `SELECT id
+            FROM customers
+            WHERE custname = $1`,
+            [req.body.formData["first-name"] + " " + req.body.formData["last-name"]]
+        )
+    } catch (error) {
+        console.log(error);
+    }
+    customerID = customerID.rows[0].id;
+    const formData: CheckoutFormInfo = req.body.formData;
+    console.log(formData);
+    const donation: number = req.body.donation
+    const donationItem = {
         price_data: {
           currency: "usd",
           product_data: {
@@ -202,14 +214,43 @@ app.post("/api/checkout", async (req, res) => {
           // the price here needs to be fetched from the DB instead
           unit_amount: item.unitPrice * 100,
         },
-        quantity: item.quantity,
-      }))
-      .concat(donationItem),
-    mode: "payment",
-    success_url: "http://localhost:3000/success",
-    cancel_url: "http://localhost:3000",
-  });
-  res.json({ id: session.id });
+        quantity: 1
+    }
+    const session = await stripe.checkout.sessions.create({
+        payment_method_types: ['card'],
+        //this is the offending area all this stuff needs to be replaced by info from DB based on play ID or something
+        line_items: data.map(item => ({
+            price_data: {
+                currency: "usd",
+                product_data: {
+                    name: item.name,
+                    description: item.description
+                },
+                // the price here needs to be fetched from the DB instead
+                unit_amount: item.unitPrice * 100
+            },
+            quantity: item.quantity
+        })).concat(donationItem),
+        mode: "payment",
+        success_url: "http://localhost:3000/success",
+        cancel_url: "http://localhost:3000",
+    })
+    const eventnum = req.body.cartItems[0].itemData.eventId;
+    // inserting successful orders into tickets db
+    // currently this isnt checking if the payment is successfully processed on the stripe page
+    // we will eventually change this to process after a successful stripe payment
+    // using payment_status = "unpaid" as a test. We will change this later.
+    if((session.payment_status == "unpaid") || (session.payment_status == "paid")){
+        try{
+            const addedTicket = await pool.query(
+            `INSERT INTO tickets(type, eventid, custid, paid, active) 
+            values ($1,$2,$3,$4,$5)`,
+            [0, eventnum, customerID, true, true])
+        } catch (error) {
+            console.log(error);
+        }
+    }
+    res.json({id: session.id})
 });
 
 // End point for the create event page. 
