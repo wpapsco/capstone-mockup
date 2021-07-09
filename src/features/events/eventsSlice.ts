@@ -1,5 +1,6 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { RootState } from '../../app/store'
+import { urlFriendly } from '../../utils/url'
 
 // TODO: pre-process response before shoving into Redux
 export interface Event {
@@ -22,9 +23,9 @@ interface ItemGroup<T> {
 
 function groupByKey<T extends Item>(arr: any[], key: keyof T): ItemGroup<T> {
     return arr.reduce<ItemGroup<T>>((map, item) => {
-        const itemKey = item[key]
+        const itemKey = urlFriendly(item[key])
         if(map[itemKey]) {
-            map[itemKey].push(item)
+                map[itemKey].push(item)
         } else {
             map[itemKey] = [item]
         }

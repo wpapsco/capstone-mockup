@@ -2,6 +2,7 @@ import {
     groupPlays,
     Event,
 } from "./eventsSlice";
+import { urlFriendly } from '../../utils/url'
 
 const testEventData: Event[] = [
     {
@@ -24,7 +25,7 @@ const testEventData: Event[] = [
     },
     {
         id: 3,
-        playname: 'test2 ',
+        playname: 'test 2',
         playdescription: 'desc1',
         eventdate: "2021-01-08T08:00:00.000Z",
         starttime: "22:00:00",
@@ -34,7 +35,7 @@ const testEventData: Event[] = [
 ]
 
 const Plays = {
-    test1: [
+    test_1: [
         {
             id: 1,
             playname: 'test 1',
@@ -54,10 +55,10 @@ const Plays = {
             availableseats: 3,
         },
     ],
-    test2: [
+    test_2: [
         {
             id: 3,
-            playname: 'test2 ',
+            playname: 'test 2',
             playdescription: 'desc1',
             eventdate: "2021-01-08T08:00:00.000Z",
             starttime: "22:00:00",
@@ -71,5 +72,8 @@ describe('Event slice utils', () => {
     it('groupPlays', () => {
         const res = groupPlays(testEventData)
         expect(res).toEqual(Plays)
+    })
+    it('urlFriendly', () => {
+        expect(urlFriendly('foo bar baz')).toEqual('foo_bar_baz')
     })
 })

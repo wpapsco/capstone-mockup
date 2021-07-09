@@ -1,17 +1,15 @@
-import Card from '@material-ui/core/Card';
-import {makeStyles, ThemeProvider} from '@material-ui/core/styles';
-// import CardActions from '@material-ui/core/CardActions';
-import CardContent from '@material-ui/core/CardContent';
-import CardMedia from '@material-ui/core/CardMedia';
-import Typography from '@material-ui/core/Typography';
-import { Play } from './eventsSlice';
+import Card from '@material-ui/core/Card'
+import {makeStyles, ThemeProvider} from '@material-ui/core/styles'
+import CardContent from '@material-ui/core/CardContent'
+import CardMedia from '@material-ui/core/CardMedia'
+import Typography from '@material-ui/core/Typography'
+import { Event } from './eventsSlice'
 import { Link } from 'react-router-dom'
-import { theme } from '../../theme';
+import { theme } from '../../theme'
 import Button from '@material-ui/core/Button'
-import { BookmarkBorderOutlined, ShoppingCartOutlined } from '@material-ui/icons';
+import { BookmarkBorderOutlined, ShoppingCartOutlined } from '@material-ui/icons'
 
-// TODO: move into utils folder?
-const urlFriendly = (s: string) => s.replaceAll(' ', '')
+import { urlFriendly } from '../../utils/url'
 
 const useStyles = makeStyles({
     root: {
@@ -53,12 +51,14 @@ const useStyles = makeStyles({
     cta: {
         marginTop: 20,
     }
-});
+})
 
 // TODO: Display date range of showings (earliest & latest)
 // TODO: Images for events
-export default function EventRow(event: Play) {
-    const classes = useStyles();
+// TODO: Make event data in redux is compatible with EventRow component
+// TODO: Make event data in redux is compatible with EventRow component
+export default function EventRow(event: Event) {
+    const classes = useStyles()
 
     return (
         <ThemeProvider theme={theme}>
@@ -80,7 +80,7 @@ export default function EventRow(event: Play) {
 
                 <CardMedia
                     className={classes.media}
-                    // image={event.imgUrl}
+                    image={'https://i.guim.co.uk/img/media/b5df93588386c0565177648cf41f3aff72c63400/0_217_5657_3395/master/5657.jpg?width=1200&height=900&quality=85&auto=format&fit=crop&s=a917ce8d52959d36bb08ad29184e2701'}
                 />
             </Card>
         </ThemeProvider>

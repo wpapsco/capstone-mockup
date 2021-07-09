@@ -1,0 +1,1 @@
+export const urlFriendly = (s: string) => s.replace(/ /g, '_')
