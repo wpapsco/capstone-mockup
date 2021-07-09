@@ -2,7 +2,7 @@ import {
     groupPlays,
     Event,
 } from "./eventsSlice";
-import { urlFriendly } from '../../utils/url'
+import { urlFriendly } from '../../utils'
 
 const testEventData: Event[] = [
     {

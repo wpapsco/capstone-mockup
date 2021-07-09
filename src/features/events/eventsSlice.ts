@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { RootState } from '../../app/store'
-import { urlFriendly } from '../../utils/url'
+import { urlFriendly } from '../../utils'
 
 // TODO: pre-process response before shoving into Redux
 export interface Event {
@@ -63,11 +63,7 @@ const initialState: EventsState = {
 const eventsSlice = createSlice({
     name: 'events',
     initialState,
-    reducers: {
-        CreateEvent: () => {
-            console.log('Not implemented')
-        }
-    },
+    reducers: {},
     extraReducers: (builder) => {
         builder
             .addCase(fetchEventData.pending, (state) => {
@@ -83,7 +79,6 @@ const eventsSlice = createSlice({
     }
 })
 
-export const { CreateEvent } = eventsSlice.actions
 export const selectAllEvents = (state: RootState) => state.events.data
 // Returns list of showings for the event
 export const selectEventByName =

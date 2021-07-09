@@ -9,7 +9,7 @@ import { theme } from '../../theme'
 import Button from '@material-ui/core/Button'
 import { BookmarkBorderOutlined, ShoppingCartOutlined } from '@material-ui/icons'
 
-import { urlFriendly } from '../../utils/url'
+import { urlFriendly } from '../../utils'
 
 const useStyles = makeStyles({
     root: {
