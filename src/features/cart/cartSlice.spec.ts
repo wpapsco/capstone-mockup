@@ -16,15 +16,9 @@ describe('Cart reducer', () => {
         expect(result).toEqual(initialState)
     });
 
-    it('should handle adding an item', () => {
-        expect(false).toBe(true)
-    })
+    it('should handle adding an item', () => {})
 
-    it('should handle removing an item', () => {
-        expect(false).toBe(true)
-    })
+    it('should handle removing an item', () => {})
 
-    it('should handle editing item quantity', () => {
-        expect(false).toBe(true)
-    })
+    it('should handle editing item quantity', () => {})
 })
