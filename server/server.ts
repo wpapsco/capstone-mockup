@@ -204,17 +204,17 @@ app.post('/api/checkout', async (req, res) => {
     console.log(formData);
     const donation: number = req.body.donation
     const donationItem = {
-        price_data: {
-          currency: "usd",
-          product_data: {
-            name: item.name,
-            description: item.description,
-          },
-          // the price here needs to be fetched from the DB instead
-          unit_amount: item.unitPrice * 100,
+      price_data: {
+        currency: "usd",
+        product_data: {
+          name: "Donation",
+          description: "A generous donation",
         },
-        quantity: 1
-    }
+        // the price here needs to be fetched from the DB instead
+        unit_amount: donation * 100,
+      },
+      quantity: 1,
+    };
     const session = await stripe.checkout.sessions.create({
         payment_method_types: ['card'],
         //this is the offending area all this stuff needs to be replaced by info from DB based on play ID or something
