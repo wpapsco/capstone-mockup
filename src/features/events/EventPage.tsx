@@ -21,7 +21,7 @@ import { addItem } from '../cart/cartSlice'
 import { useAppDispatch } from '../../app/hooks'
 import { appSelector } from '../../app/hooks'
 import { useParams } from 'react-router-dom'
-import { selectEventById } from './eventsSlice'
+import { selectEventByName } from './eventsSlice'
 
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/styles'
@@ -75,7 +75,7 @@ function EventBodySection(props: BodySectionProps) {
     )
 }
 
-type EventPageProps = { id: string }
+type EventPageProps = { playname: string }
 export default function EventPage() {
 
     const { id } = useParams<EventPageProps>()
@@ -83,9 +83,12 @@ export default function EventPage() {
     const classes = useStyles()
     const dispatch = useAppDispatch() 
     const [amount, setAmount] = useState(0)
-    if (eventData === undefined) return <p>Whoops! Event not found</p> 
-    const {playname: eventName, pageSections, imgUrl} = eventData
-    const sections = pageSections.map(data => <EventBodySection key={data.heading} {...data} />)
+
+    const { playname } = useParams<EventPageProps>()
+
+    const eventData = appSelector(state => selectEventByName(state, playname))
+    if (eventData === undefined) return <p>Whoops! Event not found</p>
+    
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault()
