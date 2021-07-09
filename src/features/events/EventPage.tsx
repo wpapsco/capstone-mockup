@@ -35,8 +35,6 @@ import { ThemeProvider } from '@material-ui/core/styles'
 import { theme } from '../../theme'
 import { openSnackbar } from '../snackbarSlice'
 
-import Showtime from '../../components/Showtime'
-
 const useStyles = makeStyles((theme) => ({
     cardRoot: {
         display: 'flex',
@@ -129,7 +127,6 @@ export default function EventPage() {
                     </CardActions>
                 </CardContent>
             </Card>
-            <main> {sections !== undefined && sections} </main>
         </ThemeProvider>
     )
 }

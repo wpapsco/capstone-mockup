@@ -50,7 +50,7 @@ export const fetchEventData = createAsyncThunk(
 )
 
 export interface EventsState {
-    data: ItemGroup<Event> | undefined,
+    data: ItemGroup<Event>,
     status: 'idle' | 'loading' | 'success' | 'failed'
 }
 
@@ -74,7 +74,7 @@ const eventsSlice = createSlice({
             })
             .addCase(fetchEventData.fulfilled, (state, action) => {
                 state.status = 'idle'
-                state.data = action.payload
+                state.data = (action.payload) ? action.payload : {}
             })
             .addCase(fetchEventData.rejected, (state) => {
                 state.status = 'failed'

@@ -11,7 +11,7 @@ import Button from '@material-ui/core/Button'
 import { BookmarkBorderOutlined, ShoppingCartOutlined } from '@material-ui/icons';
 
 // TODO: move into utils folder?
-const urlFriendly = (s: string) => s.replaceAll(' ', '-')
+const urlFriendly = (s: string) => s.replaceAll(' ', '')
 
 const useStyles = makeStyles({
     root: {
