@@ -103,7 +103,7 @@ export default function EventPage() {
             name: eventData.name
         }
         dispatch(addTicket(ticketData, cartData))
-        dispatch(openSnackbar(`Added ${amount} ticket${amount == 1 ? "" : "s"} to cart!`))
+        dispatch(openSnackbar(`Added ${amount} ticket${amount === 1 ? "" : "s"} to cart!`))
     }
 
     return (

@@ -87,8 +87,7 @@ app.get("/api/event-list", async (req, res) => {
     const events = await pool.query("select shwtm.id, plays.playname, plays.playdescription,\
     shwtm.eventdate, shwtm.starttime, shwtm.totalseats, shwtm.availableseats \
     from showtimes as shwtm join plays on shwtm.playid = plays.id \
-    where plays.active = true");
-    console.log(events);
+    where plays.active = true and shwtm.salestatus = true");
     res.json(events.rows);
   } catch (err) {
     console.error(err.message);
@@ -257,6 +256,19 @@ app.post('/api/checkout', async (req, res) => {
 app.post("/api/create-event", (req, res) => {
     console.log("Event Name", req.body.eventName);
 });
+
+// Updates salestatus in showtimes table when given an id, date, and time
+app.post("/api/delete-event", async (req, res) => {
+    try {
+        let body = req.body;
+        let values = [body.id, body.eventdate, body.starttime];
+        const query = "update showtimes set salestatus = false where id = $1 and eventdate = $2 and starttime = $3";
+        const remove_event = await pool.query(query, values);
+        res.json(remove_event.rows)
+    } catch (error) {
+        console.error(error);
+    }
+})
 
 // tslint:disable-next-line:no-console
 app.listen(port, () => console.log(`Listening on port ${port}`));
