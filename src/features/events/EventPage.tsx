@@ -17,11 +17,10 @@
  * 
  * * * * * * * * * * * * * * * * * * * * * * * */ 
 import React, { useState } from 'react'
-import { addItem } from '../cart/cartSlice'
 import { useAppDispatch } from '../../app/hooks'
 import { appSelector } from '../../app/hooks'
 import { useParams } from 'react-router-dom'
-import { selectEventByName } from './eventsSlice'
+import { selectEventShowings } from './eventsSlice'
 
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/styles'
@@ -63,15 +62,6 @@ const useStyles = makeStyles((theme) => ({
     }
 }))
 
-interface BodySectionProps { heading: string, contents: string }
-function EventBodySection(props: BodySectionProps) {
-    return (
-        <section>
-            <Typography component="h2" variant="h4" gutterBottom>{props.heading}</Typography>
-            <Typography variant="body1" paragraph>{props.contents}</Typography>
-        </section>
-    )
-}
 
 type EventPageProps = { playname: string }
 export default function EventPage() {
@@ -80,20 +70,14 @@ export default function EventPage() {
     const [amount, setAmount] = useState(0)
 
     const { playname } = useParams<EventPageProps>()
-    const eventData = appSelector(state => selectEventByName(state, playname))
+    const eventData = appSelector(state => selectEventShowings(state, playname))
     if (eventData === undefined) return <p>Whoops! Event not found</p>
     
     const eventName = eventData[0].playname
 
+// TODO: Re-implement adding ticket to cart.
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault()
-        const ticketData = {
-            concessions: false,
-            qty: amount,
-            description: eventData,
-            name: 'Ticket(s) for ' + eventData[0].playname,
-        }
-        // dispatch(addItem(ticketData))
         dispatch(openSnackbar(`Added ${amount} ticket${amount === 1 ? "" : "s"} to cart!`))
     }
 

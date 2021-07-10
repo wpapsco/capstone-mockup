@@ -1,8 +1,11 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { RootState } from '../../app/store'
-import { urlFriendly } from '../../utils'
+import {
+    urlFriendly,
+    groupByKey,
+    ItemGroup,
+} from '../../utils'
 
-// TODO: pre-process response before shoving into Redux
 export interface Event {
      id: number,
      playname: string,
@@ -14,28 +17,8 @@ export interface Event {
 }
 export type Showing = Omit<Event, "playname"|"playdescription">
 
-interface Item<T = any> {
-    [key: string]: T
-}
-interface ItemGroup<T> {
-    [key: string]: T[]
-}
-
-function groupByKey<T extends Item>(arr: any[], key: keyof T): ItemGroup<T> {
-    return arr.reduce<ItemGroup<T>>((map, item) => {
-        const itemKey = urlFriendly(item[key])
-        if(map[itemKey]) {
-                map[itemKey].push(item)
-        } else {
-            map[itemKey] = [item]
-        }
-        return map
-    }, {})
-}
-
-export interface PlayDictionary {[index: string]: Event[]}
-export const groupPlays = (events: Event[]): PlayDictionary =>
-    groupByKey<Event>(events, 'playname')
+export const groupPlays = (events: Event[]): ItemGroup<Event> =>
+    groupByKey<Event>(events, 'playname', urlFriendly)
 
 export const fetchEventData = createAsyncThunk(
     'events/fetchAll',
@@ -81,8 +64,9 @@ const eventsSlice = createSlice({
 })
 
 export const selectAllEvents = (state: RootState) => state.events.data
+
 // Returns list of showings for the event
-export const selectEventByName =
+export const selectEventShowings =
     (state: RootState, name: string): Event[] | undefined => (state.events.data) ?
         state.events.data[name] :
         undefined

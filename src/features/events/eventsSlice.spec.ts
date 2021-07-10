@@ -37,7 +37,7 @@ const testEventData: Event[] = [
     },
 ]
 
-const uncapitalizedPlays = {
+const Plays = {
     foo_Bar_baz: [
         {
             id: 1,
@@ -74,7 +74,7 @@ const uncapitalizedPlays = {
 describe('Event slice utils', () => {
     it('groupPlays', () => {
         const res = groupPlays(testEventData)
-        expect(res).toEqual(uncapitalizedPlays)
+        expect(res).toEqual(Plays)
     })
 
     it('urlFriendly', () => {
