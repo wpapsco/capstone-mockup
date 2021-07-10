@@ -33,7 +33,8 @@ function groupByKey<T extends Item>(arr: any[], key: keyof T): ItemGroup<T> {
     }, {})
 }
 
-export const groupPlays = (events: Event[]) =>
+export interface PlayDictionary {[index: string]: Event[]}
+export const groupPlays = (events: Event[]): PlayDictionary =>
     groupByKey<Event>(events, 'playname')
 
 export const fetchEventData = createAsyncThunk(

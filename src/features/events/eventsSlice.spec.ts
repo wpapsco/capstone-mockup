@@ -2,12 +2,15 @@ import {
     groupPlays,
     Event,
 } from "./eventsSlice";
-import { urlFriendly } from '../../utils'
+import {
+    urlFriendly,
+    capitalize,
+} from '../../utils'
 
 const testEventData: Event[] = [
     {
         id: 1,
-        playname: 'test 1',
+        playname: 'foo Bar baz',
         playdescription: 'desc1',
         eventdate: "2021-01-07T08:00:00.000Z",
         starttime: "19:00:00",
@@ -16,7 +19,7 @@ const testEventData: Event[] = [
     },
     {
         id: 2,
-        playname: 'test 1',
+        playname: 'foo Bar baz',
         playdescription: 'desc1',
         eventdate: "2021-01-08T08:00:00.000Z",
         starttime: "22:00:00",
@@ -34,11 +37,11 @@ const testEventData: Event[] = [
     },
 ]
 
-const Plays = {
-    test_1: [
+const uncapitalizedPlays = {
+    foo_Bar_baz: [
         {
             id: 1,
-            playname: 'test 1',
+            playname: 'foo Bar baz',
             playdescription: 'desc1',
             eventdate: "2021-01-07T08:00:00.000Z",
             starttime: "19:00:00",
@@ -47,7 +50,7 @@ const Plays = {
         },
         {
             id: 2,
-            playname: 'test 1',
+            playname: 'foo Bar baz',
             playdescription: 'desc1',
             eventdate: "2021-01-08T08:00:00.000Z",
             starttime: "22:00:00",
@@ -71,9 +74,14 @@ const Plays = {
 describe('Event slice utils', () => {
     it('groupPlays', () => {
         const res = groupPlays(testEventData)
-        expect(res).toEqual(Plays)
+        expect(res).toEqual(uncapitalizedPlays)
     })
+
     it('urlFriendly', () => {
         expect(urlFriendly('foo bar baz')).toEqual('foo_bar_baz')
+    })
+
+    it('capitalize', () => {
+        expect(capitalize('lower Case title')).toEqual('Lower Case Title')
     })
 })
