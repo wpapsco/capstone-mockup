@@ -75,44 +75,39 @@ function EventBodySection(props: BodySectionProps) {
 
 type EventPageProps = { playname: string }
 export default function EventPage() {
-
-    const { id } = useParams<EventPageProps>()
-    const eventData = appSelector(state => selectEventById(state, id))
     const classes = useStyles()
     const dispatch = useAppDispatch() 
     const [amount, setAmount] = useState(0)
 
     const { playname } = useParams<EventPageProps>()
-
     const eventData = appSelector(state => selectEventByName(state, playname))
     if (eventData === undefined) return <p>Whoops! Event not found</p>
     
+    const eventName = eventData[0].playname
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault()
         const ticketData = {
-            eventId: id,
-            // showing: eventData.date,
             concessions: false,
-            // unitPrice: 12.99,
             qty: amount,
-            description: eventData.shortDesc,
-            name: 'Ticket(s) for ' + eventData.playname,
+            description: eventData,
+            name: 'Ticket(s) for ' + eventData[0].playname,
         }
-        // dispatch(addTicket(ticketData, cartData))
-        dispatch(addItem(ticketData))
-        dispatch(openSnackbar(`Added ${amount} ticket${amount == 1 ? "" : "s"} to cart!`))
+        // dispatch(addItem(ticketData))
+        dispatch(openSnackbar(`Added ${amount} ticket${amount === 1 ? "" : "s"} to cart!`))
     }
 
     // TODO: Render showtime & date
+    // TODO: Get image to render
     return (
         <ThemeProvider theme={theme}>
             <Card className={classes.cardRoot}>
-                <CardMedia className={classes.heroImage} image={imgUrl}/>
+                <CardMedia
+                    className={classes.heroImage}
+                    image={'https://i.guim.co.uk/img/media/b5df93588386c0565177648cf41f3aff72c63400/0_217_5657_3395/master/5657.jpg?width=1200&height=900&quality=85&auto=format&fit=crop&s=a917ce8d52959d36bb08ad29184e2701'}
+                />
                 <CardContent className={classes.cardContents}>
                     <Typography component="h1" variant="h3" align="center" gutterBottom>{eventName}</Typography>
-                    {/* <Showtime align='center' date={date} /> */}
-                    {/* <Typography variant="subtitle2" align="center">{address}</Typography> */}
 
                     <CardActions className={classes.cardActions}>
                         <TextField
