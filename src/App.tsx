@@ -15,14 +15,14 @@ import {
      Redirect,
 } from 'react-router-dom';
 import Cart from './features/cart/Cart';
-import EventPage from './features/events/EventPage'
-import AllEventsPage from "./features/events/AllEventsPage";
 import NewsletterPage from "./features/newsletter/NewsletterPage";
 import CheckoutSuccess from "./components/CheckoutSuccess";
 import { Container } from "@material-ui/core";
 import Snackbar from "@material-ui/core/Snackbar";
 import { useAppDispatch, appSelector } from './app/hooks'
 import { closeSnackbar, selectSnackbar } from "./features/snackbarSlice"
+import AllEventsPage from './features/events/AllEventsPage'
+import EventPage from "./features/events/EventPage"
 
 function App() {
 
@@ -43,13 +43,6 @@ function App() {
                 <Navbar />
                 <Switch>
                     <Route path="/events/:name">
-                        <EventPage />
-                    </Route>
-                    <Route path="/events/:id">
-                        <EventPage />
-                    </Route>
-
-                    <Route path="/events/:id">
                         <EventPage />
                     </Route>
 
