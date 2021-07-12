@@ -1,5 +1,7 @@
 import { useState } from "react";
 import "./App.css";
+import { ThemeProvider } from '@material-ui/core/styles';
+import { theme } from './theme'
 import ShowingsPage from "./components/ShowingsPage";
 import CheckoutPage from "./components/CheckoutPage";
 import DoorList from "./components/DoorList";
@@ -39,65 +41,67 @@ function App() {
 
     return (
         <Container maxWidth="md">
-            <div id="maincontainer">
-                <Navbar />
-                <Switch>
-                    <Route path="/events/:name">
-                        <EventPage />
-                    </Route>
+            <ThemeProvider theme={theme}>
+                <div id="maincontainer">
+                    <Navbar />
+                    <Switch>
+                        <Route path="/events/:name">
+                            <EventPage />
+                        </Route>
 
-                    <Route path="/success">
-                        <CheckoutSuccess/>
-                    </Route>
+                        <Route path="/success">
+                            <CheckoutSuccess/>
+                        </Route>
 
-                    <Route path="/events">
-                        <AllEventsPage />
-                    </Route>
+                        <Route path="/events">
+                            <AllEventsPage />
+                        </Route>
 
-                    <Route path="/cart">
-                        <Cart />
-                    </Route>
+                        <Route path="/cart">
+                            <Cart />
+                        </Route>
 
-                    <Route path="/completeorder">
-                        <CheckoutPage/>
-                    </Route>
+                        <Route path="/completeorder">
+                            <CheckoutPage/>
+                        </Route>
 
-                    <Route path="/CreateEvents">
-                        <CreateEvents />
-                    </Route>
+                        <Route path="/CreateEvents">
+                            <CreateEvents />
+                        </Route>
 
-                    <Route path="/DeleteEvents">
-                        <DeleteEvents />
-                    </Route>
+                        <Route path="/DeleteEvents">
+                            <DeleteEvents />
+                        </Route>
 
-                    <Route path="/newsletter">
-                        <NewsletterPage />
-                    </Route>
+                        <Route path="/newsletter">
+                            <NewsletterPage />
+                        </Route>
 
-                    <Route path="/admin/admin-panel">
-                        <AdminPannel />
-                    </Route>
+                        <Route path="/admin/admin-panel">
+                            <AdminPannel />
+                        </Route>
 
-                    <Route exact path="/" >
-                        <CssBaseline />
-                        {!doorList && showings}
-                        {doorList && [
-                            <DoorList />,
-                            <Button variant="contained" color="primary" onClick={() => setDoorList(false)}>Back</Button>
-                        ]}
-                    </Route>
-                    <Redirect to="/" />
-                </Switch>
-            </div>
-            <Snackbar
-                anchorOrigin={{
-                  vertical: 'bottom',
-                  horizontal: 'left',
-                }}
-                open={snackbarState.shown}
-                autoHideDuration={6000}
-                onClose={onSnackbarClose}
-                message={snackbarState.message}/>
+                        <Route exact path="/" >
+                            <CssBaseline />
+                            {!doorList && showings}
+                            {doorList && [
+                                <DoorList />,
+                                <Button variant="contained" color="primary" onClick={() => setDoorList(false)}>Back</Button>
+                            ]}
+                        </Route>
+                        <Redirect to="/" />
+                    </Switch>
+                </div>
+                <Snackbar
+                    anchorOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'left',
+                    }}
+                    open={snackbarState.shown}
+                    autoHideDuration={6000}
+                    onClose={onSnackbarClose}
+                    message={snackbarState.message}/>
+            </ThemeProvider>
         </Container>
     );
 }
