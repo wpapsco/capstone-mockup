@@ -54,7 +54,7 @@ const eventsSlice = createSlice({
                 state.status = 'loading'
             })
             .addCase(fetchEventData.fulfilled, (state, action) => {
-                state.status = 'idle'
+                state.status = 'success'
                 state.data = (action.payload) ? action.payload : {}
             })
             .addCase(fetchEventData.rejected, (state) => {
