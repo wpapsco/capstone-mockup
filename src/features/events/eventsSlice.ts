@@ -63,6 +63,7 @@ const eventsSlice = createSlice({
     }
 })
 
+// Returns list {playname, playdescription}[]
 export const selectAllEvents = (state: RootState) => 
     Object.keys(state.events.data).map(key => {
         const { playname, playdescription } = state.events.data[key][0]

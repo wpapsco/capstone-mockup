@@ -1,14 +1,5 @@
-import {
-    groupPlays,
-    Event,
-    selectAllEvents,
-    EventsState,
-} from "./eventsSlice";
-import { RootState } from '../../app/store'
-import {
-    urlFriendly,
-    capitalize,
-} from '../../utils'
+import { groupPlays, Event, selectAllEvents, } from "./eventsSlice";
+import { urlFriendly, capitalize, } from '../../utils'
 
 const testEventData: Event[] = [
     {
@@ -76,8 +67,8 @@ const Plays = {
 
 describe('Event slice utils', () => {
     it('groupPlays', () => {
-        const res = groupPlays(testEventData)
-        expect(res).toEqual(Plays)
+        const groupedByPlays = groupPlays(testEventData)
+        expect(groupedByPlays).toEqual(Plays)
     })
 
     it('urlFriendly', () => {
@@ -90,7 +81,20 @@ describe('Event slice utils', () => {
 })
 
 describe('Event slice selectors', () => {
+    const InitState = {
+        events: {
+            data: Plays,
+            status: 'idle' as 'idle',
+        },
+        shop: { cart: [], donation: 0, },
+        snackbar: {message: '', shown: false}
+    }
+
     it('selectAllEvents', () => {
-        // TODO
+        const plays = [
+            { playname: 'foo Bar baz', playdescription: 'desc1' },
+            { playname: 'test 2', playdescription: 'desc1' },
+        ]
+        expect(selectAllEvents(InitState)).toEqual(plays)
     })
 })
