@@ -15,7 +15,7 @@ export default function AllEventsPage() {
         }
     }, [dispatch])
 
-    if (allEvents === {}) {
+    if (allEvents.length < 1) {
         return <div>No events to show. Please check again later.</div>
     }
 

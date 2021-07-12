@@ -1,7 +1,10 @@
 import {
     groupPlays,
     Event,
+    selectAllEvents,
+    EventsState,
 } from "./eventsSlice";
+import { RootState } from '../../app/store'
 import {
     urlFriendly,
     capitalize,
@@ -83,5 +86,11 @@ describe('Event slice utils', () => {
 
     it('capitalize', () => {
         expect(capitalize('lower Case title')).toEqual('Lower Case Title')
+    })
+})
+
+describe('Event slice selectors', () => {
+    it('selectAllEvents', () => {
+        // TODO
     })
 })
