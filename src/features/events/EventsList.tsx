@@ -1,21 +1,32 @@
 import { selectAllEvents } from './eventsSlice'
-import { capitalize } from '../../utils'
+import EventCard from './EventCard'
 import { appSelector } from '../../app/hooks'
+
+import { makeStyles } from '@material-ui/styles'
+
+const useStyles = makeStyles(theme => ({
+    root: {
+        display: 'flex',
+        flexDirection: 'column',
+    },
+}))
 
 const EventsList = () => {
     const allEvents = appSelector(selectAllEvents)
     const loadStatus = appSelector(state => state.events.status)
 
+    const classes = useStyles()    
+
     return (
-        <ul>
+        <section className={classes.root}>
             {(loadStatus === 'loading') && <p>Loading...</p>}
             {
                 (loadStatus === 'success') &&
                     (allEvents.length > 0) ?
-                        allEvents.map(evnt => <li>{capitalize(evnt.playname)}</li>) :
+                        allEvents.map(evnt => <EventCard {...evnt} />) :
                         <p>No upcoming events</p>
             }
-        </ul>
+        </section>
     )
 }
 export default EventsList
