@@ -5,8 +5,7 @@ import { theme } from './theme'
 import ShowingsPage from "./components/ShowingsPage";
 import CheckoutPage from "./components/CheckoutPage";
 import DoorList from "./components/DoorList";
-import CreateEvents from "./components/CreateEvents";
-import DeleteEvents from "./components/DeleteEvents";
+
 import CssBaseline from '@material-ui/core/CssBaseline';
 import AdminPannel from "./features/admin/AdminPanel";
 import Button from '@material-ui/core/Button';
@@ -23,8 +22,13 @@ import { Container } from "@material-ui/core";
 import Snackbar from "@material-ui/core/Snackbar";
 import { useAppDispatch, appSelector } from './app/hooks'
 import { closeSnackbar, selectSnackbar } from "./features/snackbarSlice"
+
 import AllEventsPage from './features/events/AllEventsPage'
 import EventPage from "./features/events/EventPage"
+import CreateEvents from "./components/CreateEvents";
+import DeleteEvents from "./components/DeleteEvents";
+
+import LoginPage from "./components/LoginPage";
 
 function App() {
 
@@ -88,6 +92,9 @@ function App() {
                                 <DoorList />,
                                 <Button variant="contained" color="primary" onClick={() => setDoorList(false)}>Back</Button>
                             ]}
+                        </Route>
+                        <Route path="/login/:redirect?" >
+                            <LoginPage />
                         </Route>
                         <Redirect to="/" />
                     </Switch>
