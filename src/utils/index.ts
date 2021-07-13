@@ -16,7 +16,7 @@ export function groupByKey<T extends Item>(arr: any[], key: keyof T, keyTransfor
     return arr.reduce<ItemGroup<T>>((map, item) => {
         const itemKey = (keyTransformer) ? keyTransformer(item[key]) : item[key]
         if(map[itemKey]) {
-                map[itemKey].push(item)
+            map[itemKey].push(item)
         } else {
             map[itemKey] = [item]
         }

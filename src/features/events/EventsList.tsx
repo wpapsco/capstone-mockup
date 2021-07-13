@@ -23,7 +23,7 @@ const EventsList = () => {
             {
                 (loadStatus === 'success') &&
                     (allEvents.length > 0) ?
-                        allEvents.map(evnt => <EventCard {...evnt} />) :
+                        allEvents.map(evnt => <EventCard key={evnt.playname} {...evnt} />) :
                         <p>No upcoming events</p>
             }
         </section>

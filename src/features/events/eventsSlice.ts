@@ -10,6 +10,7 @@ export interface Event {
      id: number,
      playname: string,
      playdescription?: string,
+     image_url: string,
      eventdate: string,
      starttime: string,
      totalseats: number,
@@ -25,7 +26,6 @@ export const fetchEventData = createAsyncThunk(
     async () => {
         try {
             const res = await fetch('/api/event-list')
-            // [{id, playname, playdesc, eventdate, starttime, totalseats, availableseats}]
             const allEvents: Event[] = await res.json()
             return groupPlays(allEvents)
         } catch (err) {
@@ -63,14 +63,15 @@ const eventsSlice = createSlice({
     }
 })
 
-// Returns list {playname, playdescription}[]
+// Returns {playname, playdescription, image_url}[]
 export const selectAllEvents = (state: RootState) => 
     Object.keys(state.events.data).map(key => {
-        const { playname, playdescription } = state.events.data[key][0]
+        const { playname, playdescription, image_url } = state.events.data[key][0]
         return {
             playname,
             playdescription: (playdescription) ?
-                playdescription : ''
+                playdescription : '',
+            image_url,
         }
     })
 

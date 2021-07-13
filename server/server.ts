@@ -88,7 +88,7 @@ app.post('/api/login', passport.authenticate('local'), (req, res) => {
 app.get("/api/event-list", async (req, res) => {
   try {
     const events = await pool.query("select shwtm.id, plays.playname, plays.playdescription,\
-    shwtm.eventdate, shwtm.starttime, shwtm.totalseats, shwtm.availableseats \
+    shwtm.eventdate, shwtm.starttime, shwtm.totalseats, shwtm.availableseats, plays.image_url \
     from showtimes as shwtm join plays on shwtm.playid = plays.id \
     where plays.active = true and shwtm.salestatus = true");
     res.json(events.rows);
