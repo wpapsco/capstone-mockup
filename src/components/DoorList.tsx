@@ -1,15 +1,14 @@
-import { DataGrid } from '@material-ui/data-grid';
-import Checkbox from '@material-ui/core/Checkbox';
-import Typography from '@material-ui/core/Typography';
-import {useEffect, useState} from 'react';
+import { CellParams, DataGrid } from '@material-ui/data-grid';
+import { Checkbox, Typography, capitalize } from '@material-ui/core';
+import { useEffect, useState } from 'react';
 import RequireLogin from './RequireLogin';
+
+const titleCase = (s: string) => s.split(' ').map(w => capitalize(w)).join(' ')
 
 export default function DoorList() {
 
-    const renderCheckbox = ((params: any) => (
-        <Checkbox checked={(params.value as boolean)} />
-    ))
-
+    const renderCheckbox = ((params: CellParams) => <Checkbox checked={params.value as boolean} />)
+    
     const columns = [
         { field: "name", headerName: "Name", width: 150},
         { field: "vip", headerName: "VIP", width: 100, renderCell: renderCheckbox},
@@ -22,20 +21,22 @@ export default function DoorList() {
     ]
 
     const [doorList, setDoorList] = useState([]);
+    const [eventName, setEventName] = useState('');
     const getDoorList = async () => {
         try {
             const response = await fetch('/api/doorlist', {credentials: "include", method: "GET"});
             const jsonData = await response.json();
-            setDoorList(jsonData);
+            setDoorList(jsonData.data);
+            setEventName(jsonData.eventname);
         } catch (error) {
             console.error(error.message);
         }
     };
 
-    useEffect(() => { getDoorList();}, []);
+    useEffect(() => { getDoorList() }, []);
     return (
         <RequireLogin>
-            <Typography variant="h2">Showing</Typography>
+            <Typography variant="h2">{`Showing: ${titleCase(eventName)}`}</Typography>
             <Typography gutterBottom variant="h5">5/21/2021 5:00PM</Typography>
             <DataGrid autoHeight rows={doorList} columns={columns} pageSize={10}/>
         </RequireLogin>

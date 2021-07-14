@@ -4,11 +4,11 @@ import Typography from '@material-ui/core/Typography';
 // import Box from '@material-ui/core/Box';
 import Grid from '@material-ui/core/Grid';
 
-export default function ShowingsPage(props: {showingSelected: (a: string) => any}) {
+export default function ShowingsPage(props: {showingSelected: () => void}) {
 
     const arr = new Array(10).fill(
         <Grid item xs={12} sm={6} md={4}>
-            <Showing onSelected={() => props.showingSelected("uhh")}/>
+            <Showing onSelected={() => props.showingSelected()}/>
         </Grid>
     )
 
