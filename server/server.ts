@@ -100,7 +100,7 @@ app.get('/api/doorlist', isAuthenticated, async (req, res) => {
         const querystring = `select cust.id as \"custid\", cust.custname as \"name\", cust.vip, cust.donorbadge, cust.seatingaccom,
             plays.id as \"playid\", plays.playname, shwtm.id as \"eventid\", shwtm.eventdate, shwtm.starttime, tix.checkedin as \"arrived\", count(cust.id) as \"num_tickets\"
             from showtimes as shwtm left join plays on shwtm.playid = plays.id left join
-            tickets as tix on shwtm.id = tix.eventid left join tickets as tix2 on tix.ticketno = tix2.ticketno
+            tickets as tix on shwtm.id = tix.eventid
             join customers as cust on tix.custid = cust.id
             where shwtm.id = $1
             group by cust.id, name ,plays.id, plays.playname, shwtm.id, shwtm.eventdate, shwtm.starttime, tix.checkedin
