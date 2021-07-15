@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import "./App.css";
 import { ThemeProvider } from '@material-ui/core/styles';
 import { theme } from './theme'
@@ -27,6 +27,7 @@ import AllEventsPage from './features/events/AllEventsPage'
 import EventPage from "./features/events/EventPage"
 import CreateEvents from "./components/CreateEvents";
 import DeleteEvents from "./components/DeleteEvents";
+import { fetchEventData } from "./features/events/eventsSlice";
 
 import LoginPage from "./components/LoginPage";
 
@@ -35,6 +36,13 @@ function App() {
     const [doorList, setDoorList] = useState(false);
     const dispatch = useAppDispatch()
     const snackbarState = appSelector(selectSnackbar)
+    const eventsStatus = appSelector(state => state.events.status)
+
+    useEffect(() => {
+        if(eventsStatus === 'idle') {
+            dispatch(fetchEventData())
+        }
+    }, [dispatch])
 
     const onSnackbarClose = (_: React.SyntheticEvent | React.MouseEvent, reason?: string) => {
         if (reason === 'clickaway') return;

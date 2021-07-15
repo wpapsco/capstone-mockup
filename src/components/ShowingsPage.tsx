@@ -1,16 +1,9 @@
-import { appSelector, useAppDispatch } from '../app/hooks'
-import { fetchEventData } from '../features/events/eventsSlice'
-import { useEffect } from 'react'
+import { appSelector } from '../app/hooks'
 import Typography from '@material-ui/core/Typography'
 import ShowingsGroup from './ShowingsGroup'
 
 export default function ShowingsPage(props: {showingSelected: () => void}) {
-    const dispatch = useAppDispatch()
     const eventsLoadStatus = appSelector(state => state.events.status)
-    useEffect(() => {
-        if (eventsLoadStatus === 'idle') { dispatch(fetchEventData()) }
-    }, [dispatch])
-
     const showingsByEvent = appSelector(state => state.events.data)
     const groupedShowings = Object.keys(showingsByEvent).map(key => {
         const first = showingsByEvent[key][0]
