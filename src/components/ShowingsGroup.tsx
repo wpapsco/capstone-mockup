@@ -1,33 +1,33 @@
-import { Showing } from '../features/events/eventsSlice'
-import ShowingCard, { ShowingProps } from "./ShowingCard"
+import { Event } from '../features/events/eventsSlice'
+import ShowingCard from "./ShowingCard"
 import Grid from '@material-ui/core/Grid'
+import { titleCase } from '../utils'
 
 export interface ShowingsGroupProps {
     eventTitle: string,
-    imageUrl: string,
-    showings: Showing[],
+    showings: Event[],
+    showingSelected: () => void,
 }
-// TODO: render ShowingCards
 const ShowingsGroup = (props: ShowingsGroupProps) => {
+    const showings = props.showings.map(show =>
+        <Grid item key={show.id} xs={12} sm={6} md={4}>
+            <ShowingCard
+                {...show}
+                onSelected={props.showingSelected}
+                eventName={props.eventTitle}
+                desc={show.playdescription}
+                id={show.id.toString()}
+            />
+        </Grid>
+    )
     return (
         <section>
-            <h2>{props.eventTitle}</h2>
+            <h2>{titleCase(props.eventTitle)}</h2>
             <Grid container spacing={3}>
-                
+                {showings}
             </Grid>
         </section>
     )
 }
 
 export default ShowingsGroup
-
-/*
-const showingCards = Object.keys(showingsByEvent).map((show: ShowingProps) => (
-    <Grid item xs={12} sm={6} md={4}>
-        <Showing
-            key={show.id}
-            {...show}
-            onSelected={() => props.showingSelected()} />
-    </Grid>
-))
-*/

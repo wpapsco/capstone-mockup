@@ -4,12 +4,11 @@ import { useEffect } from 'react'
 import Typography from '@material-ui/core/Typography'
 import ShowingsGroup from './ShowingsGroup'
 
-
 export default function ShowingsPage(props: {showingSelected: () => void}) {
     const dispatch = useAppDispatch()
     const eventsLoadStatus = appSelector(state => state.events.status)
     useEffect(() => {
-        if (eventsLoadStatus === 'idle') { dispatch(fetchEventData) }
+        if (eventsLoadStatus === 'idle') { dispatch(fetchEventData()) }
     }, [dispatch])
 
     const showingsByEvent = appSelector(state => state.events.data)
@@ -18,7 +17,7 @@ export default function ShowingsPage(props: {showingSelected: () => void}) {
         return <ShowingsGroup
             key={key}
             eventTitle={first.playname}
-            imageUrl={first.image_url}
+            showingSelected={props.showingSelected}
             showings={showingsByEvent[key]}
         />
     })
@@ -26,7 +25,8 @@ export default function ShowingsPage(props: {showingSelected: () => void}) {
     return (
         <div>
             <Typography variant="h2">Select a Showing</Typography>
-            {groupedShowings}
+            {(eventsLoadStatus === 'loading') && <p>Loading...</p>}
+            {(eventsLoadStatus === 'success') && groupedShowings}
         </div>
     )
 }
