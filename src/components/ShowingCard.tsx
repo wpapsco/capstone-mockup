@@ -7,8 +7,8 @@ import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
 import CardMedia from '@material-ui/core/CardMedia';
 import Typography from '@material-ui/core/Typography';
-
-import { titleCase, militaryToCivilian } from '../utils'
+import { Link } from 'react-router-dom';
+import { titleCase, militaryToCivilian } from '../utils';
 
 const useStyles = makeStyles({
     root: {
@@ -20,7 +20,6 @@ const useStyles = makeStyles({
 });
 
 export interface ShowingProps {
-    onSelected: () => void,
     id: string,
     eventName: string,
     eventdate: string,
@@ -52,9 +51,11 @@ export default function ShowingCard(props: ShowingProps) {
                 </CardContent>
             </CardActionArea>
             <CardActions>
-                <Button onClick={props.onSelected} size="small" variant="contained" color="primary">
-                    Select
-                </Button>
+                <Link to={`/doorlist/${props.id}`}>
+                    <Button size="small" variant="contained" color="primary">
+                        Select
+                    </Button>
+                </Link>
             </CardActions>
         </Card>
     );

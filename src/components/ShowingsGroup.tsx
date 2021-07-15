@@ -6,14 +6,12 @@ import { titleCase } from '../utils'
 export interface ShowingsGroupProps {
     eventTitle: string,
     showings: Event[],
-    showingSelected: () => void,
 }
 const ShowingsGroup = (props: ShowingsGroupProps) => {
     const showings = props.showings.map(show =>
         <Grid item key={show.id} xs={12} sm={6} md={4}>
             <ShowingCard
                 {...show}
-                onSelected={props.showingSelected}
                 eventName={props.eventTitle}
                 desc={show.playdescription}
                 id={show.id.toString()}

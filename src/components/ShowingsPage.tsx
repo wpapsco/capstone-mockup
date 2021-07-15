@@ -2,7 +2,7 @@ import { appSelector } from '../app/hooks'
 import Typography from '@material-ui/core/Typography'
 import ShowingsGroup from './ShowingsGroup'
 
-export default function ShowingsPage(props: {showingSelected: () => void}) {
+export default function ShowingsPage() {
     const eventsLoadStatus = appSelector(state => state.events.status)
     const showingsByEvent = appSelector(state => state.events.data)
     const groupedShowings = Object.keys(showingsByEvent).map(key => {
@@ -10,7 +10,6 @@ export default function ShowingsPage(props: {showingSelected: () => void}) {
         return <ShowingsGroup
             key={key}
             eventTitle={first.playname}
-            showingSelected={props.showingSelected}
             showings={showingsByEvent[key]}
         />
     })

@@ -116,8 +116,7 @@ app.get('/api/doorlist', isAuthenticated, async (req, res) => {
             where shwtm.id = $1
             group by cust.id, name ,plays.id, plays.playname, shwtm.id, shwtm.eventdate, shwtm.starttime, tix.checkedin
             order by name`;
-        // TODO: const values = [req.query.showid]
-        const values = [1];
+        const values = [req.query.showid]
         const doorlist = await pool.query(querystring, values);
         res.json(formatResponse(doorlist.rows));
     }

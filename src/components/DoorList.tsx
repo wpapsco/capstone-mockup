@@ -1,13 +1,16 @@
 import { CellParams, DataGrid } from '@material-ui/data-grid';
 import { Checkbox, Typography } from '@material-ui/core';
 import { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom'
 import RequireLogin from './RequireLogin';
 import { titleCase } from '../utils';
 
 
 
+type DoorListProps = {showid: string}
 export default function DoorList() {
 
+    const { showid } = useParams<DoorListProps>()
     const renderCheckbox = ((params: CellParams) => <Checkbox checked={params.value as boolean} />)
     
     const columns = [
@@ -25,7 +28,7 @@ export default function DoorList() {
     const [eventName, setEventName] = useState('');
     const getDoorList = async () => {
         try {
-            const response = await fetch('/api/doorlist', {credentials: "include", method: "GET"});
+            const response = await fetch(`/api/doorlist?showid=${showid}`, {credentials: "include", method: "GET"});
             const jsonData = await response.json();
             setDoorList(jsonData.data);
             setEventName(jsonData.eventname);

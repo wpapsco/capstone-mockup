@@ -8,7 +8,6 @@ import DoorList from "./components/DoorList";
 
 import CssBaseline from '@material-ui/core/CssBaseline';
 import AdminPannel from "./features/admin/AdminPanel";
-import Button from '@material-ui/core/Button';
 import Navbar from './app/Navbar';
 import {
      Switch,
@@ -33,7 +32,6 @@ import LoginPage from "./components/LoginPage";
 
 function App() {
 
-    const [doorList, setDoorList] = useState(false);
     const dispatch = useAppDispatch()
     const snackbarState = appSelector(selectSnackbar)
     const eventsStatus = appSelector(state => state.events.status)
@@ -48,8 +46,6 @@ function App() {
         if (reason === 'clickaway') return;
         dispatch(closeSnackbar())
     }
-
-    const showings = <ShowingsPage showingSelected={() => setDoorList(!doorList)} />;
 
     return (
         <Container maxWidth="md">
@@ -93,14 +89,15 @@ function App() {
                             <AdminPannel />
                         </Route>
 
+                        <Route path="/doorlist/:showid">
+                            <DoorList />
+                        </Route>
+
                         <Route exact path="/" >
                             <CssBaseline />
-                            {!doorList && showings}
-                            {doorList && [
-                                <DoorList />,
-                                <Button variant="contained" color="primary" onClick={() => setDoorList(false)}>Back</Button>
-                            ]}
+                            <ShowingsPage />
                         </Route>
+
                         <Route path="/login/:redirect?" >
                             <LoginPage />
                         </Route>
