@@ -3,7 +3,10 @@ import express from 'express';
 import {pool} from './db';
 import cors from 'cors';
 import Stripe from "stripe"
-import {CartItem, TicketData} from "../src/features/cart/cartSlice"
+import {
+    CartItem,
+    // TicketData
+} from "../src/features/cart/cartSlice"
 import {CheckoutFormInfo} from "../src/components/CompleteOrderForm"
 
 import passport from "passport"
@@ -94,6 +97,13 @@ app.get("/api/event-list", async (req, res) => {
   }
 });
 
+const formatResponse = rowdata => ({
+    eventname: rowdata[0].playname,
+    data: rowdata.map(datum => {
+        const {custid, name, vip, donorbadge, seatingaccom, num_tickets, arrived } = datum
+        return {id: custid, name, vip, donor: donorbadge, accomodations: seatingaccom, num_tickets, arrived }
+    })
+})
 //TODO: find a way to hide api calls like this behind some kind of auth
 app.get('/api/doorlist', isAuthenticated, async (req, res) => {
     try {
@@ -104,19 +114,11 @@ app.get('/api/doorlist', isAuthenticated, async (req, res) => {
             join customers as cust on tix.custid = cust.id
             where shwtm.id = $1
             group by cust.id, name ,plays.id, plays.playname, shwtm.id, shwtm.eventdate, shwtm.starttime, tix.checkedin
-            order by name`
+            order by name`;
         // TODO: const values = [req.query.showid]
-        const values = [1]
+        const values = [1];
         const doorlist = await pool.query(querystring, values);
-
-        const rows = doorlist.rows.map(dat => {
-            const {custid, name, vip, donorbadge, seatingaccom, num_tickets, arrived } = dat
-            return {id: custid, name, vip, donor: donorbadge, accomodations: seatingaccom, num_tickets, arrived }
-        })
-        res.json({
-            eventname: doorlist.rows[0].playname,
-            data: rows,
-        });
+        res.json(formatResponse(doorlist.rows));
     }
     catch (err) {
         console.error(err.message);
@@ -179,7 +181,7 @@ app.post('/api/checkout', async (req, res) => {
     // right now it gets the price info from the request made by the client.
     // THIS IS WRONG it needs to look up the price in the database given
     // the id of the show/event/whatever. PRICES CANNOT COME FROM CLIENTS!!
-    const data: CartItem<TicketData>[] = req.body.cartItems;
+    const data: CartItem[] = req.body.cartItems;
     
     // TODO: submit form data to DB
     // Adding a customer to the customer table based on form data:
@@ -237,7 +239,7 @@ app.post('/api/checkout', async (req, res) => {
                 // the price here needs to be fetched from the DB instead
                 unit_amount: item.unitPrice * 100
             },
-            quantity: item.quantity
+            quantity: item.qty
         })).concat(donationItem),
         mode: "payment",
         success_url: "http://localhost:3000/success",

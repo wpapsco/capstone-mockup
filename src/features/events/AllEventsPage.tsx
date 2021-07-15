@@ -1,20 +1,27 @@
-import { selectAllEvents } from './eventsSlice'
-import { appSelector } from '../../app/hooks'
+import { useEffect } from 'react'
+import { appSelector, useAppDispatch } from '../../app/hooks'
+import { fetchEventData } from './eventsSlice'
+import EventsList from './EventsList'
 
 import { Typography } from '@material-ui/core'
-import EventRow from './EventRow'
 
 export default function AllEventsPage() {
-    const allEvents = appSelector(selectAllEvents)
+    const dispatch = useAppDispatch()
+    const loadStatus = appSelector(state => state.events.status)
 
-    if (!allEvents) {
-        return <div>No events to show. Please check again later.</div>
-    }
+    useEffect(() => {
+        if (loadStatus === 'idle') {
+            dispatch(fetchEventData())
+        }
+    }, [dispatch])
 
     return (
         <section>
-            <Typography variant='h4' component='h1'>Upcoming Events</Typography>
-            {allEvents.map(details => <EventRow {...details} />)}
+            <Typography
+                variant='h4'
+                component='h1'
+                className='mt-2 '>Upcoming Events</Typography>
+            <EventsList />
         </section>
     )
 }
