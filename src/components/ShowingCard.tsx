@@ -26,7 +26,7 @@ export interface ShowingProps {
     time: string,
     desc?: string,
 }
-export default function Showing(props: ShowingProps) {
+export default function ShowingCard(props: ShowingProps) {
     const classes = useStyles();
 
     return (
