@@ -1,5 +1,5 @@
-import { groupPlays, Event, selectAllEvents, } from "./eventsSlice";
-import { urlFriendly, titleCase, } from '../../utils'
+import { groupPlays, Event, selectAllEvents } from "./eventsSlice";
+import { urlFriendly, titleCase, militaryToCivilian} from '../../utils'
 
 const testEventData: Event[] = [
     {
@@ -83,6 +83,10 @@ describe('Event slice utils', () => {
 
     it('titleCase', () => {
         expect(titleCase('lower Case title')).toEqual('Lower Case Title')
+    })
+
+    it('militaryToCivilian', () => {
+        expect(militaryToCivilian('19:00:00')).toEqual('7:00 PM')
     })
 })
 
