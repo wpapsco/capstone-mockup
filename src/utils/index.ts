@@ -1,10 +1,8 @@
+import { capitalize } from '@material-ui/core'
+
 export const urlFriendly = (s: string) => s.replace(/ /g, '_')
 
-export const capitalize = (s: string) =>
-    s.split(' ')
-        .map((word: string) => word.slice(0,1).toUpperCase() + word.slice(1))
-        .join(' ')
-
+export const titleCase = (s: string) => s.split(' ').map(w => capitalize(w)).join(' ')
 interface Item<T = any> {
     [key: string]: T
 }

@@ -1,5 +1,5 @@
 // This implementation should replace the EventRow component in the EventsList
-import { capitalize } from '../../utils'
+import { titleCase } from '../../utils'
 import { Card, CardContent, CardMedia, Button } from '@material-ui/core'
 import { Theme, makeStyles, useTheme } from '@material-ui/core/styles'
 
@@ -42,7 +42,7 @@ const EventCard = (props: {
     return (
         <Card className={classes.root}>
             <CardContent className={classes.cardContent}>
-                <h2>{capitalize(props.playname)}</h2>
+                <h2>{titleCase(props.playname)}</h2>
                 <p>{(props.playdescription) ?
                     props.playdescription :
                     'No description available.'

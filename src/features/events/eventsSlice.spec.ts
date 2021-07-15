@@ -1,5 +1,5 @@
 import { groupPlays, Event, selectAllEvents, } from "./eventsSlice";
-import { urlFriendly, capitalize, } from '../../utils'
+import { urlFriendly, titleCase, } from '../../utils'
 
 const testEventData: Event[] = [
     {
@@ -81,8 +81,8 @@ describe('Event slice utils', () => {
         expect(urlFriendly('foo bar baz')).toEqual('foo_bar_baz')
     })
 
-    it('capitalize', () => {
-        expect(capitalize('lower Case title')).toEqual('Lower Case Title')
+    it('titleCase', () => {
+        expect(titleCase('lower Case title')).toEqual('Lower Case Title')
     })
 })
 

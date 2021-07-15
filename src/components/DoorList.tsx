@@ -1,9 +1,10 @@
 import { CellParams, DataGrid } from '@material-ui/data-grid';
-import { Checkbox, Typography, capitalize } from '@material-ui/core';
+import { Checkbox, Typography } from '@material-ui/core';
 import { useEffect, useState } from 'react';
 import RequireLogin from './RequireLogin';
+import { titleCase } from '../utils';
 
-const titleCase = (s: string) => s.split(' ').map(w => capitalize(w)).join(' ')
+
 
 export default function DoorList() {
 
