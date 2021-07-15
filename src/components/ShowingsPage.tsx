@@ -1,23 +1,39 @@
-import Showing from "./Showing";
-import Typography from '@material-ui/core/Typography';
-// import Button from '@material-ui/core/Button';
-// import Box from '@material-ui/core/Box';
-import Grid from '@material-ui/core/Grid';
+import Showing, { ShowingProps } from "./Showing"
+import Typography from '@material-ui/core/Typography'
+import Grid from '@material-ui/core/Grid'
+
+import { useEffect, useState } from 'react'
 
 export default function ShowingsPage(props: {showingSelected: () => void}) {
 
-    const arr = new Array(10).fill(
+    const [showings, setShowings] = useState([])
+    const getShowings = async () => {
+        try {
+            const res = await fetch('/api/event-list', {credentials: "include", method: "GET"})
+            const jsonData = await res.json()
+            setShowings(jsonData)
+        } catch (error) {
+            console.error(error.message)
+        }
+    }
+
+    useEffect(() => {getShowings()}, [])
+
+    const showingCards = showings.map((show: ShowingProps) => (
         <Grid item xs={12} sm={6} md={4}>
-            <Showing onSelected={() => props.showingSelected()}/>
+            <Showing
+                key={show.id}
+                {...show}
+                onSelected={() => props.showingSelected()} />
         </Grid>
-    )
+    ))
 
     return (
         <div>
             <Typography variant="h2">Select a Showing</Typography>
             <Grid container spacing={3}>
-                {arr}
+                {showingCards}
             </Grid>
         </div>
-    );
+    )
 }
