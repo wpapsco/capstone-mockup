@@ -87,10 +87,11 @@ app.post('/api/login', passport.authenticate('local'), (req, res) => {
 // Endpoint to get the list of all events that are currently active
 app.get("/api/event-list", async (req, res) => {
   try {
-    const events = await pool.query(`select shwtm.id, plays.playname, plays.playdescription,
-    shwtm.eventdate, shwtm.starttime, shwtm.totalseats, shwtm.availableseats 
-    from showtimes as shwtm join plays on shwtm.playid = plays.id 
-    where plays.active = true and shwtm.salestatus = true`);
+    const events = await pool.query(
+        `select shwtm.id, plays.playname, plays.playdescription, plays.image_url,
+        shwtm.eventdate, shwtm.starttime, shwtm.totalseats, shwtm.availableseats
+        from showtimes as shwtm join plays on shwtm.playid = plays.id 
+        where plays.active = true and shwtm.salestatus = true`);
     res.json(events.rows);
   } catch (err) {
     console.error(err.message);
