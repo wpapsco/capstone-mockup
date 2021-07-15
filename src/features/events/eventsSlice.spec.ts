@@ -1,5 +1,5 @@
 import { groupPlays, Event, selectAllEvents } from "./eventsSlice";
-import { urlFriendly, titleCase, militaryToCivilian} from '../../utils'
+import { urlFriendly, titleCase, militaryToCivilian, dayMonthDate } from '../../utils'
 
 const testEventData: Event[] = [
     {
@@ -87,6 +87,11 @@ describe('Event slice utils', () => {
 
     it('militaryToCivilian', () => {
         expect(militaryToCivilian('19:00:00')).toEqual('7:00 PM')
+    })
+
+    it('convert to dayMonthDate', () => {
+        const d_str = '2021-01-07T08:00:00.000Z'
+        expect(dayMonthDate(d_str)).toEqual('Thu Jan 7')
     })
 })
 

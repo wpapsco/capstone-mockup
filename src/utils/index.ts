@@ -24,7 +24,7 @@ export function groupByKey<T extends Item>(arr: any[], key: keyof T, keyTransfor
 
 type time = {hours: number, minutes: number, ampm?: 'AM'|'PM'}
 
-const serializeDate = (datestr: string): time => {
+const serializeTime = (datestr: string): time => {
     const hours_minutes = datestr.split(':')
     return {
         hours: parseInt(hours_minutes[0]),
@@ -53,4 +53,21 @@ const formatTime = (time: time, template='hh:mm tt') =>
 
 // Input=19:00:00 => Output=7:00 PM
 export const militaryToCivilian = (mil_t: string) =>
-    formatTime(toCivilianHours(appendAMPM(serializeDate(mil_t))))
+    formatTime(toCivilianHours(appendAMPM(serializeTime(mil_t))))
+
+const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
+const DAYS = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat']
+const serializeDate = (datestr: string): Date => new Date(datestr)
+const getMonth = (d: Date) => MONTHS[d.getMonth()]
+const getDay = (d: Date) => DAYS[d.getDay()]
+const getDate = (d: Date) => d.getDate().toString()
+const formatDate = (d: Date, template='dy, mm dt') =>
+    template
+        .replace('dy', getDay(d))
+        .replace('mm', getMonth(d))
+        .replace('dt', getDate(d))
+
+export const dayMonthDate = (datestr: string) =>
+    formatDate(serializeDate(datestr))
+
+
