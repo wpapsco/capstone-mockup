@@ -18,7 +18,15 @@ const useStyles = makeStyles({
     },
 });
 
-export default function Showing(props: {onSelected: () => any}) {
+export interface ShowingProps {
+    onSelected: () => void,
+    id: string,
+    eventName: string,
+    date: string,
+    time: string,
+    desc?: string,
+}
+export default function Showing(props: ShowingProps) {
     const classes = useStyles();
 
     return (
@@ -31,13 +39,13 @@ export default function Showing(props: {onSelected: () => any}) {
                 />
                 <CardContent>
                     <Typography variant="h5" component="h2">
-                        Showing
+                        {props.eventName}
                     </Typography>
                     <Typography variant="body2" gutterBottom color="textPrimary" component="p">
                         5/23/2021 5:00PM
                     </Typography>
                     <Typography variant="body2" color="textSecondary" component="p">
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse dignissim dapibus dui.
+                        {(props.desc) ? props.desc : ''}
                     </Typography>
                 </CardContent>
             </CardActionArea>
