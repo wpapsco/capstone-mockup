@@ -8,7 +8,7 @@ import CardContent from '@material-ui/core/CardContent';
 import CardMedia from '@material-ui/core/CardMedia';
 import Typography from '@material-ui/core/Typography';
 
-import { titleCase } from '../utils'
+import { titleCase, militaryToCivilian } from '../utils'
 
 const useStyles = makeStyles({
     root: {
@@ -44,7 +44,7 @@ export default function ShowingCard(props: ShowingProps) {
                         {titleCase(props.eventName)}
                     </Typography>
                     <Typography variant="body2" gutterBottom color="textPrimary" component="p">
-                        5/23/2021 5:00PM
+                        {militaryToCivilian(props.starttime)}
                     </Typography>
                     <Typography variant="body2" color="textSecondary" component="p">
                         {(props.desc) ? props.desc : 'No description available'}
