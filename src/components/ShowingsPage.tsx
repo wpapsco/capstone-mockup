@@ -1,39 +1,35 @@
-import Showing, { ShowingProps } from "./Showing"
+import { appSelector, useAppDispatch } from '../app/hooks'
+import { fetchEventData } from '../features/events/eventsSlice'
+import { useEffect } from 'react'
 import Typography from '@material-ui/core/Typography'
-import Grid from '@material-ui/core/Grid'
+import ShowingsGroup from './ShowingsGroup'
 
-import { useEffect, useState } from 'react'
 
 export default function ShowingsPage(props: {showingSelected: () => void}) {
+    const dispatch = useAppDispatch()
+    const eventsLoadStatus = appSelector(state => state.events.status)
+    useEffect(() => {
+        if (eventsLoadStatus === 'idle') { dispatch(fetchEventData) }
+    }, [dispatch])
 
-    const [showings, setShowings] = useState([])
-    const getShowings = async () => {
-        try {
-            const res = await fetch('/api/event-list', {credentials: "include", method: "GET"})
-            const jsonData = await res.json()
-            setShowings(jsonData)
-        } catch (error) {
-            console.error(error.message)
-        }
-    }
-
-    useEffect(() => {getShowings()}, [])
-
-    const showingCards = showings.map((show: ShowingProps) => (
-        <Grid item xs={12} sm={6} md={4}>
-            <Showing
-                key={show.id}
-                {...show}
-                onSelected={() => props.showingSelected()} />
-        </Grid>
-    ))
+    const showingsByEvent = appSelector(state => state.events.data)
+    const groupedShowings = Object.keys(showingsByEvent).map(key => {
+        const first = showingsByEvent[key][0]
+        return <ShowingsGroup
+            key={key}
+            eventTitle={first.playname}
+            imageUrl={first.image_url}
+            showings={showingsByEvent[key]}
+        />
+    })
 
     return (
         <div>
             <Typography variant="h2">Select a Showing</Typography>
-            <Grid container spacing={3}>
-                {showingCards}
-            </Grid>
+            {groupedShowings}
         </div>
     )
 }
+
+// Want: Display showings by event
+// 
