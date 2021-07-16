@@ -108,7 +108,6 @@ const formatDoorlistResponse = rowdata => ({
     })
 })
 
-// TODO: Add ticket ID to row data
 app.get('/api/doorlist', isAuthenticated, async (req, res) => {
     try {
         const querystring = `select cust.id as "custid", cust.custname as "name", cust.vip, cust.donorbadge, cust.seatingaccom,
@@ -127,6 +126,20 @@ app.get('/api/doorlist', isAuthenticated, async (req, res) => {
         console.error(err.message);
     }
 });
+
+// TODO: Check that provided ticket ID is valid
+app.put('/api/checkin', isAuthenticated, async (req, res) => {
+    try {
+        const querystring = `UPDATE tickets SET checkedin=$1 WHERE ticketno=$2`
+        const values = [req.body.isCheckedIn, req.body.ticketID]
+        const queryRes = await pool.query(querystring, values)
+        res.json(queryRes.rows)
+    }
+    catch (err) {
+        console.error(err.message);
+        throw new Error('check in failed');
+    }
+})
 
 app.post('/api/newsletter/count', async (req, res) => {
     try
