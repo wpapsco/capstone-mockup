@@ -98,8 +98,10 @@ app.get("/api/event-list", async (req, res) => {
   }
 });
 
-const formatResponse = rowdata => ({
+const formatDoorlistResponse = rowdata => ({
     eventname: rowdata[0].playname,
+    eventdate: rowdata[0].eventdate,
+    starttime: rowdata[0].starttime,
     data: rowdata.map(datum => {
         const {custid, name, vip, donorbadge, seatingaccom, num_tickets, arrived } = datum
         return {id: custid, name, vip, donor: donorbadge, accomodations: seatingaccom, num_tickets, arrived }
@@ -118,7 +120,7 @@ app.get('/api/doorlist', isAuthenticated, async (req, res) => {
             order by name`;
         const values = [req.query.showid]
         const doorlist = await pool.query(querystring, values);
-        res.json(formatResponse(doorlist.rows));
+        res.json(formatDoorlistResponse(doorlist.rows));
     }
     catch (err) {
         console.error(err.message);

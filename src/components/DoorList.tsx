@@ -3,7 +3,7 @@ import { Checkbox, Typography } from '@material-ui/core';
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom'
 import RequireLogin from './RequireLogin';
-import { titleCase } from '../utils';
+import { titleCase, dayMonthDate, militaryToCivilian } from '../utils';
 
 
 
@@ -26,12 +26,17 @@ export default function DoorList() {
 
     const [doorList, setDoorList] = useState([]);
     const [eventName, setEventName] = useState('');
+    const [date, setDate] = useState('');
+    const [time, setTime] = useState('');
+
     const getDoorList = async () => {
         try {
             const response = await fetch(`/api/doorlist?showid=${showid}`, {credentials: "include", method: "GET"});
             const jsonData = await response.json();
             setDoorList(jsonData.data);
             setEventName(jsonData.eventname);
+            setDate(dayMonthDate(jsonData.eventdate))
+            setTime(militaryToCivilian(jsonData.starttime))
         } catch (error) {
             console.error(error.message);
         }
@@ -41,7 +46,7 @@ export default function DoorList() {
     return (
         <RequireLogin>
             <Typography variant="h2">{`Showing: ${titleCase(eventName)}`}</Typography>
-            <Typography gutterBottom variant="h5">5/21/2021 5:00PM</Typography>
+            <Typography gutterBottom variant="h5">{`${date}, ${time}`}</Typography>
             <DataGrid autoHeight rows={doorList} columns={columns} pageSize={10}/>
         </RequireLogin>
     );
