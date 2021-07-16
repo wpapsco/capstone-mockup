@@ -270,7 +270,7 @@ app.post("/api/delete-event", async (req, res) => {
     }
 })
 
-app.get('/api/email_subscriptions/newsletter', async (req, res) =>
+app.get('/api/email_subscriptions/newsletter', isAuthenticated, async (req, res) =>
 {
     try
     {
@@ -283,7 +283,7 @@ app.get('/api/email_subscriptions/newsletter', async (req, res) =>
     }
 });
 
-app.get('/api/email_subscriptions/volunteers', async (req, res) =>
+app.get('/api/email_subscriptions/volunteers', isAuthenticated, async (req, res) =>
 {
     try
     {

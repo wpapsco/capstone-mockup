@@ -15,6 +15,7 @@ import Grid from '@material-ui/core/Grid';
 import Checkbox from '@material-ui/core/Checkbox';
 import Snackbar from '@material-ui/core/Snackbar';
 import Alert from '@material-ui/lab/Alert';
+import RequireLogin from '../../components/RequireLogin';
 import {useState} from 'react';
 
 export default function EmailSubscriptions()
@@ -23,6 +24,7 @@ export default function EmailSubscriptions()
    {
       const response = await fetch("http://localhost:5000/api/" + url_append,
       {
+         credentials: "include",
          method: 'GET',
          headers:
          {
@@ -123,10 +125,9 @@ export default function EmailSubscriptions()
    };
 
    return (
+      <RequireLogin>
       <div style={{display: "flex", height: "100vh", width: "100%"}}>
          <Paper style={{flexGrow: 8, height: "100%", margin: "10px", paddingLeft: "5%", paddingTop: "50px", paddingRight: "10%"}} variant="outlined">
-            <Typography variant="h3">Newsletter Sign-up!</Typography>
-            <hr/>
             <form>
                <Grid container spacing={1}>
                <Grid item xs={3}><Button onClick={newsletter_download} variant="contained" name="newsletter list" >Newsletter List</Button></Grid>
@@ -135,6 +136,6 @@ export default function EmailSubscriptions()
             </form>
          </Paper>
       </div>
-
+      </RequireLogin>
    )
 }
