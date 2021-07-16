@@ -1,23 +1,27 @@
-import Showing from "./Showing";
-import Typography from '@material-ui/core/Typography';
-// import Button from '@material-ui/core/Button';
-// import Box from '@material-ui/core/Box';
-import Grid from '@material-ui/core/Grid';
+import { appSelector } from '../app/hooks'
+import Typography from '@material-ui/core/Typography'
+import ShowingsGroup from './ShowingsGroup'
 
-export default function ShowingsPage(props: {showingSelected: (a: string) => any}) {
-
-    const arr = new Array(10).fill(
-        <Grid item xs={12} sm={6} md={4}>
-            <Showing onSelected={() => props.showingSelected("uhh")}/>
-        </Grid>
-    )
+export default function ShowingsPage() {
+    const eventsLoadStatus = appSelector(state => state.events.status)
+    const showingsByEvent = appSelector(state => state.events.data)
+    const groupedShowings = Object.keys(showingsByEvent).map(key => {
+        const first = showingsByEvent[key][0]
+        return <ShowingsGroup
+            key={key}
+            eventTitle={first.playname}
+            showings={showingsByEvent[key]}
+        />
+    })
 
     return (
         <div>
             <Typography variant="h2">Select a Showing</Typography>
-            <Grid container spacing={3}>
-                {arr}
-            </Grid>
+            {(eventsLoadStatus === 'loading') && <p>Loading...</p>}
+            {(eventsLoadStatus === 'success') && groupedShowings}
         </div>
-    );
+    )
 }
+
+// Want: Display showings by event
+// 
