@@ -17,11 +17,10 @@
  * 
  * * * * * * * * * * * * * * * * * * * * * * * */ 
 import React, { useState } from 'react'
-import { addTicket } from '../cart/cartSlice'
 import { useAppDispatch } from '../../app/hooks'
 import { appSelector } from '../../app/hooks'
 import { useParams } from 'react-router-dom'
-import { selectEventById } from './eventsSlice'
+import { selectEventShowings } from './eventsSlice'
 
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/styles'
@@ -31,11 +30,9 @@ import CardContent from '@material-ui/core/CardContent'
 import CardActions from '@material-ui/core/CardActions'
 import Button from '@material-ui/core/Button'
 import TextField from '@material-ui/core/TextField'
-import { ThemeProvider } from '@material-ui/core/styles'
-import { theme } from '../../theme'
 import { openSnackbar } from '../snackbarSlice'
 
-import Showtime from '../../components/Showtime'
+// TODO: import { theme } from '../../theme'
 
 const useStyles = makeStyles((theme) => ({
     cardRoot: {
@@ -65,71 +62,49 @@ const useStyles = makeStyles((theme) => ({
     }
 }))
 
-interface BodySectionProps { heading: string, contents: string }
-function EventBodySection(props: BodySectionProps) {
-    return (
-        <section>
-            <Typography component="h2" variant="h4" gutterBottom>{props.heading}</Typography>
-            <Typography variant="body1" paragraph>{props.contents}</Typography>
-        </section>
-    )
-}
 
-type EventPageProps = { id: string }
+type EventPageProps = { playname: string }
 export default function EventPage() {
-
-    const { id } = useParams<EventPageProps>()
-    const eventData = appSelector(state => selectEventById(state, id))
     const classes = useStyles()
-    const dispatch = useAppDispatch()
+    const dispatch = useAppDispatch() 
     const [amount, setAmount] = useState(0)
-    if (eventData === undefined) return <p>Whoops! Event not found</p> 
-    const {name: eventName, date, address, pageSections, imgUrl} = eventData
-    const sections = pageSections.map(data => <EventBodySection {...data} />)
 
+    const { playname } = useParams<EventPageProps>()
+    const eventData = appSelector(state => selectEventShowings(state, playname))
+    if (eventData === undefined) return <p>Whoops! Event not found</p>
+    
+    const eventName = eventData[0].playname
+
+// TODO: Re-implement adding ticket to cart.
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault()
-        const ticketData = {
-            id: '',
-            eventId: id,
-            participant: "nobody",
-            concessions: false,
-            showDate: eventData.date
-        }
-        const cartData = {
-            unitPrice: 12.99,
-            quantity: amount,
-            description: eventData.shortDesc,
-            name: eventData.name
-        }
-        dispatch(addTicket(ticketData, cartData))
         dispatch(openSnackbar(`Added ${amount} ticket${amount === 1 ? "" : "s"} to cart!`))
     }
 
+    // TODO: Render showtime & date
+    // TODO: Get image to render
     return (
-        <ThemeProvider theme={theme}>
-            <Card className={classes.cardRoot}>
-                <CardMedia className={classes.heroImage} image={imgUrl}/>
-                <CardContent className={classes.cardContents}>
-                    <Typography component="h1" variant="h3" align="center" gutterBottom>{eventName}</Typography>
-                    <Showtime align='center' date={date} />
-                    <Typography variant="subtitle2" align="center">{address}</Typography>
+        <Card className={classes.cardRoot}>
+            <CardMedia
+                className={classes.heroImage}
+                image={'https://i.guim.co.uk/img/media/b5df93588386c0565177648cf41f3aff72c63400/0_217_5657_3395/master/5657.jpg?width=1200&height=900&quality=85&auto=format&fit=crop&s=a917ce8d52959d36bb08ad29184e2701'}
+            />
+            <CardContent className={classes.cardContents}>
+                <Typography component="h1" variant="h3" align="center" gutterBottom>{eventName}</Typography>
 
-                    <CardActions className={classes.cardActions}>
-                        <TextField
-                            className={classes.qtyField}
-                            required
-                            value={amount || undefined}
-                            onChange={(e) => setAmount(+e.target.value)}
-                            label="Quantity"
-                            type="number"
-                        />
-                        <Button disabled={!amount} color="primary" variant="contained" onClick={handleSubmit}>Get Tickets</Button>
-                    </CardActions>
-                </CardContent>
-            </Card>
-            <main> {sections !== undefined && sections} </main>
-        </ThemeProvider>
+                <CardActions className={classes.cardActions}>
+                    <TextField
+                        className={classes.qtyField}
+                        required
+                        value={amount || undefined}
+                        onChange={(e) => setAmount(+e.target.value)}
+                        label="Quantity"
+                        type="number"
+                    />
+                    <Button disabled={!amount} color="primary" variant="contained" onClick={handleSubmit}>Get Tickets</Button>
+                </CardActions>
+            </CardContent>
+        </Card>
     )
 }
 

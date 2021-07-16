@@ -1,81 +1,71 @@
 import { createSlice, nanoid, PayloadAction } from '@reduxjs/toolkit'
 import { RootState } from '../../app/store'
 
-// TODO: Donation (donor name, message) & discount (discount code) cart item types
-// TODO: Should concessions be a prop of TicketData or a separate Cart Item type?
-export interface TicketData {
-    id: string,
-    eventId: string,
-    participant: string,
-    concessions: boolean,
-    showDate: Date
-}
+// TODO: Load products thunk
 
-// also other stuff that might be shared between cart items like name, description, etc
-export interface CartItem<T extends TicketData> {
+export interface CartItem {
     id: string,
     name: string,
     description: string,
     unitPrice: number,
-    quantity: number,
-    itemData: T,
+    qty: number,
 }
 
-export interface CartState {
-    items: CartItem<TicketData>[],
-    status: 'pending' | 'loading' | 'failed' | 'success',
-    donation: number
+// TODO: Donation type (donor name, message)
+// TODO: Discount code
+// TODO: Auto-apply misc. fees (ex: tax)
+// TODO: Should concessions be a prop of TicketData or a separate Cart Item type?
+export interface TicketItem extends CartItem {
+    eventId: string,
+    concessions: boolean,
+    // showing: Date,
 }
 
-const initialState: CartState = {
-    items: [],
-    status: 'pending',
-    donation: 0
+export interface ShopState {
+    cart: CartItem[],
+    donation: number,
 }
 
-type CartItemProps = { unitPrice: number, quantity: number, description: string, name: string }
+const INITIAL_STATE: ShopState = {
+    cart: [], // { itemId, name, desc, unitPrice, qty }
+    donation: 0,  // { custId, message, amount, date }
+}
 
 const cartSlice = createSlice({
     name: 'cart',
-    initialState, 
+    initialState: INITIAL_STATE, 
     reducers: {
-        addTicket: {
-            reducer: (state, action: PayloadAction<TicketData, string, CartItemProps>) => {
-                const newItem: CartItem<TicketData> = {
-                    id: nanoid(),
-                    ...action.meta,
-                    itemData: { ...action.payload },
-                }
-                state.items.push(newItem)
-            },
-            prepare: (payload: TicketData, cartData: CartItemProps) => {
-                const newTicket: TicketData = {...payload, id: nanoid() }
-                return { payload: newTicket, meta: cartData }
+        addItem: (
+            state,
+            action: PayloadAction<Omit<TicketItem, 'id' | 'unitPrice'>>
+        ) => {
+            const newItem: CartItem = {
+                ...action.payload,
+                id: nanoid(),
+                unitPrice: 12.99,
             }
+            return {
+                ...state,
+                contents: [...state.cart, newItem]
+            }
+        },
+        removeItem: (state, action: PayloadAction<string>) => {
+            return state
+        },
+        editQty: (state, action: PayloadAction<{id: string, qty: number}>) => {
+            return state
         },
         setDonation: (state, action: PayloadAction<number>) => {
             return { ...state, donation: action.payload }
         }
     },
-        // removeTicket: (state, action: PayloadAction<string>) => {
-        //     const qry = action.payload
-        //     const ticketIndex = state.tickets.findIndex(t => t.id === qry)
-        //     console.log('ticket index', ticketIndex)
-        //     console.log('pre splice', state.tickets)
-
-        //     if (ticketIndex > 0) {
-        //         state.tickets.splice(ticketIndex, 1)
-        //         console.log('post splice', state.tickets)
-        //     }
-        // },
-        // editTicket: (state) => {
-        //     console.log('not yet implemented')
-        // }
 })
 
-export const { addTicket, setDonation } = cartSlice.actions
+// Actions
+export const { addItem, removeItem, editQty, setDonation } = cartSlice.actions
 
-export const selectCartItems = (state: RootState) => state.cart.items
-export const selectDonation = (state: RootState) => state.cart.donation
+// Selectors
+export const selectCartContents = (state: RootState) => state.shop.cart
+export const selectDonation = (state: RootState) => state.shop.donation
 
 export default cartSlice.reducer

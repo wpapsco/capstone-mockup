@@ -3,7 +3,10 @@ import express from 'express';
 import {pool} from './db';
 import cors from 'cors';
 import Stripe from "stripe"
-import {CartItem, TicketData} from "../src/features/cart/cartSlice"
+import {
+    CartItem,
+    // TicketData
+} from "../src/features/cart/cartSlice"
 import {CheckoutFormInfo} from "../src/components/CompleteOrderForm"
 
 import passport from "passport"
@@ -84,33 +87,38 @@ app.post('/api/login', passport.authenticate('local'), (req, res) => {
 // Endpoint to get the list of all events that are currently active
 app.get("/api/event-list", async (req, res) => {
   try {
-    const events = await pool.query("select shwtm.id, plays.playname, plays.playdescription,\
-    shwtm.eventdate, shwtm.starttime, shwtm.totalseats, shwtm.availableseats \
-    from showtimes as shwtm join plays on shwtm.playid = plays.id \
-    where plays.active = true and shwtm.salestatus = true");
+    const events = await pool.query(
+        `select shwtm.id, plays.playname, plays.playdescription, plays.image_url,
+        shwtm.eventdate, shwtm.starttime, shwtm.totalseats, shwtm.availableseats
+        from showtimes as shwtm join plays on shwtm.playid = plays.id 
+        where plays.active = true and shwtm.salestatus = true`);
     res.json(events.rows);
   } catch (err) {
     console.error(err.message);
   }
 });
 
+const formatResponse = rowdata => ({
+    eventname: rowdata[0].playname,
+    data: rowdata.map(datum => {
+        const {custid, name, vip, donorbadge, seatingaccom, num_tickets, arrived } = datum
+        return {id: custid, name, vip, donor: donorbadge, accomodations: seatingaccom, num_tickets, arrived }
+    })
+})
 //TODO: find a way to hide api calls like this behind some kind of auth
 app.get('/api/doorlist', isAuthenticated, async (req, res) => {
     try {
-        const doorlist = await pool.query("SELECT * FROM exdoorlist");
-            /* New doorlist query to make use of exisitng tables in the database
-              const querystring = "select cust.id as \"custid\", cust.custname as \"name\", cust.vip, cust.donorbadge, cust.seatingaccom, \
-              plays.id as \"playid\", plays.playname, shwtm.id as \"eventid\", shwtm.eventdate, shwtm.starttime, count(cust.id) as \"num_tickets\" \
-              from showtimes as shwtm left join plays on shwtm.playid = plays.id left join \
-              tickets as tix on shwtm.id = tix.eventid left join tickets as tix2 on tix.ticketno = tix2.ticketno \
-              join customers as cust on tix.custid = cust.id \
-              where shwtm.id = $1 \
-              group by cust.id, name ,plays.id, plays.playname, shwtm.id, shwtm.eventdate, shwtm.starttime \
-              order by name"
-              const values = [3] //static for testing (use req.id or something like that to pass in showtimeid)
-              const doorlist = await pool.query(querystring, values);
-            */
-        res.json(doorlist.rows);
+        const querystring = `select cust.id as "custid", cust.custname as "name", cust.vip, cust.donorbadge, cust.seatingaccom,
+            plays.id as "playid", plays.playname, shwtm.id as "eventid", shwtm.eventdate, shwtm.starttime, tix.checkedin as "arrived", count(cust.id) as "num_tickets"
+            from showtimes as shwtm left join plays on shwtm.playid = plays.id left join
+            tickets as tix on shwtm.id = tix.eventid
+            join customers as cust on tix.custid = cust.id
+            where shwtm.id = $1
+            group by cust.id, name ,plays.id, plays.playname, shwtm.id, shwtm.eventdate, shwtm.starttime, tix.checkedin
+            order by name`;
+        const values = [req.query.showid]
+        const doorlist = await pool.query(querystring, values);
+        res.json(formatResponse(doorlist.rows));
     }
     catch (err) {
         console.error(err.message);
@@ -134,9 +142,9 @@ app.post('/api/newsletter/update', async (req, res) => {
     {
         var body = req.body;
         var values = [body.news_opt, body.volunteer_opt, body.email];
-        const rows = await pool.query("UPDATE public.customers\
-            SET newsletter=$1, \"volunteer list\"=$2\
-            WHERE email = $3;", values);
+        const rows = await pool.query(`UPDATE public.customers
+            SET newsletter=$1, "volunteer list"=$2
+            WHERE email = $3;`, values);
         res.json(rows.rows);
     }
     catch(err)
@@ -152,9 +160,12 @@ app.post('/api/newsletter/insert', async (req, res) => {
         var values = [body.custname, body.email,
                       body.phone, body.custaddress, body.news_opt,
                       false, false, false, body.volunteer_opt];
-        const emails = await pool.query("INSERT INTO public.customers(\
-            custname, email, phone, custaddress, newsletter, donorbadge, seatingaccom, vip, \"volunteer list\")\
-            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9);", values);
+        const emails = await pool.query(
+            `INSERT INTO public.customers(
+            custname, email, phone, custaddress, newsletter, donorbadge, seatingaccom, vip, "volunteer list")
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9);`,
+            values
+        );
         res.json(emails.rows);
     }
     catch(err)
@@ -170,7 +181,7 @@ app.post('/api/checkout', async (req, res) => {
     // right now it gets the price info from the request made by the client.
     // THIS IS WRONG it needs to look up the price in the database given
     // the id of the show/event/whatever. PRICES CANNOT COME FROM CLIENTS!!
-    const data: CartItem<TicketData>[] = req.body.cartItems;
+    const data: CartItem[] = req.body.cartItems;
     
     // TODO: submit form data to DB
     // Adding a customer to the customer table based on form data:
@@ -228,7 +239,7 @@ app.post('/api/checkout', async (req, res) => {
                 // the price here needs to be fetched from the DB instead
                 unit_amount: item.unitPrice * 100
             },
-            quantity: item.quantity
+            quantity: item.qty
         })).concat(donationItem),
         mode: "payment",
         success_url: "http://localhost:3000/success",
@@ -239,7 +250,7 @@ app.post('/api/checkout', async (req, res) => {
     // currently this isnt checking if the payment is successfully processed on the stripe page
     // we will eventually change this to process after a successful stripe payment
     // using payment_status = "unpaid" as a test. We will change this later.
-    if((session.payment_status == "unpaid") || (session.payment_status == "paid")){
+    if((session.payment_status === "unpaid") || (session.payment_status === "paid")){
         try{
             const addedTicket = await pool.query(
             `INSERT INTO tickets(type, eventid, custid, paid, active) 
