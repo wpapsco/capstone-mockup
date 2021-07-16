@@ -3,10 +3,6 @@
  * Revision: 7/16/2021
  */
 
-// Todo: @nocheckin
-// Require admin signin
-// async backdrop while making the requests
-
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
