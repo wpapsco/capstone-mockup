@@ -169,5 +169,31 @@ app.post("/api/create-event", (req, res) => {
     console.log("Event Name", req.body.eventName);
 });
 
+app.get('/api/email_subscriptions/newsletter', async (req, res) =>
+{
+    try
+    {
+        const emails = await pool.query("Select email from customers where newsletter = True");
+        res.json(emails.rows);
+    }
+    catch(err)
+    {
+        console.error(err.message);
+    }
+});
+
+app.get('/api/email_subscriptions/volunteers', async (req, res) =>
+{
+    try
+    {
+        const emails = await pool.query("Select email from customers where \"volunteer list\" = True");
+        res.json(emails.rows);
+    }
+    catch(err)
+    {
+        console.error(err.message);
+    }
+});
+
 // tslint:disable-next-line:no-console
 app.listen(port, () => console.log(`Listening on port ${port}`));

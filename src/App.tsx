@@ -7,6 +7,7 @@ import CreateEvents from "./components/CreateEvents";
 import DeleteEvents from "./components/DeleteEvents";
 import CssBaseline from '@material-ui/core/CssBaseline';
 import AdminPannel from "./features/admin/AdminPanel";
+import EmailSubscriptions from "./features/admin/EmailSubscriptions";
 import Button from '@material-ui/core/Button';
 import Navbar from './app/Navbar';
 import {
@@ -92,6 +93,9 @@ function App() {
 
                     <Route path="/admin/admin-panel">
                         <AdminPannel />
+                    </Route>
+                    <Route path="/admin/email_subscriptions">
+                        <EmailSubscriptions />
                     </Route>
 
                     <Route exact path="/" >
