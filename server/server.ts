@@ -103,20 +103,21 @@ const formatDoorlistResponse = rowdata => ({
     eventdate: rowdata[0].eventdate,
     starttime: rowdata[0].starttime,
     data: rowdata.map(datum => {
-        const {custid, name, vip, donorbadge, seatingaccom, num_tickets, arrived } = datum
-        return {id: custid, name, vip, donor: donorbadge, accomodations: seatingaccom, num_tickets, arrived }
+        const {custid, name, vip, donorbadge, seatingaccom, num_tickets, checkedin, ticketno } = datum
+        return {id: custid, name, vip, donorbadge, accomodations: seatingaccom, num_tickets, checkedin, ticketno }
     })
 })
-//TODO: find a way to hide api calls like this behind some kind of auth
+
+// TODO: Add ticket ID to row data
 app.get('/api/doorlist', isAuthenticated, async (req, res) => {
     try {
         const querystring = `select cust.id as "custid", cust.custname as "name", cust.vip, cust.donorbadge, cust.seatingaccom,
-            plays.id as "playid", plays.playname, shwtm.id as "eventid", shwtm.eventdate, shwtm.starttime, tix.checkedin as "arrived", count(cust.id) as "num_tickets"
+            plays.id as "playid", plays.playname, shwtm.id as "eventid", shwtm.eventdate, shwtm.starttime, tix.checkedin, tix.ticketno, count(cust.id) as "num_tickets"
             from showtimes as shwtm left join plays on shwtm.playid = plays.id left join
             tickets as tix on shwtm.id = tix.eventid
             join customers as cust on tix.custid = cust.id
             where shwtm.id = $1
-            group by cust.id, name ,plays.id, plays.playname, shwtm.id, shwtm.eventdate, shwtm.starttime, tix.checkedin
+            group by cust.id, name ,plays.id, plays.playname, shwtm.id, shwtm.eventdate, shwtm.starttime, tix.checkedin, tix.ticketno
             order by name`;
         const values = [req.query.showid]
         const doorlist = await pool.query(querystring, values);

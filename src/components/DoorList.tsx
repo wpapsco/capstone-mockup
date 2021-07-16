@@ -13,13 +13,14 @@ export default function DoorList() {
     const { showid } = useParams<DoorListProps>()
     const renderCheckbox = ((params: CellParams) => <Checkbox checked={params.value as boolean} />)
     
+    // TODO: handle checkbox click with ticketno and PUT call to /api/checkin/:ticketno
     const columns = [
-        { field: "name", headerName: "Name", width: 150},
+        { field: "name", headerName: "Name", width: 200},
         { field: "vip", headerName: "VIP", width: 100, renderCell: renderCheckbox},
-        { field: "donor", headerName: "Donor", width: 150, renderCell: renderCheckbox},
-        { field: "accomodations", headerName: "Seating Accomodations", width: 240, renderCell: renderCheckbox},
-        { field: "num_tickets", headerName: "Tickets", width: 150},
-        { field: "arrived", headerName: "Arrived", width: 150, renderCell: (params: any) => (
+        { field: "donorbadge", headerName: "Donor", width: 100, renderCell: renderCheckbox},
+        { field: "accomodations", headerName: "Seating Accomodations", width: 180, renderCell: renderCheckbox},
+        { field: "num_tickets", headerName: "Tickets", width: 100},
+        { field: "checkedin", headerName: "Arrived", width: 100, renderCell: (params: any) => (
             <Checkbox color="primary" defaultChecked={(params.value as boolean)} />
         )}
     ]
