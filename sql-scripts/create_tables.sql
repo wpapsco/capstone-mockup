@@ -107,3 +107,9 @@ create table tickets (
     foreign key(eventId) references showtimes(id),
     foreign key(custId) references customers(id)
 );
+
+create table users (
+    id serial primary key,
+    username varchar(255),
+    pass_hash varchar(255)
+);
