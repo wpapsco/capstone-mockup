@@ -1,48 +1,78 @@
-import { CellParams, DataGrid } from '@material-ui/data-grid';
-import { Checkbox, Typography } from '@material-ui/core';
-import { useEffect, useState } from 'react';
+import { CellParams, DataGrid } from '@material-ui/data-grid'
+import { Checkbox, Typography } from '@material-ui/core'
+import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
-import RequireLogin from './RequireLogin';
-import { titleCase } from '../utils';
+import RequireLogin from './RequireLogin'
+import { titleCase, dayMonthDate, militaryToCivilian } from '../utils'
 
+const renderCheckbox = ((params: CellParams) => <Checkbox checked={params.value as boolean} />)
 
+const checkInGuest = async (isCheckedIn: boolean, ticketID: string) => {
+    try {
+        const res = await fetch(`/api/checkin`, {
+            credentials: 'include',
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ isCheckedIn, ticketID })
+        })
+        return res.json()
+    }
+    catch (err) {
+        console.log(err.message)
+    }
+}
+
+const renderCheckin = ((params: CellParams) =>
+    <Checkbox
+        color='primary'
+        defaultChecked={params.value as boolean}
+        onChange={e => checkInGuest(e.target.checked, params.getValue('ticketno') as string)}
+    />)
+
+const columns = [
+    { field: "name", headerName: "Name", width: 200 },
+    { field: "vip", headerName: "VIP", width: 100, renderCell: renderCheckbox },
+    { field: "donorbadge", headerName: "Donor", width: 100, renderCell: renderCheckbox },
+    { field: "accomodations", headerName: "Seating Accomodations", width: 180, renderCell: renderCheckbox },
+    { field: "num_tickets", headerName: "Tickets", width: 100 },
+    { field: "checkedin", headerName: "Checked In", width: 100, renderCell: renderCheckin },
+]
 
 type DoorListProps = {showid: string}
 export default function DoorList() {
 
     const { showid } = useParams<DoorListProps>()
-    const renderCheckbox = ((params: CellParams) => <Checkbox checked={params.value as boolean} />)
-    
-    const columns = [
-        { field: "name", headerName: "Name", width: 150},
-        { field: "vip", headerName: "VIP", width: 100, renderCell: renderCheckbox},
-        { field: "donor", headerName: "Donor", width: 150, renderCell: renderCheckbox},
-        { field: "accomodations", headerName: "Seating Accomodations", width: 240, renderCell: renderCheckbox},
-        { field: "num_tickets", headerName: "Tickets", width: 150},
-        { field: "arrived", headerName: "Arrived", width: 150, renderCell: (params: any) => (
-            <Checkbox color="primary" defaultChecked={(params.value as boolean)} />
-        )}
-    ]
+    const [doorList, setDoorList] = useState([])
+    const [eventName, setEventName] = useState('')
+    const [date, setDate] = useState('')
+    const [time, setTime] = useState('')
 
-    const [doorList, setDoorList] = useState([]);
-    const [eventName, setEventName] = useState('');
     const getDoorList = async () => {
         try {
-            const response = await fetch(`/api/doorlist?showid=${showid}`, {credentials: "include", method: "GET"});
-            const jsonData = await response.json();
-            setDoorList(jsonData.data);
-            setEventName(jsonData.eventname);
-        } catch (error) {
-            console.error(error.message);
-        }
-    };
+            const response = await fetch(`/api/doorlist?showid=${showid}`, {credentials: "include", method: "GET"})
+            const jsonData = await response.json()
 
-    useEffect(() => { getDoorList() }, []);
+            // doorlistData.data {id: custid, name, vip, donor: donorbadge, accomodations: seatingaccom, num_tickets, checkedin, ticketno }
+            setDoorList(jsonData.data)
+            setEventName(jsonData.eventname)
+            setDate(dayMonthDate(jsonData.eventdate))
+            setTime(militaryToCivilian(jsonData.starttime))
+        } catch (error) {
+            console.error(error.message)
+        }
+    }
+
+    useEffect(() => { getDoorList() }, [])
+
     return (
         <RequireLogin>
             <Typography variant="h2">{`Showing: ${titleCase(eventName)}`}</Typography>
-            <Typography gutterBottom variant="h5">5/21/2021 5:00PM</Typography>
-            <DataGrid autoHeight rows={doorList} columns={columns} pageSize={10}/>
+            <Typography gutterBottom variant="h5">{`${date}, ${time}`}</Typography>
+            <DataGrid
+                autoHeight
+                rows={doorList}
+                columns={columns}
+                pageSize={10}/>
         </RequireLogin>
-    );
+    )
 }
