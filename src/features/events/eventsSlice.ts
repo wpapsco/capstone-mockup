@@ -1,10 +1,6 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { RootState } from '../../app/store'
-import {
-    urlFriendly,
-    groupByKey,
-    ItemGroup,
-} from '../../utils'
+import { Dictionary } from '../../utils'
 
 export interface Event {
      id: number,
@@ -16,10 +12,27 @@ export interface Event {
      totalseats: number,
      availableseats: number,
 }
-export type Showing = Omit<Event, "playname"|"playdescription">
 
-export const groupPlays = (events: Event[]): ItemGroup<Event> =>
-    groupByKey<Event>(events, 'playname', urlFriendly)
+export type Showing = Omit<Event, "playname"|"playdescription"|"image_url">
+
+export interface Play {
+    playname: string,
+    playdescription?: string,
+    image_url: string,
+    showings: Showing[],
+}
+
+
+export const aggregateShowings = (events: Event[]) =>
+    events.reduce<Dictionary<Play>>((plays, event) => {
+        const { playname, playdescription, image_url, ...showing } = event
+        const key = playname.replace(/ /g, '_')
+        return (plays[key]) ?
+            { ...plays, [key]: {...plays[key], showings: [...plays[key].showings, showing] as Showing[]}} :
+            { ...plays, [key]: { playname, playdescription, image_url, showings: [showing] }}
+        },
+        {}
+    )
 
 export const fetchEventData = createAsyncThunk(
     'events/fetchAll',
@@ -27,7 +40,7 @@ export const fetchEventData = createAsyncThunk(
         try {
             const res = await fetch('/api/event-list')
             const allEvents: Event[] = await res.json()
-            return groupPlays(allEvents)
+            return aggregateShowings(allEvents)
         } catch (err) {
             console.error(err.message)
         }
@@ -35,7 +48,7 @@ export const fetchEventData = createAsyncThunk(
 )
 
 export interface EventsState {
-    data: ItemGroup<Event>,
+    data: Dictionary<Play>,
     status: 'idle' | 'loading' | 'success' | 'failed'
 }
 
@@ -66,7 +79,7 @@ const eventsSlice = createSlice({
 // Returns {playname, playdescription, image_url}[]
 export const selectAllEvents = (state: RootState) => 
     Object.keys(state.events.data).map(key => {
-        const { playname, playdescription, image_url } = state.events.data[key][0]
+        const { playname, playdescription, image_url } = state.events.data[key]
         return {
             playname,
             playdescription: (playdescription) ?
@@ -75,10 +88,13 @@ export const selectAllEvents = (state: RootState) =>
         }
     })
 
-// Returns list of showings for the event
-export const selectEventShowings =
-    (state: RootState, name: string): Event[] | undefined => (state.events.data) ?
-        state.events.data[name] :
-        undefined
+// Returns list of showings for given event, or undefined if play doesn't exist
+export const selectEventData =
+    (state: RootState, name: string): Play | undefined => {
+        const key = name.replace(/ /g, '_')
+        return (state.events.data[key]) ?
+            state.events.data[key] :
+            undefined
+    }
 
 export default eventsSlice.reducer
