@@ -89,11 +89,11 @@ export const selectAllEvents = (state: RootState) =>
     })
 
 // Returns list of showings for given event, or undefined if play doesn't exist
-export const selectEventShowings =
-    (state: RootState, name: string): Showing[] | undefined => {
+export const selectEventData =
+    (state: RootState, name: string): Play | undefined => {
         const key = name.replace(/ /g, '_')
         return (state.events.data[key]) ?
-            state.events.data[key].showings :
+            state.events.data[key] :
             undefined
     }
 
