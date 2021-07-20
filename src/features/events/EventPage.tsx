@@ -3,56 +3,11 @@ import { useAppDispatch } from '../../app/hooks'
 import { appSelector } from '../../app/hooks'
 import { useParams } from 'react-router-dom'
 import { selectEventData, Showing } from './eventsSlice'
-
-import Typography from '@material-ui/core/Typography';
-import { makeStyles } from '@material-ui/styles'
-import Card from '@material-ui/core/Card';
-import CardMedia from '@material-ui/core/CardMedia'
-import CardContent from '@material-ui/core/CardContent'
-import CardActions from '@material-ui/core/CardActions'
-import Button from '@material-ui/core/Button'
-import TextField from '@material-ui/core/TextField'
+import eventPageStyles from './eventPageStyles'
 import { openSnackbar } from '../snackbarSlice'
 import { titleCase, dayMonthDate, militaryToCivilian } from '../../utils'
 
-const useStyles = makeStyles((theme) => ({
-    cardRoot: {
-        display: 'flex',
-        height: '400px',
-        marginBottom: 40,
-    },
-    cardContents: {
-        display: 'flex',
-        justifyContent: 'center',
-        flexDirection: 'column',
-        flex: 'auto',
-    },
-    heroImage: {
-        width: '500px',
-    },
-    cardActions: {
-        display: 'flex',
-        alignItems: 'baseline',
-        justifyContent: 'center',
-    },  
-    qtyField: {
-        maxWidth: '100px',
-    },
-    showtime: {
-        textAlign: 'center'
-    }
-}))
-
-const ShowingRow = (props: Showing) =>
-    <li>{`${dayMonthDate(props.eventdate)}, ${militaryToCivilian(props.starttime)}: ${props.availableseats} tickets available`}</li>
-    
-const ShowingsList = (props: {showings: Showing[]}) =>
-    <ul>
-        {props.showings.map(sh => <ShowingRow key={sh.id} {...sh} />)}
-    </ul>
-
-
-type EventPageProps = { playKey: string }
+type EventPageProps = { eventname: string }
 const EventPage = () => {
     const classes = useStyles()
     const dispatch = useAppDispatch() 
