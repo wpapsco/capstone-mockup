@@ -59,7 +59,8 @@ const EventPage = () => {
     const [amount, setAmount] = useState(0)
     const { playKey } = useParams<EventPageProps>()
 
-    const eventData = appSelector(state => selectEventData(state, playKey))
+    const { eventname } = useParams<EventPageProps>()
+    const eventData = appSelector(state => selectEventData(state, eventname))
     if (eventData === undefined) return <p>Whoops! Event not found</p>
     
     const { playname, playdescription, image_url, showings } = eventData
