@@ -43,6 +43,7 @@ const EventPage = () => {
                 Select a showing
             </InputLabel>
             <Select
+                required
                 labelId="select-showing-label"
                 id="select-showing"
                 value={showingId}
@@ -57,6 +58,7 @@ const EventPage = () => {
             </Select>
         </FormControl>
 
+    // TODO: Quantity validation (positive integers only)
     return (
         <article>
             <Card className={classes.cardRoot}>
