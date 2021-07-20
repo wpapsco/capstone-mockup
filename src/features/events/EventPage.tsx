@@ -1,23 +1,34 @@
 import React, { useState } from 'react'
-import { useAppDispatch } from '../../app/hooks'
-import { appSelector } from '../../app/hooks'
+import { useAppDispatch, appSelector } from '../../app/hooks'
 import { useParams } from 'react-router-dom'
 import { selectEventData, Showing } from './eventsSlice'
 import eventPageStyles from './eventPageStyles'
+import {
+    Card,
+    CardMedia,
+    CardContent,
+    CardActions,
+    Button,
+    TextField,
+    Typography,
+    InputLabel,
+    Select,
+    MenuItem,
+    FormControl
+} from '@material-ui/core';
 import { openSnackbar } from '../snackbarSlice'
 import { titleCase, dayMonthDate, militaryToCivilian } from '../../utils'
 
 type EventPageProps = { eventname: string }
 const EventPage = () => {
-    const classes = useStyles()
+    const classes = eventPageStyles()
     const dispatch = useAppDispatch() 
     const [amount, setAmount] = useState(0)
-    const { playKey } = useParams<EventPageProps>()
+    const [showingId, setShowingId] = useState(0)
 
     const { eventname } = useParams<EventPageProps>()
     const eventData = appSelector(state => selectEventData(state, eventname))
     if (eventData === undefined) return <p>Whoops! Event not found</p>
-    
     const { playname, playdescription, image_url, showings } = eventData
 
     // TODO: Re-implement adding ticket to cart.
@@ -26,8 +37,26 @@ const EventPage = () => {
         dispatch(openSnackbar(`Added ${amount} ticket${amount === 1 ? "" : "s"} to cart!`))
     }
 
-    // TODO: Render showtime & date
-    // TODO: Get image to render
+    const ShowingsList = (props: {showings: Showing[]}) =>
+        <FormControl className={classes.formControl}>
+            <InputLabel shrink id="select-showing-label">
+                Select a showing
+            </InputLabel>
+            <Select
+                labelId="select-showing-label"
+                id="select-showing"
+                value={showingId}
+                onChange={e => setShowingId(e.target.value as number)}
+                className={classes.formInput}
+            >
+                {props.showings.map((sh: Showing) =>
+                    <MenuItem key={sh.id} value={sh.id}>
+                        {dayMonthDate(sh.eventdate) + ' - ' + militaryToCivilian(sh.starttime)}
+                    </MenuItem>
+                )}
+            </Select>
+        </FormControl>
+
     return (
         <article>
             <Card className={classes.cardRoot}>
@@ -37,25 +66,34 @@ const EventPage = () => {
                 />
                 <CardContent className={classes.cardContents}>
                     <Typography component="h1" variant="h3" align="center" gutterBottom>{titleCase(playname)}</Typography>
-
                     <CardActions className={classes.cardActions}>
-                        <TextField
-                            className={classes.qtyField}
-                            required
-                            value={amount || undefined}
-                            onChange={(e) => setAmount(+e.target.value)}
-                            label="Quantity"
-                            type="number"
-                        />
-                        <Button disabled={!amount} color="primary" variant="contained" onClick={handleSubmit}>Get Tickets</Button>
+                        <ShowingsList showings={showings} />
+                        <FormControl className={classes.formControl}>
+                            <TextField
+                                className={classes.formInput}
+                                required
+                                value={amount || undefined}
+                                onChange={(e) => setAmount(+e.target.value)}
+                                label="Quantity"
+                                type="number"
+                            />
+                        </FormControl>
+                        <FormControl className={classes.formControl}>
+                            <Button
+                                disabled={!amount || !showingId}
+                                color="primary"
+                                variant="contained"
+                                onClick={handleSubmit}
+                            >
+                                Get Tickets
+                            </Button>
+                        </FormControl>
                     </CardActions>
                 </CardContent>
             </Card>
             <main>
                 <Typography component="h2" variant="h4">Event Description</Typography>
                 <p>{(playdescription) ? playdescription : ''}</p>
-                <Typography component="h2" variant="h4">Showings</Typography>
-                <ShowingsList showings={showings} />
             </main>
         </article>
     )
