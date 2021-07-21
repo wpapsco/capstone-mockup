@@ -16,7 +16,6 @@ import {
      Redirect,
 } from 'react-router-dom';
 import Cart from './features/cart/Cart';
-import EventPage from './features/events/EventPage'
 import NewsletterCreate from "./features/newsletter/NewsletterCreate";
 import NewsletterSignup from "./features/newsletter/NewsletterSignup";
 import CheckoutSuccess from "./components/CheckoutSuccess";
