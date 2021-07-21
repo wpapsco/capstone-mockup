@@ -1,5 +1,5 @@
 import { Event, selectAllEvents, aggregateShowings } from "./eventsSlice";
-import { urlFriendly, titleCase, militaryToCivilian, dayMonthDate } from '../../utils'
+import { titleCase, militaryToCivilian, dayMonthDate } from '../../utils'
 
 const testEventData: Event[] = [
     {
@@ -113,10 +113,6 @@ describe('Event slice utils', () => {
 
     it('aggregateShowings', () => {
         expect(aggregateShowings(testEventData)).toEqual(PlaysV2)
-    })
-
-    it('urlFriendly', () => {
-        expect(urlFriendly('foo bar baz')).toEqual('foo_bar_baz')
     })
 
     it('titleCase', () => {
