@@ -84,13 +84,13 @@ export default function EmailSubscriptions()
          }
       }
 
-      download("newsletter.txt", string_builder);
+      download("newsletter.csv", string_builder);
    }
 
    const volunteer_download = async (event:React.FormEvent) =>
    {
       event.preventDefault();
-
+      
       var json_data;
       try
       {
@@ -102,7 +102,7 @@ export default function EmailSubscriptions()
          // Todo(jesse): Do something
          return;
       }
-
+      
       var string_builder = "";
       for(var it_index in json_data)
       {
@@ -117,7 +117,7 @@ export default function EmailSubscriptions()
          }
       }
 
-      download("volunteers.txt", string_builder);
+      download("volunteers.csv", string_builder);
    };
 
    return (
