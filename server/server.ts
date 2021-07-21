@@ -280,15 +280,25 @@ app.post('/api/checkout', async (req, res) => {
 });
 
 // End point for the create event page. 
-app.post("/api/create-event", (req, res) => {
-    console.log("Event Name", req.body.eventName);
+app.post("/api/create-event", async (req, res) => {
+    try {
+        let body = req.body;
+        const values = [body.eventName, body.eventDate, body.eventTime, body.eventTickets, null];
+        console.log(values);
+        // const query = "insert into showtimes (playid, eventdate, starttime, totalseats, availableseats, purchaseuri)\
+        // values ($1, $2, $3, $4, $4, $5);"
+        // const create_event = await pool.query(query, values);
+        // res.json(create_event);
+    } catch (error) {
+        console.error(error);
+    }
 });
 
 // Updates salestatus in showtimes table when given an id, date, and time
 app.post("/api/delete-event", async (req, res) => {
     try {
         let body = req.body;
-        let values = [body.id, body.eventdate, body.starttime];
+        const values = [body.id, body.eventdate, body.starttime];
         const query = "update showtimes set salestatus = false where id = $1 and eventdate = $2 and starttime = $3";
         const remove_event = await pool.query(query, values);
         res.json(remove_event.rows)
@@ -296,6 +306,70 @@ app.post("/api/delete-event", async (req, res) => {
         console.error(error);
     }
 })
+
+// Get all ticket types
+app.get("/api/tickets/type", async (req, res) => {
+    try{
+        const query = "select * from tickettype";
+        const get_all_tickets = await pool.query(query);
+        res.json(get_all_tickets.rows);
+    } catch (error) {
+        console.error(error);
+    }
+})
+
+// Set which tickets can be sold for an event
+app.post("/api/set-tickets", async (req, res) => {
+    try {
+        let body = req.body;
+        const values = [body.showid, body.ticket_type];
+        const query = "insert into linkedtickets (showid, type) values ($1, $2)";
+        const set_tickets = await pool.query(query, values);
+        res.json(set_tickets);
+    } catch (error) {
+        console.error(error);
+    }
+})
+
+// Get list of which tickets can be purchased for the show along with its prices
+app.get("/api/show-tickets", async (req, res) => {
+    try {
+        const query = "select tt.name, tt.price, tt.concessions from linkedtickets lt join\
+                        tickettype tt on lt.ticket_type = tt.id where lt.showid = $1";
+        const values = [req.body.id];
+        const available_tickets = await pool.query(query, values);
+        res.json(available_tickets);
+        console.log(available_tickets.rows);
+    } catch (error) {
+        console.error(error);
+    }
+})
+
+app.get('/api/email_subscriptions/newsletter', isAuthenticated, async (req, res) =>
+{
+    try
+    {
+        const emails = await pool.query("Select email from customers where newsletter = True");
+        res.json(emails.rows);
+    }
+    catch(err)
+    {
+        console.error(err.message);
+    }
+});
+
+app.get('/api/email_subscriptions/volunteers', isAuthenticated, async (req, res) =>
+{
+    try
+    {
+        const emails = await pool.query("Select email from customers where \"volunteer list\" = True");
+        res.json(emails.rows);
+    }
+    catch(err)
+    {
+        console.error(err.message);
+    }
+});
 
 // tslint:disable-next-line:no-console
 app.listen(port, () => console.log(`Listening on port ${port}`));

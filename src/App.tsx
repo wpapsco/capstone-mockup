@@ -8,6 +8,7 @@ import DoorList from "./components/DoorList";
 
 import CssBaseline from '@material-ui/core/CssBaseline';
 import AdminPannel from "./features/admin/AdminPanel";
+import EmailSubscriptions from "./features/admin/EmailSubscriptions";
 import Navbar from './app/Navbar';
 import {
      Switch,
@@ -15,7 +16,8 @@ import {
      Redirect,
 } from 'react-router-dom';
 import Cart from './features/cart/Cart';
-import NewsletterPage from "./features/newsletter/NewsletterPage";
+import NewsletterCreate from "./features/newsletter/NewsletterCreate";
+import NewsletterSignup from "./features/newsletter/NewsletterSignup";
 import CheckoutSuccess from "./components/CheckoutSuccess";
 import { Container } from "@material-ui/core";
 import Snackbar from "@material-ui/core/Snackbar";
@@ -81,12 +83,18 @@ function App() {
                             <DeleteEvents />
                         </Route>
 
-                        <Route path="/newsletter">
-                            <NewsletterPage />
+                        <Route path="/admin/newsletter_create">
+                        <NewsletterCreate />
+                        </Route>
+                        <Route path="/newsletter_signup">
+                            <NewsletterSignup />
                         </Route>
 
                         <Route path="/admin/admin-panel">
                             <AdminPannel />
+                        </Route>
+                        <Route path="/admin/email_subscriptions">
+                            <EmailSubscriptions />
                         </Route>
 
                         <Route path="/doorlist/:showid">
