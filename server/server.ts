@@ -345,5 +345,31 @@ app.get("/api/show-tickets", async (req, res) => {
     }
 })
 
+app.get('/api/email_subscriptions/newsletter', isAuthenticated, async (req, res) =>
+{
+    try
+    {
+        const emails = await pool.query("Select email from customers where newsletter = True");
+        res.json(emails.rows);
+    }
+    catch(err)
+    {
+        console.error(err.message);
+    }
+});
+
+app.get('/api/email_subscriptions/volunteers', isAuthenticated, async (req, res) =>
+{
+    try
+    {
+        const emails = await pool.query("Select email from customers where \"volunteer list\" = True");
+        res.json(emails.rows);
+    }
+    catch(err)
+    {
+        console.error(err.message);
+    }
+});
+
 // tslint:disable-next-line:no-console
 app.listen(port, () => console.log(`Listening on port ${port}`));

@@ -118,12 +118,12 @@ export default function AdminPannel() {
                         Newsletter
                     </Typography>
                     <List>
-                        <ListItem button>
+                        <ListItem button component="a" href="/admin/newsletter_create">
                             <ListItemIcon>
                                 <AddBox />
                             </ListItemIcon>
                             <ListItemText primary="Create newsletter" />
-                        </ListItem>  
+                        </ListItem>
                     </List>
                 </Card>
             </Grid>
