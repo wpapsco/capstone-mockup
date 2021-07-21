@@ -9,6 +9,7 @@ export interface CartItem {
     description: string,
     unitPrice: number,
     qty: number,
+    type: string,        //TODO: 'ticket' | 'seasonPackage' | '
 }
 
 // TODO: Donation type (donor name, message)
@@ -16,9 +17,8 @@ export interface CartItem {
 // TODO: Auto-apply misc. fees (ex: tax)
 // TODO: Should concessions be a prop of TicketData or a separate Cart Item type?
 export interface TicketItem extends CartItem {
-    eventId: string,
+    type: 'ticket',
     concessions: boolean,
-    // showing: Date,
 }
 
 export interface ShopState {
@@ -31,17 +31,32 @@ const INITIAL_STATE: ShopState = {
     donation: 0,  // { custId, message, amount, date }
 }
 
+type SHOWID = string
+
 const cartSlice = createSlice({
     name: 'cart',
     initialState: INITIAL_STATE, 
     reducers: {
-        addItem: (
-            state,
-            action: PayloadAction<Omit<TicketItem, 'id' | 'unitPrice'>>
-        ) => {
+        addTicket: (state, action: PayloadAction<{eventId: SHOWID, concessions: boolean}>) => ({
+            ...state,
+            cart: [
+                ...state.cart,
+                {
+                    id: action.payload.eventId,
+                    type: 'ticket',
+                    name: 'Ticket(s)',
+                    description: 'General admission',
+                    unitPrice: 15.99,
+                    qty: 1,
+                    concessions: action.payload.concessions,
+                } as TicketItem
+            ]
+        }),
+        addItem: (state, action: PayloadAction<Omit<CartItem,'id'|'type'|'unitPrice'>>) => {
             const newItem: CartItem = {
                 ...action.payload,
                 id: nanoid(),
+                type: 'ticket',
                 unitPrice: 12.99,
             }
             return {
@@ -49,12 +64,18 @@ const cartSlice = createSlice({
                 contents: [...state.cart, newItem]
             }
         },
-        removeItem: (state, action: PayloadAction<string>) => {
-            return state
-        },
-        editQty: (state, action: PayloadAction<{id: string, qty: number}>) => {
-            return state
-        },
+        removeItem: (state, action: PayloadAction<SHOWID>) => ({
+            ...state,
+            cart: state.cart.filter(item => item.id!==action.payload)
+        }),
+        editQty: (state, action: PayloadAction<{id: string, qty: number}>): ShopState => ({
+            ...state,
+            cart: state.cart.map(item => {
+                return (item.id === action.payload.id) ?
+                   {...item, qty: action.payload.qty} :
+                   item
+            })
+        }),
         setDonation: (state, action: PayloadAction<number>) => {
             return { ...state, donation: action.payload }
         }
@@ -62,7 +83,7 @@ const cartSlice = createSlice({
 })
 
 // Actions
-export const { addItem, removeItem, editQty, setDonation } = cartSlice.actions
+export const { addTicket, addItem, removeItem, editQty, setDonation } = cartSlice.actions
 
 // Selectors
 export const selectCartContents = (state: RootState) => state.shop.cart
