@@ -48,7 +48,7 @@ function App() {
                 <div id="maincontainer">
                     <Navbar />
                     <Switch>
-                        <Route path="/events/:name">
+                        <Route path="/events/:eventname">
                             <EventPage />
                         </Route>
 

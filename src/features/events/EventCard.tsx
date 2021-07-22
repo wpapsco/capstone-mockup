@@ -2,6 +2,7 @@
 import { titleCase } from '../../utils'
 import { Card, CardContent, CardMedia, Button } from '@material-ui/core'
 import { Theme, makeStyles, useTheme } from '@material-ui/core/styles'
+import { Link } from 'react-router-dom'
 
 const useStyles = makeStyles((theme: Theme) => ({
     root: {
@@ -47,13 +48,15 @@ const EventCard = (props: {
                     props.playdescription :
                     'No description available.'
                 }</p>
-                <Button
-                    className={classes.callToAction}
-                    variant="contained"
-                    color="primary"
-                >
-                    See Showings
-                </Button>
+                <Link to={`/events/${props.playname.replace(/ /g, '_')}`}>
+                    <Button
+                        className={classes.callToAction}
+                        variant="contained"
+                        color="primary"
+                    >
+                        See Showings
+                    </Button>
+                </Link>
             </CardContent>
             <CardMedia
                 className={classes.cardMedia}
