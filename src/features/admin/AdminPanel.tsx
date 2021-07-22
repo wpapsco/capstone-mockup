@@ -14,13 +14,14 @@ import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
 import MeetingRoomIcon from '@material-ui/icons/MeetingRoom';
 import { Typography } from "@material-ui/core";
 
-
 const useStyles = makeStyles({
     root: {
         
     },
     title: {
         fontSize: 24,
+        display: "flex",
+        padding: "7px"
     },
     card: {
         display: "inline-flex",
@@ -30,7 +31,8 @@ const useStyles = makeStyles({
     }
 });
 
-export default function AdminPannel() {
+
+export default function AdminPanel() {
     const classes = useStyles();
 
     return (
@@ -78,25 +80,25 @@ export default function AdminPannel() {
                         Events 
                     </Typography>
                     <List>
-                        <ListItem button>
+                        <ListItem button component="a" href="/admin/CreateEvents">
                             <ListItemIcon>
                                 <AddBox />
                             </ListItemIcon>
                             <ListItemText primary="Create an event" />
                         </ListItem>
-                        <ListItem button>
+                        <ListItem button component="a" href="/admin/DeleteEvents">
                             <ListItemIcon>
                                 <DeleteForever />
                             </ListItemIcon>
                             <ListItemText primary="Delete an event" />
                         </ListItem>
-                        <ListItem button>
+                        <ListItem button component="a" href="/events" >
                             <ListItemIcon>
                                 <ViewListIcon />
                             </ListItemIcon>
                             <ListItemText primary="View events" />
                         </ListItem>
-                        <ListItem button>
+                        <ListItem button component="a" href="/admin/doorlist">
                             <ListItemIcon>
                                 <MeetingRoomIcon />
                             </ListItemIcon>
