@@ -1,5 +1,5 @@
-import { appSelector } from '../../app/hooks'
-import { selectCartContents, CartItem } from './cartSlice'
+import { appSelector, useAppDispatch } from '../../app/hooks'
+import { selectCartContents, CartItem, editQty } from './cartSlice'
 
 import Paper from '@material-ui/core/Paper'
 import { createStyles, makeStyles } from '@material-ui/core/styles'
@@ -35,13 +35,13 @@ const useStyles = makeStyles(() =>
 
 // TODO: quantity setter component
 const CartRow = (props: CartItem) => {
+    const dispatch = useAppDispatch()
     const classes = useStyles(theme)
-    const [qty, setQty] = useState(props.qty)
-    const [cost, setCost] = useState(props.unitPrice * qty)
+    const [cost, setCost] = useState(props.unitPrice * props.qty)
 
     useEffect(() => {
-        setCost(qty * props.unitPrice)
-    }, [qty])
+        setCost(props.qty * props.unitPrice)
+    }, [props.qty])
     
     return (
         <Paper elevation={1} className={classes.cartItem}>
@@ -51,16 +51,18 @@ const CartRow = (props: CartItem) => {
             </span>
 
             <div className={classes.itemDescriptors}>
-                <button onClick={() => setQty(qty - 1)}>-</button>
-                <span className={classes.qtyPicker}>{qty}</span>
-                <button onClick={() => setQty(qty + 1)}>+</button>
+                <button onClick={() => dispatch(editQty({id: props.id, qty: props.qty-1}))}>
+                    -
+                </button>
+                <span className={classes.qtyPicker}>{props.qty}</span>
+                <button onClick={() => dispatch(editQty({id: props.id, qty: props.qty+1}))}>
+                    +
+                </button>
             </div>
 
             {toDollarAmount(cost)}
 
-            <Button>
-                Remove
-            </Button>
+            <Button>Remove</Button>
         </Paper>
     )
 }
