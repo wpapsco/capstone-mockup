@@ -51,7 +51,6 @@ function App() {
 
     return (
         <Container maxWidth="md">
-            <ThemeProvider theme={theme}>
                 <div id="maincontainer">
                     <Navbar />
                     <Switch>
@@ -121,7 +120,6 @@ function App() {
                     autoHideDuration={6000}
                     onClose={onSnackbarClose}
                     message={snackbarState.message}/>
-            </ThemeProvider>
         </Container>
     );
 }
