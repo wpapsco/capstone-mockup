@@ -42,7 +42,14 @@ const CartRow = (props: CartItem) => {
     useEffect(() => {
         setCost(props.qty * props.unitPrice)
     }, [props.qty])
+
+    const handleDecrement = () => {
+        if (props.qty > 0) {
+            dispatch(editQty({id: props.id, qty: props.qty-1}))
+        }
+    }
     
+    // TODO: do not allow purchase qty > available seats
     return (
         <Paper elevation={1} className={classes.cartItem}>
             <span className={classes.itemDescriptors}>
@@ -51,7 +58,7 @@ const CartRow = (props: CartItem) => {
             </span>
 
             <div className={classes.itemDescriptors}>
-                <button onClick={() => dispatch(editQty({id: props.id, qty: props.qty-1}))}>
+                <button onClick={handleDecrement}>
                     -
                 </button>
                 <span className={classes.qtyPicker}>{props.qty}</span>

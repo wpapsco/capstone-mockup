@@ -78,14 +78,17 @@ const cartSlice = createSlice({
             ...state,
             cart: state.cart.filter(item => item.id!==action.payload)
         }),
-        editQty: (state, action: PayloadAction<{id: number, qty: number}>): ShopState => ({
-            ...state,
-            cart: state.cart.map(item => {
-                return (item.id === action.payload.id) ?
-                   {...item, qty: action.payload.qty} :
-                   item
-            })
-        }),
+        editQty: (state, action: PayloadAction<{id: number, qty: number}>): ShopState => {
+            const newQty = (action.payload.qty >= 0) ? action.payload.qty : 0
+            return {
+                ...state,
+                cart: state.cart.map(item => {
+                    return (item.id === action.payload.id) ?
+                       {...item, qty: newQty} :
+                       item
+                })
+            }
+        },
         setDonation: (state, action: PayloadAction<number>) => {
             return { ...state, donation: action.payload }
         }

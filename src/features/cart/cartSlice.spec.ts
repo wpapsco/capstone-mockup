@@ -16,10 +16,12 @@ describe('Cart reducer', () => {
         expect(result).toEqual(initialState)
     });
 
-    const playid = 'play1'
+    const playId = 1
+    const eventId = 2
     const addTicketResult = {
         cart: [{
-            id: playid,
+            playId: playId,
+            id: eventId,
             type: 'ticket',
             name: 'Ticket(s)',
             description: 'General admission',
@@ -33,8 +35,10 @@ describe('Cart reducer', () => {
     it('should handle adding an ticket', () => {
         expect(
             cartReducer(initialState, addTicket({
-                eventId: 'play1',
-                concessions: true
+                playId,
+                eventId,
+                concessions: true,
+                qty: 1,
             }))
         ).toEqual(addTicketResult)
     })
@@ -43,10 +47,10 @@ describe('Cart reducer', () => {
         const newQty = 3
         expect(cartReducer(
             addTicketResult,
-            editQty({id: playid, qty: newQty})
+            editQty({id: playId, qty: newQty})
         )).toEqual({
             cart: [{
-                id: playid,
+                id: playId,
                 type: 'ticket',
                 name: 'Ticket(s)',
                 description: 'General admission',
@@ -58,7 +62,25 @@ describe('Cart reducer', () => {
         })
     })
 
+    it('shnould not be able to set negative quantities', () => {
+        expect(cartReducer(
+            addTicketResult,
+            editQty({id: playId, qty: -1})
+        )).toEqual({
+            cart: [{
+                id: playId,
+                type: 'ticket',
+                name: 'Ticket(s)',
+                description: 'General admission',
+                unitPrice: 15.99,
+                qty: 0,
+                concessions: true,
+            }],
+            donation: 0
+        })
+    })
+
     it('should handle removing an item', () => {
-        expect(cartReducer(addTicketResult, removeItem(playid)))
+        expect(cartReducer(addTicketResult, removeItem(playId)))
             .toEqual(initialState)
     })})
