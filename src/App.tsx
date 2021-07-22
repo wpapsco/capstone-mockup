@@ -1,7 +1,7 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import "./App.css";
 import { ThemeProvider } from '@material-ui/core/styles';
-import { theme } from './theme'
+import theme from './theme'
 import CheckoutPage from "./components/CheckoutPage";
 
 import Navbar from './app/Navbar';

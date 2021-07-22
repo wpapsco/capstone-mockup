@@ -1,6 +1,6 @@
 import { createMuiTheme } from '@material-ui/core'
 
-export const theme = createMuiTheme({
+const theme = createMuiTheme({
     palette: {
         primary: {
             main: '#429EC3',
@@ -23,6 +23,8 @@ export const theme = createMuiTheme({
     },
     // spacing: 20,
 })
+
+export default theme
 
 // --e-global-color-primary: #D8993F;
 // --e-global-color-secondary: #31383D;
