@@ -1,5 +1,5 @@
 import { appSelector, useAppDispatch } from '../../app/hooks'
-import { selectCartContents, CartItem, editQty } from './cartSlice'
+import { selectCartContents, CartItem, editQty, removeItem } from './cartSlice'
 
 import Paper from '@material-ui/core/Paper'
 import { createStyles, makeStyles } from '@material-ui/core/styles'
@@ -69,7 +69,9 @@ const CartRow = (props: CartItem) => {
 
             {toDollarAmount(cost)}
 
-            <Button>Remove</Button>
+            <Button onClick={() => dispatch(removeItem(props.id))}>
+                Remove
+            </Button>
         </Paper>
     )
 }
