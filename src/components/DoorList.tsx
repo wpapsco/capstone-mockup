@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import RequireLogin from './RequireLogin'
 import { titleCase, dayMonthDate, militaryToCivilian } from '../utils'
+import {withStyles} from '@material-ui/styles'
 
 const renderCheckbox = ((params: CellParams) => <Checkbox checked={params.value as boolean} />)
 
@@ -70,6 +71,7 @@ export default function DoorList() {
             <Typography gutterBottom variant="h5">{`${date}, ${time}`}</Typography>
             <DataGrid
                 autoHeight
+                disableSelectionOnClick
                 rows={doorList}
                 columns={columns}
                 pageSize={10}/>
