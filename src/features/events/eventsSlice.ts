@@ -28,10 +28,10 @@ export interface Play {
 export const aggregateShowings = (events: Event[]) =>
     events.reduce<Dictionary<Play>>((plays, event) => {
         const { playname, playdescription, image_url, playid, ...showing } = event
-        const key = playid
-        return (plays[key]) ?
-            { ...plays, [key]: {...plays[key], showings: [...plays[key].showings, showing] as Showing[]}} :
-            { ...plays, [key]: { playid, playname, playdescription, image_url, showings: [showing] }}
+
+        return (plays[playid]) ?
+            { ...plays, [playid]: {...plays[playid], showings: [...plays[playid].showings, showing] as Showing[]}} :
+            { ...plays, [playid]: { playid, playname, playdescription, image_url, showings: [showing] }}
         }, {})
 
 export const fetchEventData = createAsyncThunk(

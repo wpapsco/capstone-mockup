@@ -2,6 +2,7 @@ import React, {useState} from 'react'
 import {useAppDispatch, appSelector} from '../../app/hooks'
 import {useParams} from 'react-router-dom'
 import {selectEventData, Showing} from './eventsSlice'
+import { addTicket } from '../cart/cartSlice'
 import eventPageStyles from './eventPageStyles'
 import {
     Card,
@@ -9,6 +10,8 @@ import {
     CardContent,
     CardActions,
     Button,
+    Checkbox,
+    FormControlLabel,
     TextField,
     Typography,
     InputLabel,
@@ -25,6 +28,7 @@ const EventPage = () => {
     const dispatch = useAppDispatch()
     const [amount, setAmount] = useState(0)
     const [showingId, setShowingId] = useState(0)
+    const [concessions, setConcessions] = useState(false)
 
     const {playid} = useParams<EventPageProps>()
     const eventData = appSelector(state => selectEventData(state, Number.parseInt(playid)))
@@ -34,6 +38,12 @@ const EventPage = () => {
     // TODO: Re-implement adding ticket to cart.
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault()
+        dispatch(addTicket({
+            playId: Number.parseInt(playid),
+            eventId: showingId,
+            concessions,
+            qty: amount,
+        }))
         dispatch(openSnackbar(`Added ${amount} ticket${amount === 1 ? "" : "s"} to cart!`))
     }
 
@@ -76,6 +86,16 @@ const EventPage = () => {
                                 onChange={(e) => setAmount(+e.target.value)}
                                 label="Quantity"
                                 type="number" />
+                        </FormControl>
+                        <FormControl className={classes.formControl}>
+                            <FormControlLabel
+                                control={
+                                    <Checkbox
+                                        checked={concessions}
+                                        onChange={e => setConcessions(!concessions)} name='concessions' />
+                                }
+                                label='Add concessions'
+                            />
                         </FormControl>
                         <FormControl className={classes.formControl}>
                             <Button

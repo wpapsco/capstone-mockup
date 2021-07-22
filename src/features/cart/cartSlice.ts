@@ -4,7 +4,7 @@ import { RootState } from '../../app/store'
 // TODO: Load products thunk
 
 export interface CartItem {
-    id: string,
+    id: number,
     name: string,
     description: string,
     unitPrice: number,
@@ -18,6 +18,7 @@ export interface CartItem {
 // TODO: Should concessions be a prop of TicketData or a separate Cart Item type?
 export interface TicketItem extends CartItem {
     type: 'ticket',
+    playId: number,
     concessions: boolean,
 }
 
@@ -31,31 +32,40 @@ const INITIAL_STATE: ShopState = {
     donation: 0,  // { custId, message, amount, date }
 }
 
-type SHOWID = string
+type SHOWID = number
 
 const cartSlice = createSlice({
     name: 'cart',
     initialState: INITIAL_STATE, 
     reducers: {
-        addTicket: (state, action: PayloadAction<{eventId: SHOWID, concessions: boolean}>) => ({
-            ...state,
-            cart: [
-                ...state.cart,
-                {
-                    id: action.payload.eventId,
-                    type: 'ticket',
-                    name: 'Ticket(s)',
-                    description: 'General admission',
-                    unitPrice: 15.99,
-                    qty: 1,
-                    concessions: action.payload.concessions,
-                } as TicketItem
-            ]
-        }),
+        addTicket: (state, action: PayloadAction<{
+            playId: number,
+            eventId: SHOWID,
+            concessions: boolean,
+            qty: number,
+        }>) => {
+            const {playId, eventId, concessions, qty} = action.payload
+            return {
+                ...state,
+                cart: [
+                    ...state.cart,
+                    {
+                        id: eventId,
+                        type: 'ticket',
+                        name: 'Ticket(s)',
+                        description: 'General admission',
+                        unitPrice: 15.99,
+                        qty,
+                        concessions,
+                        playId,
+                    } as TicketItem
+                ]
+            }
+        },
         addItem: (state, action: PayloadAction<Omit<CartItem,'id'|'type'|'unitPrice'>>) => {
             const newItem: CartItem = {
                 ...action.payload,
-                id: nanoid(),
+                id: 1,
                 type: 'ticket',
                 unitPrice: 12.99,
             }
@@ -68,7 +78,7 @@ const cartSlice = createSlice({
             ...state,
             cart: state.cart.filter(item => item.id!==action.payload)
         }),
-        editQty: (state, action: PayloadAction<{id: string, qty: number}>): ShopState => ({
+        editQty: (state, action: PayloadAction<{id: number, qty: number}>): ShopState => ({
             ...state,
             cart: state.cart.map(item => {
                 return (item.id === action.payload.id) ?
