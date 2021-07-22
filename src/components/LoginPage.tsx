@@ -41,6 +41,5 @@ export default function LoginPage() {
             onChange={e => setPassword(e.target.value)} />
         <Button variant="contained" color="primary" onClick={onSubmit}>Log in</Button>
         {loggedIn && <Redirect to={"/" + (redirect ? redirect : "")}/>}
-        {redirect}
     </div>
 }

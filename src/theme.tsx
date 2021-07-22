@@ -21,7 +21,7 @@ export const theme = createMuiTheme({
     shape: {
         borderRadius: 5,
     },
-    spacing: 20,
+    // spacing: 20,
 })
 
 // --e-global-color-primary: #D8993F;

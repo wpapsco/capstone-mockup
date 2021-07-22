@@ -51,7 +51,7 @@ export default function ShowingCard(props: ShowingProps) {
                 </CardContent>
             </CardActionArea>
             <CardActions>
-                <Link to={`/doorlist/${props.id}`}>
+                <Link to={`/admin/doorlist/${props.id}`}>
                     <Button size="small" variant="contained" color="primary">
                         Select
                     </Button>

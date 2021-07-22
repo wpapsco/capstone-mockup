@@ -32,13 +32,11 @@ export default function Navbar()  {
     return (
         <Paper square className={classes.navbar}>
             <Tabs>
-                <Tab label="Doorlist" component={NavLink} to="/" />
                 <Tab label="Events" component={NavLink} to="/events" />
                 <Tab label="Complete Order" component={NavLink} to="/completeorder"/>
-                <Tab label="Create Events" component={NavLink} to="/CreateEvents"/>
                 
-                // TODO: This should only show if user is logged in!!
-                <Tab label="Admin" component={NavLink} to="/admin/admin-panel" />
+                {/* TODO: This should only show if user is logged in!! */}
+                <Tab label="Admin" component={NavLink} to="/admin" />
             </Tabs>
             <NavLink to="/cart"><ShoppingCartIcon /></NavLink>
         </Paper>
