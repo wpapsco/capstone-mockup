@@ -1,7 +1,7 @@
-import React, { useState } from 'react'
-import { useAppDispatch, appSelector } from '../../app/hooks'
-import { useParams } from 'react-router-dom'
-import { selectEventData, Showing } from './eventsSlice'
+import React, {useState} from 'react'
+import {useAppDispatch, appSelector} from '../../app/hooks'
+import {useParams} from 'react-router-dom'
+import {selectEventData, Showing} from './eventsSlice'
 import eventPageStyles from './eventPageStyles'
 import {
     Card,
@@ -16,20 +16,20 @@ import {
     MenuItem,
     FormControl
 } from '@material-ui/core';
-import { openSnackbar } from '../snackbarSlice'
-import { titleCase, dayMonthDate, militaryToCivilian } from '../../utils'
+import {openSnackbar} from '../snackbarSlice'
+import {titleCase, dayMonthDate, militaryToCivilian} from '../../utils'
 
-type EventPageProps = { eventname: string }
+type EventPageProps = {playid: string}
 const EventPage = () => {
     const classes = eventPageStyles()
-    const dispatch = useAppDispatch() 
+    const dispatch = useAppDispatch()
     const [amount, setAmount] = useState(0)
     const [showingId, setShowingId] = useState(0)
 
-    const { eventname } = useParams<EventPageProps>()
-    const eventData = appSelector(state => selectEventData(state, eventname))
+    const {playid} = useParams<EventPageProps>()
+    const eventData = appSelector(state => selectEventData(state, Number.parseInt(playid)))
     if (eventData === undefined) return <p>Whoops! Event not found</p>
-    const { playname, playdescription, image_url, showings } = eventData
+    const {playname, playdescription, image_url, showings} = eventData
 
     // TODO: Re-implement adding ticket to cart.
     const handleSubmit = (e: React.FormEvent) => {
@@ -48,8 +48,7 @@ const EventPage = () => {
                 id="select-showing"
                 value={showingId}
                 onChange={e => setShowingId(e.target.value as number)}
-                className={classes.formInput}
-            >
+                className={classes.formInput} >
                 {props.showings.map((sh: Showing) =>
                     <MenuItem key={sh.id} value={sh.id}>
                         {dayMonthDate(sh.eventdate) + ' - ' + militaryToCivilian(sh.starttime)}
@@ -64,8 +63,7 @@ const EventPage = () => {
             <Card className={classes.cardRoot}>
                 <CardMedia
                     className={classes.heroImage}
-                    image={image_url}
-                />
+                    image={image_url} />
                 <CardContent className={classes.cardContents}>
                     <Typography component="h1" variant="h3" align="center" gutterBottom>{titleCase(playname)}</Typography>
                     <CardActions className={classes.cardActions}>
@@ -77,16 +75,14 @@ const EventPage = () => {
                                 value={amount || undefined}
                                 onChange={(e) => setAmount(+e.target.value)}
                                 label="Quantity"
-                                type="number"
-                            />
+                                type="number" />
                         </FormControl>
                         <FormControl className={classes.formControl}>
                             <Button
                                 disabled={!amount || !showingId}
                                 color="primary"
                                 variant="contained"
-                                onClick={handleSubmit}
-                            >
+                                onClick={handleSubmit}>
                                 Get Tickets
                             </Button>
                         </FormControl>
