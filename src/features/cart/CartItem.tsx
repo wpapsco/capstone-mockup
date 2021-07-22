@@ -7,10 +7,7 @@ import AddOutlinedIcon from '@material-ui/icons/AddOutlined'
 import RemoveOutlinedIcon from '@material-ui/icons/RemoveOutlined'
 import CloseOutlinedIcon from '@material-ui/icons/CloseOutlined';
 import theme from '../../theme'
-
-const toDollarAmount = (n: number): string => {
-    return '$' + n.toFixed(2).toString()
-}
+import { toDollarAmount } from '../../utils'
 
 const useStyles = makeStyles(() => 
     createStyles({
@@ -19,8 +16,8 @@ const useStyles = makeStyles(() =>
             flexDirection: 'row',
             alignItems: 'center',
             justifyContent: 'space-between',
-            padding: '10px 15px',
-            margin: '10px 0',
+            padding: '15px 30px',
+            margin: '15px',
         },
         itemDescriptors: {
             width: '33%',

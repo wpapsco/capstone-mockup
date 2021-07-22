@@ -51,3 +51,7 @@ export const dayMonthDate = (datestr: string) =>
     formatDate(serializeDate(datestr))
 
 export type Dictionary<U> = {[key: string]: U}
+
+export const toDollarAmount = (n: number): string => {
+    return '$' + n.toFixed(2).toString()
+}
