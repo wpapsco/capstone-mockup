@@ -37,6 +37,7 @@ const EventCard = (props: {
     playname: string,
     playdescription: string,
     image_url: string,
+    playid: number,
 }) => {
     const classes = useStyles(useTheme())
 
@@ -48,7 +49,7 @@ const EventCard = (props: {
                     props.playdescription :
                     'No description available.'
                 }</p>
-                <Link to={`/events/${props.playname.replace(/ /g, '_')}`}>
+                <Link to={`/events/${props.playid}`}>
                     <Button
                         className={classes.callToAction}
                         variant="contained"
