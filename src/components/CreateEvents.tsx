@@ -79,7 +79,7 @@ export default function CreateEvents(props: {}) {
         Submit
       </Button>
       <h3>To Delete An Event click the Link Below</h3>
-      <Link to="/DeleteEvents">Go To Event Deletion Page</Link>
+      <Link to="/admin/DeleteEvents">Go To Event Deletion Page</Link>
     </div>
   );
 }
