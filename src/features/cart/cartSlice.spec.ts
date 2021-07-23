@@ -1,8 +1,8 @@
 import cartReducer, {
     ShopState,
-    addItem,
-    removeItem,
+    addTicket,
     editQty,
+    removeItem,
 } from './cartSlice'
 
 describe('Cart reducer', () => {
@@ -16,9 +16,71 @@ describe('Cart reducer', () => {
         expect(result).toEqual(initialState)
     });
 
-    it('should handle adding an item', () => {})
+    const playId = 1
+    const eventId = 2
+    const addTicketResult = {
+        cart: [{
+            playId: playId,
+            id: eventId,
+            type: 'ticket',
+            name: 'Ticket(s)',
+            description: 'General admission',
+            unitPrice: 15.99,
+            qty: 1,
+            concessions: true,
+        }],
+        donation: 0
+    }
+    
+    it('should handle adding an ticket', () => {
+        expect(
+            cartReducer(initialState, addTicket({
+                playId,
+                eventId,
+                concessions: true,
+                qty: 1,
+            }))
+        ).toEqual(addTicketResult)
+    })
 
-    it('should handle removing an item', () => {})
+    it('should handle editing item quantity', () => {
+        const newQty = 3
+        expect(cartReducer(
+            addTicketResult,
+            editQty({id: playId, qty: newQty})
+        )).toEqual({
+            cart: [{
+                id: playId,
+                type: 'ticket',
+                name: 'Ticket(s)',
+                description: 'General admission',
+                unitPrice: 15.99,
+                qty: newQty,
+                concessions: true,
+            }],
+            donation: 0
+        })
+    })
 
-    it('should handle editing item quantity', () => {})
-})
+    it('shnould not be able to set negative quantities', () => {
+        expect(cartReducer(
+            addTicketResult,
+            editQty({id: playId, qty: -1})
+        )).toEqual({
+            cart: [{
+                id: playId,
+                type: 'ticket',
+                name: 'Ticket(s)',
+                description: 'General admission',
+                unitPrice: 15.99,
+                qty: 0,
+                concessions: true,
+            }],
+            donation: 0
+        })
+    })
+
+    it('should handle removing an item', () => {
+        expect(cartReducer(addTicketResult, removeItem(playId)))
+            .toEqual(initialState)
+    })})

@@ -1,7 +1,7 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import "./App.css";
 import { ThemeProvider } from '@material-ui/core/styles';
-import { theme } from './theme'
+import theme from './theme'
 import CheckoutPage from "./components/CheckoutPage";
 
 import Navbar from './app/Navbar';
@@ -48,7 +48,7 @@ function App() {
                 <div id="maincontainer">
                     <Navbar />
                     <Switch>
-                        <Route path="/events/:name">
+                        <Route path="/events/:playid">
                             <EventPage />
                         </Route>
 
