@@ -1,6 +1,6 @@
 // This implementation should replace the EventRow component in the EventsList
 import { titleCase } from '../../utils'
-import { Card, CardContent, CardMedia, Button } from '@material-ui/core'
+import { Card, CardContent, CardMedia, Button, Typography } from '@material-ui/core'
 import { Theme, makeStyles, useTheme } from '@material-ui/core/styles'
 import { Link } from 'react-router-dom'
 
@@ -20,16 +20,18 @@ const useStyles = makeStyles((theme: Theme) => ({
         }
     },
     cardMedia: {
-        width: '300px',
+        minWidth: '400px',
         justifySelf: 'end',
     },
     cardContent: {
+        padding: '1.8em',
         display: 'flex',
         flexDirection: 'column',
+        // maxWidth: '60%',
     },
     callToAction: {
         alignSelf: 'center',
-        justifySelf: 'end',
+        marginTop: 'auto',
     },
 }))
 
@@ -44,17 +46,15 @@ const EventCard = (props: {
     return (
         <Card className={classes.root}>
             <CardContent className={classes.cardContent}>
-                <h2>{titleCase(props.playname)}</h2>
-                <p>{(props.playdescription) ?
-                    props.playdescription :
-                    'No description available.'
-                }</p>
-                <Link to={`/events/${props.playid}`}>
-                    <Button
-                        className={classes.callToAction}
-                        variant="contained"
-                        color="primary"
-                    >
+                <Typography component='h2' variant='h5'>{titleCase(props.playname)}</Typography>
+                <Typography variant='body1'>
+                    {(props.playdescription) ?
+                        props.playdescription :
+                        'No description available.'
+                    }
+                </Typography>
+                <Link to={`/events/${props.playid}`} className={classes.callToAction}>
+                    <Button variant="contained" color="primary">
                         See Showings
                     </Button>
                 </Link>

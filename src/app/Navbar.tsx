@@ -14,6 +14,7 @@ const useStyles = makeStyles((theme: Theme) =>
             justifyContent: 'space-between',
             alignItems: 'center',
             paddingRight: '30px',
+            marginBottom: '30px',
         },
         // link: {
         //     '&::visited': {

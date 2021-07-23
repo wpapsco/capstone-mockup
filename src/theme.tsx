@@ -12,7 +12,7 @@ const theme = createMuiTheme({
     typography: {
         fontFamily: 'Montserrat',
         body1: {
-            fontSize: '1rem',
+            fontSize: '0.9rem',
         },
         subtitle1: {
             fontFamily: 'Roboto'
