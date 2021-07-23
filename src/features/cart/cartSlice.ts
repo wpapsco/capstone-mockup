@@ -38,6 +38,8 @@ const cartSlice = createSlice({
     name: 'cart',
     initialState: INITIAL_STATE, 
     reducers: {
+        // TODO: prevent duplicating the same item (subsequent addTicket actions w/ matching
+        // item ID should add the new quantity to the current one)
         addTicket: (state, action: PayloadAction<{
             playId: number,
             eventId: SHOWID,

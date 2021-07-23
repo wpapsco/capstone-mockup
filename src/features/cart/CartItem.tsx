@@ -30,6 +30,11 @@ const useStyles = makeStyles(() =>
     })
 )
 
+// TODO: Add product image
+// TODO: Display play name
+// TODO: Display show time
+// TODO: Display concession ticket & its price
+// TODO: do not allow purchase qty > available seats
 const CartRow = (props: CartItem) => {
     const dispatch = useAppDispatch()
     const classes = useStyles(theme)
@@ -45,7 +50,6 @@ const CartRow = (props: CartItem) => {
         }
     }
     
-    // TODO: do not allow purchase qty > available seats
     return (
         <Paper elevation={1} className={classes.cartItem}>
             <span className={classes.itemDescriptors}>
