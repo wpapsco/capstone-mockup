@@ -6,7 +6,7 @@ import snackbarReducer from '../features/snackbarSlice';
 const store = configureStore(
     {
         reducer: {
-            shop: shopReducer,
+            ticketing: shopReducer,
             events: eventsReducer,
             snackbar: snackbarReducer
         }

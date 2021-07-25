@@ -26,7 +26,7 @@ const useStyles = makeStyles(() =>
 const Cart = () => {
     const classes = useStyles()
     const items = appSelector(state => selectCartContents(state))
-    const subtotal = appSelector(state => state.shop.cart.reduce(
+    const subtotal = appSelector(state => state.ticketing.cart.reduce(
         (subtot, item) => subtot + (item.unitPrice * item.qty),
         0
     ))

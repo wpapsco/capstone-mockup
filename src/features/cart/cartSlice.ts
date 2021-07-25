@@ -101,7 +101,7 @@ const cartSlice = createSlice({
 export const { addTicket, addItem, removeItem, editQty, setDonation } = cartSlice.actions
 
 // Selectors
-export const selectCartContents = (state: RootState) => state.shop.cart
-export const selectDonation = (state: RootState) => state.shop.donation
+export const selectCartContents = (state: RootState) => state.ticketing.cart
+export const selectDonation = (state: RootState) => state.ticketing.donation
 
 export default cartSlice.reducer
