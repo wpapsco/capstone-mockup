@@ -88,7 +88,7 @@ app.post('/api/login', passport.authenticate('local'), (req, res) => {
 app.get("/api/event-list", async (req, res) => {
   try {
     const events = await pool.query(
-        `select shwtm.id, plays.playname, plays.playdescription, plays.image_url,
+        `select shwtm.id, shwtm.playid, plays.playname, plays.playdescription, plays.image_url,
         shwtm.eventdate, shwtm.starttime, shwtm.totalseats, shwtm.availableseats
         from showtimes as shwtm join plays on shwtm.playid = plays.id 
         where plays.active = true and shwtm.salestatus = true`);
@@ -334,12 +334,18 @@ app.post("/api/set-tickets", async (req, res) => {
 // Get list of which tickets can be purchased for the show along with its prices
 app.get("/api/show-tickets", async (req, res) => {
     try {
-        const query = "select tt.name, tt.price, tt.concessions from linkedtickets lt join\
-                        tickettype tt on lt.ticket_type = tt.id where lt.showid = $1";
-        const values = [req.body.id];
+        const query = 
+            `SELECT pl.id as play_id, sh.id as show_id, playname, playdescription, eventdate, starttime, availableseats, price, concessions
+            FROM plays pl
+                LEFT JOIN showtimes sh ON pl.id=sh.playid
+                JOIN linkedtickets lt ON lt.showid=sh.id
+                JOIN tickettype tt ON lt.ticket_type=tt.id
+            WHERE pl.id=$1 AND isseason=false;`;
+        const values = [req.query.play];
         const available_tickets = await pool.query(query, values);
         res.json(available_tickets);
         console.log(available_tickets.rows);
+        return available_tickets.rows;
     } catch (error) {
         console.error(error);
     }
@@ -370,6 +376,26 @@ app.get('/api/email_subscriptions/volunteers', isAuthenticated, async (req, res)
         console.error(err.message);
     }
 });
+const fulfillOrder = (session) => {
+    // TODO: fill me in
+    console.log("Fulfilling order", session);
+  }
 
+app.post("/webhook", async(req, res) =>{
+    const event = req.body;
+    console.log(event);
+    switch (event.type) {
+        case 'payment_intent.succeeded':
+          const paymentIntent = event.data.object;
+          console.log('PaymentIntent was successful');
+          break;
+        // ... handle other event types
+        default:
+          console.log(`Unhandled event type ${event.type}`);
+      }
+    
+      // Return a 200 response to acknowledge receipt of the event
+      res.json({received: true});
+})
 // tslint:disable-next-line:no-console
 app.listen(port, () => console.log(`Listening on port ${port}`));

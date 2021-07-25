@@ -3,7 +3,7 @@ import Tabs from '@material-ui/core/Tabs'
 import Tab from '@material-ui/core/Tab'
 import ShoppingCartIcon from '@material-ui/icons/ShoppingCart'
 import { Theme, makeStyles, createStyles } from '@material-ui/core/styles'
-import { theme } from '../theme'
+import theme from '../theme'
 
 import { NavLink } from 'react-router-dom'
 
@@ -14,6 +14,7 @@ const useStyles = makeStyles((theme: Theme) =>
             justifyContent: 'space-between',
             alignItems: 'center',
             paddingRight: '30px',
+            marginBottom: '30px',
         },
         // link: {
         //     '&::visited': {
