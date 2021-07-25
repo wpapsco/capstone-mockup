@@ -1,5 +1,6 @@
 import {Switch, Route, useRouteMatch} from "react-router";
-import CreateEvents from "../../components/CreateEvents";
+//import CreateEvents from "../../components/CreateEvents";
+import NewEventMain from "./eventCreation/newEventMain";
 import DeleteEvents from "../../components/DeleteEvents";
 import DoorList from "../../components/DoorList";
 import ShowingsPage from "../../components/ShowingsPage";
@@ -14,7 +15,7 @@ export default function AdminSwitch() {
             <AdminPanel/>
         </Route>
         <Route path={`${path}/CreateEvents`}>
-            <CreateEvents />
+            <NewEventMain />
         </Route>
         <Route path={`${path}/DeleteEvents`}>
             <DeleteEvents />
