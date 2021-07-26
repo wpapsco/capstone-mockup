@@ -50,7 +50,6 @@ function MultiSelectCalendar({classes, value, onChange}: {classes: any, value?: 
                 onChange={handleChange}
                 onYearChange={date => {
                     if (!date) return;
-                    console.log("yearchange", date)
                     updateDate = false;
                 }}
                 renderDay={(day, selectedDate, dayInCurrentMonth, dayComponent) => {
