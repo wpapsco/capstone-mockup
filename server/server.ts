@@ -405,8 +405,9 @@ app.get('/api/plays', async (req, res) => {
             SELECT id, playname title, playdescription description, image_url
             FROM plays
             WHERE active=true;`
-        const plays = await pool.query(querystring)
-        res.json(plays.rows);
+        const data = await pool.query(querystring)
+        const plays = data.rows.map(play => ({...play, id: play.id.toString()}))
+        res.json(plays)
     }
     catch (err) {
         console.error(err.message);

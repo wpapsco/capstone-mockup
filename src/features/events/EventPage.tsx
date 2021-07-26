@@ -30,10 +30,12 @@ const EventPage = () => {
     const [showingId, setShowingId] = useState(0)
     const [concessions, setConcessions] = useState(false)
 
-    const {playid} = useParams<EventPageProps>()
-    const eventData = appSelector(state => selectEventData(state, Number.parseInt(playid)))
+    const { playid } = useParams<EventPageProps>()
+    // const eventData = appSelector(state => selectEventData(state, Number.parseInt(playid)))
+    const eventData = appSelector(state => state.ticketing.plays.find(p => p.id===playid))
+
     if (eventData === undefined) return <p>Whoops! Event not found</p>
-    const {playname, playdescription, image_url, showings} = eventData
+    const {title, description, image_url} = eventData
 
     // TODO: Re-implement adding ticket to cart.
     const handleSubmit = (e: React.FormEvent) => {
@@ -68,6 +70,7 @@ const EventPage = () => {
         </FormControl>
 
     // TODO: Quantity validation (positive integers only)
+    // TODO: ShowingsList
     return (
         <article>
             <Card className={classes.cardRoot}>
@@ -75,9 +78,9 @@ const EventPage = () => {
                     className={classes.heroImage}
                     image={image_url} />
                 <CardContent className={classes.cardContents}>
-                    <Typography component="h1" variant="h3" align="center" gutterBottom>{titleCase(playname)}</Typography>
+                    <Typography component="h1" variant="h3" align="center" gutterBottom>{titleCase(title)}</Typography>
                     <CardActions className={classes.cardActions}>
-                        <ShowingsList showings={showings} />
+                        {/* <ShowingsList showings={[showings]} /> */}
                         <FormControl className={classes.formControl}>
                             <TextField
                                 className={classes.formInput}
@@ -111,7 +114,7 @@ const EventPage = () => {
             </Card>
             <main>
                 <Typography component="h2" variant="h4">Event Description</Typography>
-                <p>{(playdescription) ? playdescription : ''}</p>
+                <p>{(description) ? description : ''}</p>
             </main>
         </article>
     )
