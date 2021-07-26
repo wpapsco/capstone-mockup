@@ -12,7 +12,7 @@ import {
 import Cart from './features/cart/Cart';
 import NewsletterSignup from "./features/newsletter/NewsletterSignup";
 import CheckoutSuccess from "./components/CheckoutSuccess";
-import { Container } from "@material-ui/core";
+import { Button, Container } from "@material-ui/core";
 import Snackbar from "@material-ui/core/Snackbar";
 import { useAppDispatch, appSelector } from './app/hooks'
 import { closeSnackbar, selectSnackbar } from "./features/snackbarSlice"
@@ -24,6 +24,7 @@ import { fetchEventData } from "./features/events/eventsSlice";
 import LoginPage from "./components/LoginPage";
 import AdminSwitch from "./features/admin/AdminSwitch";
 import RequireLogin from "./components/RequireLogin";
+import MultiSelectCalendar from "./components/MultiSelectCalendar";
 
 function App() {
 
@@ -42,12 +43,19 @@ function App() {
         dispatch(closeSnackbar())
     }
 
+    const [dates, setDates] = useState<Date[]>([])
+
     return (
         <Container maxWidth="md">
             <ThemeProvider theme={theme}>
                 <div id="maincontainer">
                     <Navbar />
                     <Switch>
+                        <Route path="/testcalendar">
+                            <MultiSelectCalendar value={dates} onChange={setDates}/>
+                            <Button onClick={() => setDates([])}>Clear</Button>
+                            {dates.map(d => <p>{d.toLocaleString()}</p>)}
+                        </Route>
                         <Route path="/events/:playid">
                             <EventPage />
                         </Route>
