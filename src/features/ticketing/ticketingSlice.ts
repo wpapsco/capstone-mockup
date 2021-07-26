@@ -1,4 +1,5 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit'
+import { RootState } from '../../app/store'
 import { CartItem, LoadStatus, Play, Ticket } from './ticketingTypes'
 
 export interface ticketingState {
@@ -6,6 +7,7 @@ export interface ticketingState {
     tickets: Ticket[],
     plays: Play[],
     status: LoadStatus,
+    selectedTicket: number | null,
 }
 
 const INITIAL_STATE: ticketingState = {
@@ -13,6 +15,7 @@ const INITIAL_STATE: ticketingState = {
     tickets: [],
     plays: [],
     status: 'idle',
+    selectedTicket: null,
 }
 
 const fetchData = async (url: string) => {
@@ -42,6 +45,13 @@ const ticketingSlice = createSlice({
         addTicket: (state, action) => state,
         removeTicket: (state, action) => state,
         editQty: (state, action) => state,
+        selectTicket: (state, action: PayloadAction<number>) => ({
+            ...state,
+            selectedTicket: (action.payload)
+                ? action.payload
+                : null
+        }),
+        clearSelection: (state) => ({...state, selectedTicket: null})
     },
     extraReducers: builder => {
         builder
@@ -63,4 +73,6 @@ const ticketingSlice = createSlice({
     }
 })
 
+export const selectSelectedTicket = (state: RootState) => state.ticketing.selectedTicket
+export const { selectTicket, clearSelection } = ticketingSlice.actions
 export default ticketingSlice.reducer

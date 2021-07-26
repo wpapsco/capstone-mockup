@@ -416,7 +416,7 @@ app.get('/api/plays', async (req, res) => {
 
 app.get('/api/tickets', async (req, res) => {
     try {
-        const qs = `SELECT sh.id eventid, playid, eventdate, starttime, availableseats, tt.name admission_type, price t_price, concessions c_price
+        const qs = `SELECT sh.id eventid, playid, eventdate, starttime, availableseats, tt.name admission_type, price ticket_price, concessions concession_price
             FROM showtimes sh
                 JOIN linkedtickets lt ON sh.id=lt.showid
                 JOIN tickettype tt ON lt.ticket_type=tt.id
@@ -426,7 +426,8 @@ app.get('/api/tickets', async (req, res) => {
             .map(ticket => ({
                 ...ticket,
                 eventdate: dayMonthDate(ticket.eventdate),
-                starttime: militaryToCivilian(ticket.starttime)
+                starttime: militaryToCivilian(ticket.starttime),
+                playid: ticket.playid.toString()
             }))
         res.json(ticketData);
     }

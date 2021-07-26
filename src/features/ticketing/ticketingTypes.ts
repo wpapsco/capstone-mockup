@@ -1,5 +1,5 @@
 export interface CartItem {
-    product_id: number,     // references state.tickets[event_id]
+    product_id: number,     // references state.tickets.eventid
     qty: number,
     name: string,
     desc: string,
@@ -7,13 +7,14 @@ export interface CartItem {
 }
 
 export interface Ticket {
-    number: string,
+    eventid: number,             // references showtime.id in database
+    playid: string,
     event_title: string,
     desc: string,
     eventdate: string,
     starttime: string,
-    ticket_price: number,
-    concession_price?: number,
+    ticket_price: string,
+    concession_price: string,
     available: number,
 }
 

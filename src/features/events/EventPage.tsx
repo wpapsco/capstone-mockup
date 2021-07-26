@@ -1,7 +1,6 @@
-import React, {useState} from 'react'
-import {useAppDispatch, appSelector} from '../../app/hooks'
-import {useParams} from 'react-router-dom'
-import {selectEventData, Showing} from './eventsSlice'
+import React, { useState } from 'react'
+import { useAppDispatch, appSelector } from '../../app/hooks'
+import { useParams } from 'react-router-dom'
 import { addTicket } from '../cart/cartSlice'
 import eventPageStyles from './eventPageStyles'
 import {
@@ -14,60 +13,41 @@ import {
     FormControlLabel,
     TextField,
     Typography,
-    InputLabel,
-    Select,
-    MenuItem,
     FormControl
 } from '@material-ui/core';
-import {openSnackbar} from '../snackbarSlice'
-import {titleCase, dayMonthDate, militaryToCivilian} from '../../utils'
+import { openSnackbar } from '../snackbarSlice'
+import { titleCase } from '../../utils'
+
+import TicketPicker from '../ticketing/ticketPicker'
+import { selectSelectedTicket, clearSelection } from '../ticketing/ticketingSlice'
 
 type EventPageProps = {playid: string}
 const EventPage = () => {
     const classes = eventPageStyles()
     const dispatch = useAppDispatch()
     const [amount, setAmount] = useState(0)
-    const [showingId, setShowingId] = useState(0)
+    const selectedTicket = appSelector(selectSelectedTicket)
     const [concessions, setConcessions] = useState(false)
 
     const { playid } = useParams<EventPageProps>()
-    // const eventData = appSelector(state => selectEventData(state, Number.parseInt(playid)))
     const eventData = appSelector(state => state.ticketing.plays.find(p => p.id===playid))
 
     if (eventData === undefined) return <p>Whoops! Event not found</p>
     const {title, description, image_url} = eventData
 
-    // TODO: Re-implement adding ticket to cart.
     const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault()
-        dispatch(addTicket({
-            playId: Number.parseInt(playid),
-            eventId: showingId,
-            concessions,
-            qty: amount,
-        }))
-        dispatch(openSnackbar(`Added ${amount} ticket${amount === 1 ? "" : "s"} to cart!`))
+        if (selectedTicket!==null) {
+            e.preventDefault()
+            dispatch(addTicket({
+                playId: Number.parseInt(playid),
+                eventId: selectedTicket,
+                concessions,
+                qty: amount,
+            }))
+            dispatch(clearSelection())
+            dispatch(openSnackbar(`Added ${amount} ticket${amount === 1 ? "" : "s"} to cart!`))
+        }
     }
-
-    const ShowingsList = (props: {showings: Showing[]}) =>
-        <FormControl className={classes.formControl}>
-            <InputLabel shrink id="select-showing-label">
-                Select a showing
-            </InputLabel>
-            <Select
-                required
-                labelId="select-showing-label"
-                id="select-showing"
-                value={showingId}
-                onChange={e => setShowingId(e.target.value as number)}
-                className={classes.formInput} >
-                {props.showings.map((sh: Showing) =>
-                    <MenuItem key={sh.id} value={sh.id}>
-                        {dayMonthDate(sh.eventdate) + ' - ' + militaryToCivilian(sh.starttime)}
-                    </MenuItem>
-                )}
-            </Select>
-        </FormControl>
 
     // TODO: Quantity validation (positive integers only)
     // TODO: ShowingsList
@@ -80,7 +60,9 @@ const EventPage = () => {
                 <CardContent className={classes.cardContents}>
                     <Typography component="h1" variant="h3" align="center" gutterBottom>{titleCase(title)}</Typography>
                     <CardActions className={classes.cardActions}>
-                        {/* <ShowingsList showings={[showings]} /> */}
+
+                        <TicketPicker playid={playid}/>
+
                         <FormControl className={classes.formControl}>
                             <TextField
                                 className={classes.formInput}
@@ -102,7 +84,7 @@ const EventPage = () => {
                         </FormControl>
                         <FormControl className={classes.formControl}>
                             <Button
-                                disabled={!amount || !showingId}
+                                disabled={!amount || !selectedTicket}
                                 color="primary"
                                 variant="contained"
                                 onClick={handleSubmit}>
