@@ -20,6 +20,7 @@ import { closeSnackbar, selectSnackbar } from "./features/snackbarSlice"
 import AllEventsPage from './features/events/AllEventsPage'
 import EventPage from "./features/events/EventPage"
 import { fetchEventData } from "./features/events/eventsSlice";
+import { fetchTicketingData } from './features/ticketing/ticketingSlice'
 
 import LoginPage from "./components/LoginPage";
 import AdminSwitch from "./features/admin/AdminSwitch";
@@ -34,6 +35,7 @@ function App() {
     useEffect(() => {
         if(eventsStatus === 'idle') {
             dispatch(fetchEventData())
+            dispatch(fetchTicketingData())
         }
     }, [dispatch])
 

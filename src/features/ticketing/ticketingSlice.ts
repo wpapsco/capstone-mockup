@@ -1,37 +1,39 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit'
-import { CartItem, Event, LoadStatus, Ticket } from './ticketingTypes'
+import { CartItem, LoadStatus, Play, Ticket } from './ticketingTypes'
 
 export interface ticketingState {
     cart: CartItem[],
     tickets: Ticket[],
-    events: Event[],
-    eventsStatus: LoadStatus,
-    ticketsStatus: LoadStatus,
+    plays: Play[],
+    status: LoadStatus,
 }
 
 const INITIAL_STATE: ticketingState = {
     cart: [],
     tickets: [],
-    events: [],
-    eventsStatus: 'idle',
-    ticketsStatus: 'idle',
+    plays: [],
+    status: 'idle',
 }
 
-// async thunks
-export const fetchTickets = createAsyncThunk(
-    'tickets/fetch',
-    async () => {
-        try {
-            const res = await fetch('/api/tickets')
-            return await res.json()
-        } catch (err) {
-            console.error(err.message)
-        }
+const fetchData = async (url: string) => {
+    try {
+        const res = await fetch(url)
+        return await res.json()
     }
-)
+    catch(err) {
+        console.error(err.message)
+    }
+}
 
 //TODO: fetchEvents
-export const fetchEvents = null
+export const fetchTicketingData = createAsyncThunk(
+    'events/fetch',
+    async () => {
+        const plays: Play[] = await fetchData('/api/plays')
+        const tickets: Ticket[] = await fetchData('/api/tickets')
+        return { plays, tickets }
+    }
+)
 
 const ticketingSlice = createSlice({
     name: 'cart',
@@ -43,14 +45,20 @@ const ticketingSlice = createSlice({
     },
     extraReducers: builder => {
         builder
-            .addCase(fetchTickets.pending, state => {
-                state.ticketsStatus = 'loading'
+            .addCase(fetchTicketingData.pending, state => {
+                state.status = 'loading'
             })
-            .addCase(fetchTickets.fulfilled, (state, action) => {
-                state.ticketsStatus = 'success'
-                state.tickets = (action.payload)
-                    ? action.payload
+            .addCase(fetchTicketingData.fulfilled, (state, action) => {
+                state.status = 'success'
+                state.tickets = (action.payload.tickets)
+                    ? action.payload.tickets
                     : []
+                state.plays = (action.payload.plays)
+                    ? action.payload.plays
+                    : []
+            })
+            .addCase(fetchTicketingData.rejected, state => {
+                state.status = 'failed'
             })
     }
 })

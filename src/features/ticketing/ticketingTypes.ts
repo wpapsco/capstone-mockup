@@ -1,5 +1,5 @@
 export interface CartItem {
-    product_id: string,     // references state.tickets[event_id]
+    product_id: number,     // references state.tickets[event_id]
     qty: number,
     name: string,
     desc: string,
@@ -7,19 +7,21 @@ export interface CartItem {
 }
 
 export interface Ticket {
-    event_id: string,
-    desc: 'general admission'
+    number: string,
+    event_title: string,
+    desc: string,
+    eventdate: string,
+    starttime: string,
     ticket_price: number,
     concession_price?: number,
+    available: number,
 }
 
-export interface Event {
-    id: string,
+export interface Play {
+    id: number,
     title: string,
-    desc: string,
-    date: string,
-    time: string,
-    day: string,
+    description: string,
+    image_url: string,
 }
 
 export type LoadStatus = 'idle' | 'loading' | 'success' | 'failed'
