@@ -45,6 +45,22 @@ export const fetchTicketingData = createAsyncThunk(
     }
 )
 
+const someInList = <T>(list: Array<T>, prop: keyof T) => (value: T[keyof T]) =>
+    list.some(i => i[prop]===value)
+
+const selectTicketReducer = (state: ticketingState, action: PayloadAction<number>) => {
+    const idInTickets = someInList(state.tickets, 'eventid')
+    return {
+        ...state,
+        selection: {
+            ...state.selection,
+            selectedTicket: (idInTickets(action.payload))
+                ? action.payload
+                : null
+        }
+    }
+}
+
 const ticketingSlice = createSlice({
     name: 'cart',
     initialState: INITIAL_STATE,
@@ -52,15 +68,7 @@ const ticketingSlice = createSlice({
         addTicket: (state, action) => state,
         removeTicket: (state, action) => state,
         editQty: (state, action) => state,
-        selectTicket: (state, action: PayloadAction<number>) => ({
-            ...state,
-            selection: {
-                ...state.selection,
-                selectedTicket: (action.payload)
-                    ? action.payload
-                    : null
-            }
-        }),
+        selectTicket: selectTicketReducer,
         setQty: (state, action: PayloadAction<number>) => ({
             ...state,
             selection: {
