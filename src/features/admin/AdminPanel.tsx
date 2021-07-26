@@ -13,6 +13,7 @@ import CreateIcon from '@material-ui/icons/Create';
 import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
 import MeetingRoomIcon from '@material-ui/icons/MeetingRoom';
 import { Typography } from "@material-ui/core";
+import {NavLink} from "react-router-dom";
 
 const useStyles = makeStyles({
     root: {
@@ -31,6 +32,9 @@ const useStyles = makeStyles({
     }
 });
 
+const LinkTo = (path: string) => (props: any) => 
+    <NavLink to={path} {...props} />
+    
 
 export default function AdminPanel() {
     const classes = useStyles();
@@ -80,25 +84,25 @@ export default function AdminPanel() {
                         Events 
                     </Typography>
                     <List>
-                        <ListItem button component="a" href="/admin/CreateEvents">
+                        <ListItem button component={LinkTo("admin/CreateEvents")}>
                             <ListItemIcon>
                                 <AddBox />
                             </ListItemIcon>
                             <ListItemText primary="Create an event" />
                         </ListItem>
-                        <ListItem button component="a" href="/admin/DeleteEvents">
+                        <ListItem button component={LinkTo("/admin/DeleteEvents")}>
                             <ListItemIcon>
                                 <DeleteForever />
                             </ListItemIcon>
                             <ListItemText primary="Delete an event" />
                         </ListItem>
-                        <ListItem button component="a" href="/events" >
+                        <ListItem button component={LinkTo("/events")}>
                             <ListItemIcon>
                                 <ViewListIcon />
                             </ListItemIcon>
                             <ListItemText primary="View events" />
                         </ListItem>
-                        <ListItem button component="a" href="/admin/doorlist">
+                        <ListItem button component={LinkTo("/admin/doorlist")}>
                             <ListItemIcon>
                                 <MeetingRoomIcon />
                             </ListItemIcon>
