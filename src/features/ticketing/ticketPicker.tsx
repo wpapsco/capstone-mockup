@@ -1,5 +1,6 @@
+import { useEffect } from 'react'
 import { appSelector, useAppDispatch } from '../../app/hooks'
-import { selectTicket, selectSelectedTicket } from './ticketingSlice'
+import { clearSelection, selectTicket, selectSelectedTicket } from './ticketingSlice'
 import {
     InputLabel,
     Select,
@@ -17,6 +18,12 @@ const TicketPicker = (props: {playid: string}) => {
         state.ticketing.tickets
             .filter(ticket => ticket.playid===props.playid)
     )
+
+    useEffect(() => {
+        if (selectedTicket!==null) {
+            dispatch(clearSelection())
+        }
+    }, [dispatch])
     // TODO: sort by date
     return (
         <FormControl className={classes.formControl}>
