@@ -8,6 +8,7 @@ import {
     // TicketData
 } from "../src/features/cart/cartSlice"
 import {CheckoutFormInfo} from "../src/components/CompleteOrderForm"
+import { dayMonthDate, militaryToCivilian } from '../src/utils';
 
 import passport from "passport"
 import {Strategy as LocalStrategy} from "passport-local"
@@ -397,5 +398,41 @@ app.post("/webhook", async(req, res) =>{
       // Return a 200 response to acknowledge receipt of the event
       res.json({received: true});
 })
+
+app.get('/api/plays', async (req, res) => {
+    try {
+        const querystring = `
+            SELECT id, playname title, playdescription description, image_url
+            FROM plays
+            WHERE active=true;`
+        const plays = await pool.query(querystring)
+        res.json(plays.rows);
+    }
+    catch (err) {
+        console.error(err.message);
+    }
+});
+
+app.get('/api/tickets', async (req, res) => {
+    try {
+        const qs = `SELECT sh.id eventid, playid, eventdate, starttime, availableseats, tt.name admission_type, price t_price, concessions c_price
+            FROM showtimes sh
+                JOIN linkedtickets lt ON sh.id=lt.showid
+                JOIN tickettype tt ON lt.ticket_type=tt.id
+            WHERE isseason=false AND availableseats > 0;`
+        const query_res = await pool.query(qs)
+        const ticketData = query_res.rows
+            .map(ticket => ({
+                ...ticket,
+                eventdate: dayMonthDate(ticket.eventdate),
+                starttime: militaryToCivilian(ticket.starttime)
+            }))
+        res.json(ticketData);
+    }
+    catch (err) {
+        console.error(err.message)
+    }
+})
+
 // tslint:disable-next-line:no-console
 app.listen(port, () => console.log(`Listening on port ${port}`));
