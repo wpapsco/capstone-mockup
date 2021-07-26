@@ -24,7 +24,7 @@ const TicketPicker = (props: {playid: string}) => {
             dispatch(clearSelection())
         }
     }, [dispatch])
-    // TODO: sort by date
+    
     return (
         <FormControl className={classes.formControl}>
             <InputLabel shrink id='select-ticket-label'>
