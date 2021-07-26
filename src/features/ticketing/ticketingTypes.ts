@@ -3,7 +3,8 @@ export interface CartItem {
     qty: number,
     name: string,
     desc: string,
-    product_url: string,
+    product_img_url: string,
+    price: string,
 }
 
 export interface Ticket {
@@ -23,6 +24,17 @@ export interface Play {
     title: string,
     description: string,
     image_url: string,
+}
+
+export interface ticketingState {
+    cart: CartItem[],
+    tickets: Ticket[],
+    plays: Play[],
+    status: LoadStatus,
+    selection: {
+        selectedTicket: number | null,
+        qty: number | '',
+    }
 }
 
 export type LoadStatus = 'idle' | 'loading' | 'success' | 'failed'

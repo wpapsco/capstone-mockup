@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
 import { useAppDispatch, appSelector } from '../../app/hooks'
 import { useParams } from 'react-router-dom'
-import { addTicket } from '../cart/cartSlice'
 import eventPageStyles from './eventPageStyles'
 import {
     Card,
@@ -19,7 +18,12 @@ import { titleCase } from '../../utils'
 
 import TicketPicker from '../ticketing/ticketPicker'
 import QuantityField from '../ticketing/quantityField'
-import { selectSelectedTicket, selectTicketQty, clearSelection } from '../ticketing/ticketingSlice'
+import {
+    addTicketToCart,
+    selectSelectedTicket,
+    selectTicketQty,
+    clearSelection
+} from '../ticketing/ticketingSlice'
 
 type EventPageProps = {playid: string}
 const EventPage = () => {
@@ -38,12 +42,8 @@ const EventPage = () => {
     const handleSubmit = (e: React.FormEvent) => {
         if (selectedTicket!==null && amount) {
             e.preventDefault()
-            dispatch(addTicket({
-                playId: Number.parseInt(playid),
-                eventId: selectedTicket,
-                concessions,
-                qty: amount,
-            }))
+            // TODO: add concessions,
+            dispatch(addTicketToCart({id: selectedTicket, qty: amount}))
             dispatch(clearSelection())
             dispatch(openSnackbar(`Added ${amount} ticket${amount === 1 ? "" : "s"} to cart!`))
         }
