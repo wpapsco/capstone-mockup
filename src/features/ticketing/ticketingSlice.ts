@@ -61,30 +61,20 @@ const selectTicketReducer = (state: ticketingState, action: PayloadAction<number
     }
 }
 
+const setQtyReducer = (state: ticketingState, action: PayloadAction<number>) => ({
+    ...state,
+    selection: {...state.selection, qty: (action.payload > 0) ? action.payload : 0}
+})
+
 const ticketingSlice = createSlice({
     name: 'cart',
     initialState: INITIAL_STATE,
     reducers: {
-        addTicket: (state, action) => state,
-        removeTicket: (state, action) => state,
-        editQty: (state, action) => state,
+        // TODO: removeTicket: (state, action) => state,
+        // TODO: editQty: (state, action) => state,
         selectTicket: selectTicketReducer,
-        setQty: (state, action: PayloadAction<number>) => ({
-            ...state,
-            selection: {
-                ...state.selection,
-                qty: (action.payload > 0)
-                    ? action.payload
-                    : 0
-            }
-        }),
-        clearSelection: (state) => ({
-            ...state,
-            selection: {
-                selectedTicket: null,
-                qty: '',
-            }
-        })
+        setQty: setQtyReducer,
+        clearSelection: (state) => ({ ...state, selection: {selectedTicket: null, qty: ''}})
     },
     extraReducers: builder => {
         builder
