@@ -399,6 +399,9 @@ app.post("/webhook", async(req, res) =>{
       res.json({received: true});
 })
 
+const propToString = prop => obj =>
+    ({...obj, [prop]: obj[prop].toString()})
+    
 app.get('/api/plays', async (req, res) => {
     try {
         const querystring = `
@@ -406,13 +409,21 @@ app.get('/api/plays', async (req, res) => {
             FROM plays
             WHERE active=true;`
         const data = await pool.query(querystring)
-        const plays = data.rows.map(play => ({...play, id: play.id.toString()}))
+        const plays = data.rows.map(propToString('id'))
         res.json(plays)
     }
     catch (err) {
         console.error(err.message);
     }
 });
+
+
+const toTicket = row => ({
+    ...row,
+    eventdate: dayMonthDate(row.eventdate),
+    starttime: militaryToCivilian(row.starttime),
+    playid: row.playid.toString()
+})
 
 app.get('/api/tickets', async (req, res) => {
     try {
@@ -422,13 +433,7 @@ app.get('/api/tickets', async (req, res) => {
                 JOIN tickettype tt ON lt.ticket_type=tt.id
             WHERE isseason=false AND availableseats > 0;`
         const query_res = await pool.query(qs)
-        const ticketData = query_res.rows
-            .map(ticket => ({
-                ...ticket,
-                eventdate: dayMonthDate(ticket.eventdate),
-                starttime: militaryToCivilian(ticket.starttime),
-                playid: ticket.playid.toString()
-            }))
+        const ticketData = query_res.rows.map(toTicket)
         res.json(ticketData);
     }
     catch (err) {
