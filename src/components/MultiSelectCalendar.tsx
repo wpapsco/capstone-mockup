@@ -8,7 +8,7 @@ import format from "date-fns/format";
 import {withStyles} from "@material-ui/styles";
 import clsx from 'clsx';
 
-function MultiSelectCalendar({ classes, value, onChange}: {classes: any, value?: Date[], onChange?: (a: Date[]) => void}) {
+function MultiSelectCalendar({classes, value, onChange}: {classes: any, value?: Date[], onChange?: (a: Date[]) => void}) {
 
     const [dates, setDates] = useState<Date[]>([]);
     const [selDate, setSelDate] = useState<Date>(new Date());
@@ -55,11 +55,18 @@ function MultiSelectCalendar({ classes, value, onChange}: {classes: any, value?:
                 }}
                 renderDay={(day, selectedDate, dayInCurrentMonth, dayComponent) => {
                     if (!day) return <div />
+                    const daySelected = (value || dates).some(d => isSameDay(d, day))
                     const wrapperClassName = clsx({
-                        [classes.highlight]: (value || dates).some(d => isSameDay(d, day))
+                        [classes.wrapper]: daySelected,
+                        [classes.highlight]: daySelected && dayInCurrentMonth,
+                        [classes.highlightOutside]: daySelected && !dayInCurrentMonth
                     })
+                    const dayClassName = clsx(classes.day, {
+                        [classes.nonCurrentMonthDay]: !dayInCurrentMonth && !daySelected,
+                        [classes.selectedNonCurrentMonthDay]: !dayInCurrentMonth && daySelected
+                    });
                     return <div className={wrapperClassName}>
-                        <IconButton className={classes.day}>
+                        <IconButton className={dayClassName}>
                             <span> {format(day, "d")} </span>
                         </IconButton>
                     </div>
@@ -70,9 +77,6 @@ function MultiSelectCalendar({ classes, value, onChange}: {classes: any, value?:
 }
 
 const styles = createStyles((theme: any) => ({
-    dayWrapper: {
-        position: "relative",
-    },
     day: {
         width: 36,
         height: 36,
@@ -80,28 +84,25 @@ const styles = createStyles((theme: any) => ({
         margin: "0 2px",
         color: "inherit",
     },
-    customDayHighlight: {
-        position: "absolute",
-        top: 0,
-        bottom: 0,
-        left: "2px",
-        right: "2px",
-        border: `1px solid ${theme.palette.secondary.main}`,
-        borderRadius: "50%",
-    },
     nonCurrentMonthDay: {
         color: theme.palette.text.disabled,
     },
-    highlightNonCurrentMonthDay: {
-        color: "#676767",
+    selectedNonCurrentMonthDay: {
+        color: theme.palette.common.white
     },
-    highlight: {
-        background: theme.palette.primary.main,
+    wrapper: {
+        background: "inherit",
         color: theme.palette.common.white,
         borderTopLeftRadius: "50%",
         borderBottomLeftRadius: "50%",
         borderTopRightRadius: "50%",
         borderBottomRightRadius: "50%",
+    },
+    highlight: {
+        background: theme.palette.primary.main,
+    },
+    highlightOutside: {
+        background: theme.palette.primary.dark,
     }
 }))
 
