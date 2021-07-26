@@ -11,7 +11,6 @@ import {
     Button,
     Checkbox,
     FormControlLabel,
-    TextField,
     Typography,
     FormControl
 } from '@material-ui/core';
@@ -19,13 +18,14 @@ import { openSnackbar } from '../snackbarSlice'
 import { titleCase } from '../../utils'
 
 import TicketPicker from '../ticketing/ticketPicker'
-import { selectSelectedTicket, clearSelection } from '../ticketing/ticketingSlice'
+import QuantityField from '../ticketing/quantityField'
+import { selectSelectedTicket, selectTicketQty, clearSelection } from '../ticketing/ticketingSlice'
 
 type EventPageProps = {playid: string}
 const EventPage = () => {
     const classes = eventPageStyles()
     const dispatch = useAppDispatch()
-    const [amount, setAmount] = useState(0)
+    const amount = appSelector(selectTicketQty)
     const selectedTicket = appSelector(selectSelectedTicket)
     const [concessions, setConcessions] = useState(false)
 
@@ -36,7 +36,7 @@ const EventPage = () => {
     const {title, description, image_url} = eventData
 
     const handleSubmit = (e: React.FormEvent) => {
-        if (selectedTicket!==null) {
+        if (selectedTicket!==null && amount) {
             e.preventDefault()
             dispatch(addTicket({
                 playId: Number.parseInt(playid),
@@ -62,16 +62,8 @@ const EventPage = () => {
                     <CardActions className={classes.cardActions}>
 
                         <TicketPicker playid={playid}/>
-
-                        <FormControl className={classes.formControl}>
-                            <TextField
-                                className={classes.formInput}
-                                required
-                                value={amount || undefined}
-                                onChange={(e) => setAmount(+e.target.value)}
-                                label="Quantity"
-                                type="number" />
-                        </FormControl>
+                        <QuantityField />
+                        
                         <FormControl className={classes.formControl}>
                             <FormControlLabel
                                 control={

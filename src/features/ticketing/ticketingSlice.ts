@@ -1,4 +1,5 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit'
+import { NumericLiteral } from 'typescript'
 import { RootState } from '../../app/store'
 import { CartItem, LoadStatus, Play, Ticket } from './ticketingTypes'
 
@@ -7,7 +8,10 @@ export interface ticketingState {
     tickets: Ticket[],
     plays: Play[],
     status: LoadStatus,
-    selectedTicket: number | null,
+    selection: {
+        selectedTicket: number | null,
+        qty: number | '',
+    }
 }
 
 const INITIAL_STATE: ticketingState = {
@@ -15,7 +19,10 @@ const INITIAL_STATE: ticketingState = {
     tickets: [],
     plays: [],
     status: 'idle',
-    selectedTicket: null,
+    selection: {
+        selectedTicket: null,
+        qty: '',
+    }
 }
 
 const fetchData = async (url: string) => {
@@ -28,7 +35,7 @@ const fetchData = async (url: string) => {
     }
 }
 
-//TODO: fetchEvents
+// TODO: sort by date
 export const fetchTicketingData = createAsyncThunk(
     'events/fetch',
     async () => {
@@ -47,11 +54,29 @@ const ticketingSlice = createSlice({
         editQty: (state, action) => state,
         selectTicket: (state, action: PayloadAction<number>) => ({
             ...state,
-            selectedTicket: (action.payload)
-                ? action.payload
-                : null
+            selection: {
+                ...state.selection,
+                selectedTicket: (action.payload)
+                    ? action.payload
+                    : null
+            }
         }),
-        clearSelection: (state) => ({...state, selectedTicket: null})
+        setQty: (state, action: PayloadAction<number>) => ({
+            ...state,
+            selection: {
+                ...state.selection,
+                qty: (action.payload > 0)
+                    ? action.payload
+                    : 0
+            }
+        }),
+        clearSelection: (state) => ({
+            ...state,
+            selection: {
+                selectedTicket: null,
+                qty: '',
+            }
+        })
     },
     extraReducers: builder => {
         builder
@@ -73,6 +98,7 @@ const ticketingSlice = createSlice({
     }
 })
 
-export const selectSelectedTicket = (state: RootState) => state.ticketing.selectedTicket
-export const { selectTicket, clearSelection } = ticketingSlice.actions
+export const selectSelectedTicket = (state: RootState) => state.ticketing.selection.selectedTicket
+export const selectTicketQty = (state: RootState) => state.ticketing.selection.qty
+export const { selectTicket, clearSelection, setQty } = ticketingSlice.actions
 export default ticketingSlice.reducer
