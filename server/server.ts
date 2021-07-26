@@ -376,6 +376,26 @@ app.get('/api/email_subscriptions/volunteers', isAuthenticated, async (req, res)
         console.error(err.message);
     }
 });
+const fulfillOrder = (session) => {
+    // TODO: fill me in
+    console.log("Fulfilling order", session);
+  }
 
+app.post("/webhook", async(req, res) =>{
+    const event = req.body;
+    console.log(event);
+    switch (event.type) {
+        case 'payment_intent.succeeded':
+          const paymentIntent = event.data.object;
+          console.log('PaymentIntent was successful');
+          break;
+        // ... handle other event types
+        default:
+          console.log(`Unhandled event type ${event.type}`);
+      }
+    
+      // Return a 200 response to acknowledge receipt of the event
+      res.json({received: true});
+})
 // tslint:disable-next-line:no-console
 app.listen(port, () => console.log(`Listening on port ${port}`));
