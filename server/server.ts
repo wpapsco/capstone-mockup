@@ -228,8 +228,7 @@ app.post('/api/checkout', async (req, res) => {
     }
     customerID = customerID.rows[0].id;
     const formData: CheckoutFormInfo = req.body.formData;
-    console.log(formData);
-    const donation: number = req.body.donation
+    const donation: number = req.body.donation;
     const donationItem = {
       price_data: {
         currency: "usd",
@@ -242,6 +241,18 @@ app.post('/api/checkout', async (req, res) => {
       },
       quantity: 1,
     };
+    const cartSize = req.body.cartItems.length;
+    var orders = [];
+
+    for(let i = 0; i<cartSize;++i){
+        let newOrder = {
+            id: req.body.cartItems[i].id.toString(),
+            quantity: req.body.cartItems[i].qty.toString(),
+
+        };
+        orders.push(newOrder);
+    }
+
     const session = await stripe.checkout.sessions.create({
         payment_method_types: ['card'],
         //this is the offending area all this stuff needs to be replaced by info from DB based on play ID or something
@@ -260,22 +271,12 @@ app.post('/api/checkout', async (req, res) => {
         mode: "payment",
         success_url: "http://localhost:3000/success",
         cancel_url: "http://localhost:3000",
-    })
-    const eventnum = req.body.cartItems[0].itemData.eventId;
-    // inserting successful orders into tickets db
-    // currently this isnt checking if the payment is successfully processed on the stripe page
-    // we will eventually change this to process after a successful stripe payment
-    // using payment_status = "unpaid" as a test. We will change this later.
-    if((session.payment_status === "unpaid") || (session.payment_status === "paid")){
-        try{
-            const addedTicket = await pool.query(
-            `INSERT INTO tickets(type, eventid, custid, paid, active) 
-            values ($1,$2,$3,$4,$5)`,
-            [0, eventnum, customerID, true, true])
-        } catch (error) {
-            console.log(error);
+        metadata: {
+            orders: JSON.stringify(orders),
+            custid: customerID
         }
-    }
+    })
+    console.log(session);
     res.json({id: session.id})
 });
 
