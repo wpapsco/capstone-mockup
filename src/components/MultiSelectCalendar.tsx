@@ -19,7 +19,8 @@ function MultiSelectCalendar({classes, value, onChange}: {classes: any, value?: 
         setSelDate(date)
         if (updateDate) {
             toggleDate(date)
-            updateDate = true;
+        } else {
+            updateDate = true
         }
     }
 
