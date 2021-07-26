@@ -38,6 +38,7 @@ export default function LoginPage() {
         <TextField
             label="password"
             variant="outlined"
+            type="password"
             onChange={e => setPassword(e.target.value)} />
         <Button variant="contained" color="primary" onClick={onSubmit}>Log in</Button>
         {loggedIn && <Redirect to={"/" + (redirect ? redirect : "")}/>}
