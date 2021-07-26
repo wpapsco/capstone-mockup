@@ -3,16 +3,46 @@ import DateFnsUtils from "@date-io/date-fns";
 import {MaterialUiPickersDate} from "@material-ui/pickers/typings/date";
 import isSameDay from "date-fns/isSameDay";
 import {useState} from "react";
-import {createStyles, IconButton} from "@material-ui/core";
+import {IconButton, makeStyles} from "@material-ui/core";
 import format from "date-fns/format";
-import {withStyles} from "@material-ui/styles";
 import clsx from 'clsx';
 
-function MultiSelectCalendar({classes, value, onChange}: {classes: any, value?: Date[], onChange?: (a: Date[]) => void}) {
+const useStyles = makeStyles(theme => ({
+    day: {
+        width: 36,
+        height: 36,
+        fontSize: theme.typography.caption.fontSize,
+        margin: "0 2px",
+        color: "inherit",
+    },
+    nonCurrentMonthDay: {
+        color: theme.palette.text.disabled,
+    },
+    selectedNonCurrentMonthDay: {
+        color: theme.palette.common.white
+    },
+    wrapper: {
+        background: "inherit",
+        color: theme.palette.common.white,
+        borderTopLeftRadius: "50%",
+        borderBottomLeftRadius: "50%",
+        borderTopRightRadius: "50%",
+        borderBottomRightRadius: "50%",
+    },
+    highlight: {
+        background: theme.palette.primary.main,
+    },
+    highlightOutside: {
+        background: theme.palette.primary.dark,
+    }
+}))
+
+function MultiSelectCalendar({value, onChange}: {value?: Date[], onChange?: (a: Date[]) => void}) {
 
     const [dates, setDates] = useState<Date[]>([]);
     const [selDate, setSelDate] = useState<Date>(new Date());
     let updateDate = true;
+    const classes = useStyles();
 
     const handleChange = (date: MaterialUiPickersDate) => {
         if (!date) return;
@@ -75,35 +105,4 @@ function MultiSelectCalendar({classes, value, onChange}: {classes: any, value?: 
         </MuiPickersUtilsProvider>
     </>
 }
-
-const styles = createStyles((theme: any) => ({
-    day: {
-        width: 36,
-        height: 36,
-        fontSize: theme.typography.caption.fontSize,
-        margin: "0 2px",
-        color: "inherit",
-    },
-    nonCurrentMonthDay: {
-        color: theme.palette.text.disabled,
-    },
-    selectedNonCurrentMonthDay: {
-        color: theme.palette.common.white
-    },
-    wrapper: {
-        background: "inherit",
-        color: theme.palette.common.white,
-        borderTopLeftRadius: "50%",
-        borderBottomLeftRadius: "50%",
-        borderTopRightRadius: "50%",
-        borderBottomRightRadius: "50%",
-    },
-    highlight: {
-        background: theme.palette.primary.main,
-    },
-    highlightOutside: {
-        background: theme.palette.primary.dark,
-    }
-}))
-
-export default withStyles(styles)(MultiSelectCalendar);
+export default MultiSelectCalendar;

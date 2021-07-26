@@ -397,5 +397,11 @@ app.post("/webhook", async(req, res) =>{
       // Return a 200 response to acknowledge receipt of the event
       res.json({received: true});
 })
+
+app.get('/logout', function(req, res){
+    req.logout();
+    res.sendStatus(200);
+});
+
 // tslint:disable-next-line:no-console
 app.listen(port, () => console.log(`Listening on port ${port}`));
