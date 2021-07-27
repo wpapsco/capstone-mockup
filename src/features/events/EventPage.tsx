@@ -29,7 +29,7 @@ type EventPageProps = {playid: string}
 const EventPage = () => {
     const classes = eventPageStyles()
     const dispatch = useAppDispatch()
-    const amount = appSelector(selectTicketQty)
+    const qty = appSelector(selectTicketQty)
     const selectedTicket = appSelector(selectSelectedTicket)
     const [concessions, setConcessions] = useState(false)
 
@@ -40,12 +40,11 @@ const EventPage = () => {
     const {title, description, image_url} = eventData
 
     const handleSubmit = (e: React.FormEvent) => {
-        if (selectedTicket!==null && amount) {
+        if (selectedTicket!==null && qty) {
             e.preventDefault()
-            // TODO: add concessions,
-            dispatch(addTicketToCart({id: selectedTicket, qty: amount}))
+            dispatch(addTicketToCart({id: selectedTicket, qty, concessions}))
             dispatch(clearSelection())
-            dispatch(openSnackbar(`Added ${amount} ticket${amount === 1 ? "" : "s"} to cart!`))
+            dispatch(openSnackbar(`Added ${qty} ticket${qty === 1 ? "" : "s"} to cart!`))
         }
     }
 
@@ -76,7 +75,7 @@ const EventPage = () => {
                         </FormControl>
                         <FormControl className={classes.formControl}>
                             <Button
-                                disabled={!amount || !selectedTicket}
+                                disabled={!qty || !selectedTicket}
                                 color="primary"
                                 variant="contained"
                                 onClick={handleSubmit}>

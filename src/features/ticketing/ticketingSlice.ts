@@ -76,14 +76,21 @@ const setQtyReducer = (state: ticketingState, action: PayloadAction<number>) => 
 
 
 const byEventId = (id: number) => (obj: Ticket) => obj.eventid===id
-const partialCartData = (ticket: Ticket) => ({
-    product_id: ticket.eventid,
-    name: 'Ticket(s) to ' + ticket.event_title,
-    desc: ticket.admission_type,
-    price: ticket.ticket_price.slice(1),
-})
+const sumMoneyStrings = (moneyStrings: string[]) =>
+    moneyStrings
+        .map(s => s.slice(1))
+        .map(s => Number.parseFloat(s))
+        .reduce((tot, n) => tot + n, 0)
+        .toString()
 
-const addTicketReducer: CaseReducer<ticketingState, PayloadAction<{id: number, qty: number}>> = (state, action) => {
+const addConcessionPrice = (t: {ticket_price: string, concession_price: string}) =>
+    sumMoneyStrings([t.ticket_price, t.concession_price])
+
+const addTicketReducer: CaseReducer<ticketingState, PayloadAction<{
+    id: number,
+    qty: number,
+    concessions: boolean
+}>> = (state, action) => {
     const idInTickets = someInList(state.tickets, 'eventid')
     const ticketData = (idInTickets(action.payload.id))
         ? state.tickets.find(byEventId(action.payload.id))
@@ -91,7 +98,14 @@ const addTicketReducer: CaseReducer<ticketingState, PayloadAction<{id: number, q
 
     const newCartItem = (ticketData)
         ? {
-            ...partialCartData(ticketData),
+            product_id: ticketData.eventid,
+            name: ticketData.event_title + ' ticket(s)',
+            price: (action.payload.concessions)
+                ? addConcessionPrice(ticketData)
+                : ticketData.ticket_price,
+            desc: (action.payload.concessions)
+                ? ticketData.admission_type + ' + concessions'
+                : ticketData.admission_type,
             qty: action.payload.qty,
             product_img_url: state.plays.find(p => p.id===ticketData.playid)!.image_url,
         }
