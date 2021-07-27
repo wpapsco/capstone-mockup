@@ -36,6 +36,7 @@ const Cart = () => {
         <section>
             <div className={classes.cartContents}>
                 <Typography component='h1' variant='h3'>My Cart</Typography>
+                {(itemCost.length > 0) ? items.map(data => <CartRow key={data.product_id} {...data} />) : <p>Empty Cart</p>}
             </div>
 
             <Divider orientation='horizontal' />
