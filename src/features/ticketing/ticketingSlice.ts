@@ -95,7 +95,7 @@ const addTicketReducer: CaseReducer<ticketingState, PayloadAction<{
             name: ticketData.event_title + ' ticket(s)',
             price: (action.payload.concessions)
                 ? addConcessionPrice(ticketData)
-                : ticketData.ticket_price,
+                : ticketData.ticket_price.slice(1),
             desc: makeTicketDesc(ticketData, action.payload.concessions),
             qty: action.payload.qty,
             product_img_url: state.plays.find(p => p.id===ticketData.playid)!.image_url,
