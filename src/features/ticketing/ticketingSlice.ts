@@ -68,6 +68,7 @@ const selectTicketReducer = (state: ticketingState, action: PayloadAction<number
     }
 }
 
+// TODO: Don't allow more than available
 const setQtyReducer = (state: ticketingState, action: PayloadAction<number>) => ({
     ...state,
     selection: {...state.selection, qty: (action.payload > 0) ? action.payload : 0}
@@ -75,7 +76,7 @@ const setQtyReducer = (state: ticketingState, action: PayloadAction<number>) => 
 
 
 const byEventId = (id: number) => (obj: Ticket) => obj.eventid===id
-const getPartialCartData = (ticket: Ticket) => ({
+const partialCartData = (ticket: Ticket) => ({
     product_id: ticket.eventid,
     name: 'Ticket(s) to ' + ticket.event_title,
     desc: ticket.admission_type,
@@ -90,7 +91,7 @@ const addTicketReducer: CaseReducer<ticketingState, PayloadAction<{id: number, q
 
     const newCartItem = (ticketData)
         ? {
-            ...getPartialCartData(ticketData),
+            ...partialCartData(ticketData),
             qty: action.payload.qty,
             product_img_url: state.plays.find(p => p.id===ticketData.playid)!.image_url,
         }
@@ -104,13 +105,27 @@ const addTicketReducer: CaseReducer<ticketingState, PayloadAction<{id: number, q
     }
 }
 
+const editQtyReducer: CaseReducer<ticketingState, PayloadAction<{id: number, qty: number}>> =
+    (state, action) => ({
+        ...state,
+        cart: state.cart.map(item => (item.product_id===action.payload.id)
+            ? {
+                ...item,
+                qty: (action.payload.qty > 0)
+                    ? action.payload.qty
+                    : 0
+            }
+            : item
+        )
+    })
+
 const ticketingSlice = createSlice({
     name: 'cart',
     initialState: INITIAL_STATE,
     reducers: {
         // TODO: removeTicket: (state, action) => state,
-        // TODO: editQty: (state, action) => state,
         addTicketToCart: addTicketReducer,
+        editItemQty: editQtyReducer,
         selectTicket: selectTicketReducer,
         setQty: setQtyReducer,
         clearSelection: (state) => ({ ...state, selection: {selectedTicket: null, qty: ''}})
@@ -138,5 +153,5 @@ const ticketingSlice = createSlice({
 export const selectSelectedTicket = (state: RootState) => state.ticketing.selection.selectedTicket
 export const selectTicketQty = (state: RootState) => state.ticketing.selection.qty
 export const selectCartContents = (state: RootState): CartItem[] => state.ticketing.cart
-export const { addTicketToCart, selectTicket, clearSelection, setQty } = ticketingSlice.actions
+export const { addTicketToCart, selectTicket, clearSelection, setQty, editItemQty } = ticketingSlice.actions
 export default ticketingSlice.reducer

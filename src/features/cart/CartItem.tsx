@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { CartItem } from '../ticketing/ticketingTypes'
+import { editItemQty } from '../ticketing/ticketingSlice'
 import { editQty, removeItem } from './cartSlice'
 import { useAppDispatch } from '../../app/hooks'
 import { Paper, Typography } from '@material-ui/core'
@@ -35,7 +36,6 @@ const useStyles = makeStyles(() =>
     })
 )
 
-// TODO: Add product image
 // TODO: Display show time
 // TODO: Display concession ticket & its price
 // TODO: do not allow purchase qty > available seats
@@ -50,12 +50,12 @@ const CartRow = (props: CartItem) => {
         setCost(props.qty * price)
     }, [props.qty])
 
-    const handleDecrement = () => {
+    const decrement = () => {
         if (props.qty > 0) {
-            dispatch(editQty({id: props.product_id, qty: props.qty-1}))
+            dispatch(editItemQty({id: props.product_id, qty: props.qty-1}))
         }
     }
-    
+
     return (
         <Paper elevation={1} className={classes.cartItem}>
             <img src={props.product_img_url} className={classes.image} alt='foo'/>
@@ -65,9 +65,11 @@ const CartRow = (props: CartItem) => {
             </span>
 
             <div className={classes.itemDescriptors}>
-                <RemoveOutlinedIcon onClick={handleDecrement}></RemoveOutlinedIcon>
+                <RemoveOutlinedIcon onClick={decrement}></RemoveOutlinedIcon>
                 <span className={classes.qtyPicker}>{props.qty}</span>
-                <AddOutlinedIcon onClick={() => dispatch(editQty({id: props.product_id, qty: props.qty+1}))}></AddOutlinedIcon>
+                <AddOutlinedIcon
+                    onClick={() => dispatch(editItemQty({id: props.product_id, qty: props.qty+1}))}>
+                </AddOutlinedIcon>
             </div>
 
             {toDollarAmount(cost)}
