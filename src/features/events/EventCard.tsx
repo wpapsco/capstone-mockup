@@ -1,22 +1,23 @@
 // This implementation should replace the EventRow component in the EventsList
 import { titleCase } from '../../utils'
-import { Card, CardContent, CardMedia, Button, Typography } from '@material-ui/core'
+import { Card, CardContent, CardMedia, Button, Typography, useMediaQuery } from '@material-ui/core'
 import { Theme, makeStyles, useTheme } from '@material-ui/core/styles'
 import { Link } from 'react-router-dom'
 
 const useStyles = makeStyles((theme: Theme) => ({
     root: {
-        margin: '1em',
+        marginBottom: '1em',
+        marginTop: '1em',
         display: 'flex',
         justifyContent: 'space-between',
-        height: '300px',
         width: '100%',
         flexDirection: 'row',
-        [theme.breakpoints.down('sm')]: {
+        [theme.breakpoints.down('md')]: {
             flexDirection: 'column',
         },
         [theme.breakpoints.up('md')]: {
             flexDirection: 'row',
+            minHeight: '300px',
         }
     },
     cardMedia: {
@@ -27,11 +28,19 @@ const useStyles = makeStyles((theme: Theme) => ({
         padding: '1.8em',
         display: 'flex',
         flexDirection: 'column',
+        justifyContent: 'space-between',
         // maxWidth: '60%',
     },
     callToAction: {
         alignSelf: 'center',
-        marginTop: 'auto',
+        textDecoration: 'none',
+        [theme.breakpoints.down('md')]: {
+            marginTop: '1em'
+        },
+        [theme.breakpoints.up('md')]: {
+            marginTop: 'auto'
+        },
+        width: "100%"
     },
 }))
 
@@ -41,7 +50,8 @@ const EventCard = (props: {
     image_url: string,
     playid: number,
 }) => {
-    const classes = useStyles(useTheme())
+    const theme = useTheme()
+    const classes = useStyles(theme)
 
     return (
         <Card className={classes.root}>
@@ -54,7 +64,7 @@ const EventCard = (props: {
                     }
                 </Typography>
                 <Link to={`/events/${props.playid}`} className={classes.callToAction}>
-                    <Button variant="contained" color="primary">
+                    <Button variant="contained" color="primary" fullWidth>
                         See Showings
                     </Button>
                 </Link>
