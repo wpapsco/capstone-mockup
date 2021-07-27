@@ -1,6 +1,6 @@
 // This implementation should replace the EventRow component in the EventsList
 import { titleCase } from '../../utils'
-import { Card, CardContent, CardMedia, Button, Typography, useMediaQuery } from '@material-ui/core'
+import { Card, CardContent, CardMedia, Button, Typography } from '@material-ui/core'
 import { Theme, makeStyles, useTheme } from '@material-ui/core/styles'
 import { Link } from 'react-router-dom'
 
