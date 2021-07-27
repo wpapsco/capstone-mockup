@@ -3,12 +3,9 @@ import express from 'express';
 import {pool} from './db';
 import cors from 'cors';
 import Stripe from "stripe"
-import {
-    CartItem,
-    // TicketData
-} from "../src/features/cart/cartSlice"
 import {CheckoutFormInfo} from "../src/components/CompleteOrderForm"
-import { dayMonthDate, militaryToCivilian } from '../src/utils';
+import {CartItem, Ticket} from '../src/features/ticketing/ticketingTypes'
+import {dayMonthDate, militaryToCivilian} from '../src/utils';
 
 import passport from "passport"
 import {Strategy as LocalStrategy} from "passport-local"
@@ -251,10 +248,10 @@ app.post('/api/checkout', async (req, res) => {
                 currency: "usd",
                 product_data: {
                     name: item.name,
-                    description: item.description
+                    description: item.desc
                 },
                 // the price here needs to be fetched from the DB instead
-                unit_amount: item.unitPrice * 100
+                unit_amount: item.price * 100
             },
             quantity: item.qty
         })).concat(donationItem),
@@ -417,20 +414,24 @@ app.get('/api/plays', async (req, res) => {
     }
 });
 
-
-const toTicket = row => ({
+// remove $ and parse to float
+const parseMoneyString = (s: string) => Number.parseFloat(s.slice(1))
+const toTicket = (row): Ticket => ({
     ...row,
+    playid: row.playid.toString(),
+    ticket_price: parseMoneyString(row.ticket_price),
+    concession_price: parseMoneyString(row.concession_price),
     eventdate: dayMonthDate(row.eventdate),
     starttime: militaryToCivilian(row.starttime),
-    playid: row.playid.toString()
 })
 
 app.get('/api/tickets', async (req, res) => {
     try {
-        const qs = `SELECT sh.id eventid, playid, eventdate, starttime, availableseats, tt.name admission_type, price ticket_price, concessions concession_price
+        const qs = `SELECT sh.id eventid, playid, playname event_title, eventdate, starttime, availableseats, tt.name admission_type, price ticket_price, concessions concession_price
             FROM showtimes sh
                 JOIN linkedtickets lt ON sh.id=lt.showid
                 JOIN tickettype tt ON lt.ticket_type=tt.id
+                JOIN plays pl ON sh.playid=pl.id
             WHERE isseason=false AND availableseats > 0;`
         const query_res = await pool.query(qs)
         const ticketData = query_res.rows.map(toTicket)

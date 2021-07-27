@@ -4,7 +4,7 @@ export interface CartItem {
     name: string,
     desc: string,
     product_img_url: string,
-    price: string,
+    price: number,
 }
 
 export interface Ticket {
@@ -14,8 +14,8 @@ export interface Ticket {
     admission_type: string,
     eventdate: string,
     starttime: string,
-    ticket_price: string,
-    concession_price: string,
+    ticket_price: number,
+    concession_price: number,
     available: number,
 }
 

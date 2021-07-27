@@ -8,6 +8,7 @@ import {
     FormControl,
 } from '@material-ui/core'
 import eventPageStyles from '../events/eventPageStyles'
+import { toDollarAmount } from '../../utils'
 
 
 const TicketPicker = (props: {playid: string}) => {
@@ -38,7 +39,7 @@ const TicketPicker = (props: {playid: string}) => {
             >
                 {tickets.map(t =>
                     <MenuItem key={t.eventid} value={t.eventid}>
-                        {`${t.eventdate}, ${t.starttime} - ${t.ticket_price} (${t.concession_price} concessions)`}
+                        {`${t.eventdate}, ${t.starttime} - ${toDollarAmount(t.ticket_price)} (${toDollarAmount(t.concession_price)} concessions)`}
                     </MenuItem>
                 )}
             </Select>

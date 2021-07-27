@@ -23,8 +23,8 @@ const useStyles = makeStyles(() =>
     })
 )
 
-type Item = {price: string, qty: number}
-const itemCost = (item: Item) => Number.parseFloat(item.price) * item.qty
+type Item = {price: number, qty: number}
+const itemCost = (item: Item) => item.price * item.qty
 const subtotalReducer = (acc: number, item: Item) => acc + itemCost(item)
 
 const Cart = () => {

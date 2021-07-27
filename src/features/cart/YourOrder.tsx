@@ -19,7 +19,7 @@ const YourOrder = () => {
 
     useEffect(() => {
         setSubtotal(
-            cartItems.reduce((tot, curItem) => tot + (curItem.qty * Number.parseFloat(curItem.price)), 0)
+            cartItems.reduce((tot, curItem) => tot + (curItem.qty * curItem.price), 0)
         )
     }, [cartItems])
 

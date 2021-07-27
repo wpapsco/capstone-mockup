@@ -2,6 +2,7 @@ import { createSlice, createAsyncThunk, PayloadAction, CaseReducer } from '@redu
 import { RootState } from '../../app/store'
 import { CartItem, Play, Ticket, ticketingState } from './ticketingTypes'
 import { titleCase } from '../../utils'
+import { isTemplateLiteralToken } from 'typescript'
 
 const fetchData = async (url: string) => {
     try {
@@ -13,31 +14,14 @@ const fetchData = async (url: string) => {
     }
 }
 
-const createTitleMap = (plays: Play[]) =>
-    plays.reduce((titleMap, play) => {
-        const key = play.id
-        return (titleMap[key])
-            ? {...titleMap}
-            : {...titleMap, [key]: play.title}
-    }, {} as {[index:string] : string})
-
-const addPlayTitles = (titleMap: any) => (ticket: Ticket): Ticket => ({
-    ...ticket,
-    event_title: (titleMap[ticket.playid])
-        ? titleCase(titleMap[ticket.playid])
-        : 'Play'
-})
-
+const capitalizeTitles = (ticket: Ticket) => ({...ticket, event_title: titleCase(ticket.event_title)})
 // TODO: sort by date
 export const fetchTicketingData = createAsyncThunk(
     'events/fetch',
     async () => {
         const plays: Play[] = await fetchData('/api/plays')
-        const titleMap = createTitleMap(plays)
-        const appendTitles = addPlayTitles(titleMap)
-        const ticketdata: Ticket[] = await fetchData('/api/tickets')
-
-        return { plays, tickets: ticketdata.map(appendTitles)}
+        const tickets: Ticket[] = await fetchData('/api/tickets')
+        return {plays, tickets: tickets.map(capitalizeTitles)}
     }
 )
 
@@ -65,19 +49,22 @@ const setQtyReducer = (state: ticketingState, action: PayloadAction<number>) => 
 
 
 const byEventId = (id: number) => (obj: Ticket) => obj.eventid===id
-const sumMoneyStrings = (moneyStrings: string[]) =>
-    moneyStrings
-        .map(s => s.slice(1))
-        .map(s => Number.parseFloat(s))
-        .reduce((tot, n) => tot + n, 0)
-        .toString()
 
-const addConcessionPrice = (t: {ticket_price: string, concession_price: string}) =>
-    sumMoneyStrings([t.ticket_price, t.concession_price])
+const applyConcession = (c_price: number) => (item: CartItem) => {
+    const name = item.name + ' + Concessions'
+    const price = c_price + item.price
+    const desc = `${item.desc} with concessions ticket`
+    return ({...item, name, price, desc})
+}
 
-const makeTicketDesc = (t: Ticket, boughtConcession: boolean) =>
-    `${t.admission_type} ${boughtConcession && '+ concessions'}
-    ${t.eventdate} @ ${t.starttime}`
+const makeTicketDesc = (t: Ticket) => `${t.admission_type} - ${t.eventdate}, ${t.starttime}`
+
+const toPartialCartItem = (t: Ticket) => ({
+    product_id: t.eventid,
+    name: t.event_title + ' ticket(s)',
+    price: t.ticket_price,
+    desc: makeTicketDesc(t),
+})
 
 const addTicketReducer: CaseReducer<ticketingState, PayloadAction<{
     id: number,
@@ -88,23 +75,24 @@ const addTicketReducer: CaseReducer<ticketingState, PayloadAction<{
     const ticketData = (idInTickets(action.payload.id))
         ? state.tickets.find(byEventId(action.payload.id))
         : null
-
-    const newCartItem = (ticketData)
-        ? {
-            product_id: ticketData.eventid,
-            name: ticketData.event_title + ' ticket(s)',
-            price: (action.payload.concessions)
-                ? addConcessionPrice(ticketData)
-                : ticketData.ticket_price.slice(1),
-            desc: makeTicketDesc(ticketData, action.payload.concessions),
+    
+    if (ticketData===null || ticketData===undefined) {
+        return state
+    }
+    else {
+        const addConcession = applyConcession(ticketData.concession_price)
+        const newCartItem = {
+            ...toPartialCartItem(ticketData),
             qty: action.payload.qty,
             product_img_url: state.plays.find(p => p.id===ticketData.playid)!.image_url,
         }
-        : null
-    
-    return {
-        ...state,
-        cart: (newCartItem) ? [...state.cart, newCartItem] : [...state.cart]
+
+        return {
+            ...state,
+            cart: (action.payload.concessions)
+                ? [...state.cart, addConcession(newCartItem)]
+                : [...state.cart, newCartItem]
+        }
     }
 }
 

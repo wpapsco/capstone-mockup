@@ -48,13 +48,9 @@ const useStyles = makeStyles(() =>
 const CartRow = (props: CartItem) => {
     const dispatch = useAppDispatch()
     const classes = useStyles(theme)
-    const price = Number.parseFloat(props.price)
+    const [cost, setCost] = useState(props.price * props.qty)
 
-    const [cost, setCost] = useState(price * props.qty)
-
-    useEffect(() => {
-        setCost(props.qty * price)
-    }, [props.qty])
+    useEffect(() => setCost(props.qty * props.price), [props.qty])
 
     const decrement = () => {
         if (props.qty > 0) {
