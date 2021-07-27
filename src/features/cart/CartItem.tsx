@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react'
 import { CartItem } from '../ticketing/ticketingTypes'
-import { editItemQty } from '../ticketing/ticketingSlice'
-import { editQty, removeItem } from './cartSlice'
+import { editItemQty, removeTicketFromCart } from '../ticketing/ticketingSlice'
 import { useAppDispatch } from '../../app/hooks'
 import { Paper, Typography } from '@material-ui/core'
 import { createStyles, makeStyles } from '@material-ui/core/styles'
@@ -24,9 +23,15 @@ const useStyles = makeStyles(() =>
         image: {
             width: '100px',
             borderRadius: '3px',
+            marginRight: '15px',
         },
         itemDescriptors: {
-            width: '33%',
+            width: '43%',
+            color: 'rgb(64, 88, 96)',
+        },
+        itemName: {
+            fontSize: '1.1rem',
+            fontWeight: 'bold',
         },
         qtyPicker: {
             fontSize: '1.2rem',
@@ -60,7 +65,14 @@ const CartRow = (props: CartItem) => {
         <Paper elevation={1} className={classes.cartItem}>
             <img src={props.product_img_url} className={classes.image} alt='foo'/>
             <span className={classes.itemDescriptors}>
-                <Typography component='h2' variant="h6" color="textPrimary">{props.name}</Typography>
+                <Typography
+                    component='h2'
+                    variant="body1"
+                    color="textPrimary"
+                    className={classes.itemName}
+                >
+                    {props.name}
+                </Typography>
                 <p>{props.desc}</p>
             </span>
 
@@ -74,7 +86,7 @@ const CartRow = (props: CartItem) => {
 
             {toDollarAmount(cost)}
 
-            <CloseOutlinedIcon onClick={() => dispatch(removeItem(props.product_id))}> </CloseOutlinedIcon>
+            <CloseOutlinedIcon onClick={() => dispatch(removeTicketFromCart(props.product_id))}> </CloseOutlinedIcon>
         </Paper>
     )
 }
