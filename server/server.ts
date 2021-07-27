@@ -93,6 +93,7 @@ app.get("/api/event-list", async (req, res) => {
         from showtimes as shwtm join plays on shwtm.playid = plays.id 
         where plays.active = true and shwtm.salestatus = true`);
     res.json(events.rows);
+    console.log(events.rowCount);
   } catch (err) {
     console.error(err.message);
   }

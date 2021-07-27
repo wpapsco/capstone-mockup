@@ -40,6 +40,7 @@ export const fetchEventData = createAsyncThunk(
         try {
             const res = await fetch('/api/event-list')
             const allEvents: Event[] = await res.json()
+            console.log(allEvents)
             return aggregateShowings(allEvents)
         } catch (err) {
             console.error(err.message)

@@ -6,6 +6,7 @@ import {useState} from "react";
 import {IconButton, makeStyles} from "@material-ui/core";
 import format from "date-fns/format";
 import clsx from 'clsx';
+import {DatePickerToolbar} from "@material-ui/pickers/DatePicker/DatePickerToolbar";
 
 const useStyles = makeStyles(theme => ({
     day: {
@@ -41,12 +42,17 @@ export type MultiSelectCalendarProps = {
     value?: Date[],
     onChange?: (a: Date[]) => void,
     disabled?: boolean,
-    onDateClicked?: (date: Date) => void
+    onDateClicked?: (date: Date) => void,
+    bindDates?: boolean
 }
-function MultiSelectCalendar({value, onChange, disabled, onDateClicked}: MultiSelectCalendarProps) {
+function MultiSelectCalendar({value, onChange, disabled, onDateClicked, bindDates}: MultiSelectCalendarProps) {
 
     const [dates, setDates] = useState<Date[]>([]);
-    const [selDate, setSelDate] = useState<Date>(new Date());
+    let startDate = new Date()
+    if (value) {
+        startDate = value[0]
+    }
+    const [selDate, setSelDate] = useState<Date>(startDate);
     let updateDate = true;
     const classes = useStyles();
 
@@ -91,6 +97,9 @@ function MultiSelectCalendar({value, onChange, disabled, onDateClicked}: MultiSe
                     if (!date) return;
                     updateDate = false;
                 }}
+                minDate={!bindDates || !value ? undefined : value.reduce((a, b) => a < b ? a : b)}
+                maxDate={!bindDates || !value ? undefined : value.reduce((a, b) => a > b ? a : b)}
+                disableToolbar={bindDates}
                 renderDay={(day, selectedDate, dayInCurrentMonth, dayComponent) => {
                     if (!day) return <div />
                     const daySelected = (value || dates).some(d => isSameDay(d, day))
