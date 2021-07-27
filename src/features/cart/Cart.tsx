@@ -1,9 +1,9 @@
 import { appSelector } from '../../app/hooks'
-import { selectCartContents } from './cartSlice'
 import CartRow from './CartItem'
 import { Divider, Typography } from '@material-ui/core'
 import { createStyles, makeStyles } from '@material-ui/core/styles'
 import { toDollarAmount } from '../../utils'
+import { selectCartContents } from '../ticketing/ticketingSlice'
 
 const useStyles = makeStyles(() =>
     createStyles({
@@ -23,24 +23,19 @@ const useStyles = makeStyles(() =>
     })
 )
 
+type Item = {price: string, qty: number}
+const itemCost = (item: Item) => Number.parseFloat(item.price) * item.qty
+const subtotalReducer = (acc: number, item: Item) => acc + itemCost(item)
+
 const Cart = () => {
     const classes = useStyles()
-    const items = appSelector(state => selectCartContents(state))
-    const subtotal = appSelector(state => state.shop.cart.reduce(
-        (subtot, item) => subtot + (item.unitPrice * item.qty),
-        0
-    ))
-    const cartItems = items.map(item => <CartRow {...item} />)
+    const items = appSelector(selectCartContents)
+    const subtotal = items.reduce(subtotalReducer, 0)
     
-    // TODO: Add better call to action for empty cart state
     return (
         <section>
             <div className={classes.cartContents}>
                 <Typography component='h1' variant='h3'>My Cart</Typography>
-                {(cartItems.length > 0) ?
-                    cartItems :
-                    <p>Your cart is empty</p>
-                }
             </div>
 
             <Divider orientation='horizontal' />

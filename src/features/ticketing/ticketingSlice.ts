@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk, PayloadAction, CaseReducer } from '@reduxjs/toolkit'
 import { RootState } from '../../app/store'
-import { Play, Ticket, ticketingState } from './ticketingTypes'
+import { CartItem, Play, Ticket, ticketingState } from './ticketingTypes'
 import { titleCase } from '../../utils'
 
 const INITIAL_STATE: ticketingState = {
@@ -137,5 +137,6 @@ const ticketingSlice = createSlice({
 
 export const selectSelectedTicket = (state: RootState) => state.ticketing.selection.selectedTicket
 export const selectTicketQty = (state: RootState) => state.ticketing.selection.qty
+export const selectCartContents = (state: RootState): CartItem[] => state.ticketing.cart
 export const { addTicketToCart, selectTicket, clearSelection, setQty } = ticketingSlice.actions
 export default ticketingSlice.reducer
