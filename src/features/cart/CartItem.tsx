@@ -44,8 +44,6 @@ const useStyles = makeStyles(() =>
     })
 )
 
-// TODO: Display show time
-// TODO: Display concession ticket & its price
 // TODO: do not allow purchase qty > available seats
 const CartRow = (props: CartItem) => {
     const dispatch = useAppDispatch()
