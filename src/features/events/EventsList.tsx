@@ -9,6 +9,7 @@ const useStyles = makeStyles(theme => ({
     root: {
         display: 'flex',
         flexDirection: 'column',
+        padding: '1em',
     },
     loading: {
         padding: '20px',
