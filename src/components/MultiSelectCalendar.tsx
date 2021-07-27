@@ -37,7 +37,13 @@ const useStyles = makeStyles(theme => ({
     }
 }))
 
-function MultiSelectCalendar({value, onChange}: {value?: Date[], onChange?: (a: Date[]) => void}) {
+export type MultiSelectCalendarProps = {
+    value?: Date[],
+    onChange?: (a: Date[]) => void,
+    disabled?: boolean,
+    onDateClicked?: (date: Date) => void
+}
+function MultiSelectCalendar({value, onChange, disabled, onDateClicked}: MultiSelectCalendarProps) {
 
     const [dates, setDates] = useState<Date[]>([]);
     const [selDate, setSelDate] = useState<Date>(new Date());
@@ -55,6 +61,8 @@ function MultiSelectCalendar({value, onChange}: {value?: Date[], onChange?: (a: 
     }
 
     const toggleDate = (date: Date) => {
+        if (onDateClicked) onDateClicked(date)
+        if (disabled) return
         const idx = dates.findIndex(d => isSameDay(d, date))
         if (idx == -1) {
             setDates([date, ...dates]);

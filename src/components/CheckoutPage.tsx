@@ -16,7 +16,7 @@ const useStyles = makeStyles({
         margin: "10px",
         paddingLeft: "30px",
         paddingTop: "30px",
-        paddingRight: "30px"
+        paddingRight: "30px",
     },
     root: {
         display: "flex",
