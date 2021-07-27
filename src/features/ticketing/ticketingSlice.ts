@@ -3,17 +3,6 @@ import { RootState } from '../../app/store'
 import { CartItem, Play, Ticket, ticketingState } from './ticketingTypes'
 import { titleCase } from '../../utils'
 
-const INITIAL_STATE: ticketingState = {
-    cart: [],
-    tickets: [],
-    plays: [],
-    status: 'idle',
-    selection: {
-        selectedTicket: null,
-        qty: '',
-    }
-}
-
 const fetchData = async (url: string) => {
     try {
         const res = await fetch(url)
@@ -86,6 +75,10 @@ const sumMoneyStrings = (moneyStrings: string[]) =>
 const addConcessionPrice = (t: {ticket_price: string, concession_price: string}) =>
     sumMoneyStrings([t.ticket_price, t.concession_price])
 
+const makeTicketDesc = (t: Ticket, boughtConcession: boolean) =>
+    `${t.admission_type} ${boughtConcession && '+ concessions'}
+    ${t.eventdate} @ ${t.starttime}`
+
 const addTicketReducer: CaseReducer<ticketingState, PayloadAction<{
     id: number,
     qty: number,
@@ -103,9 +96,7 @@ const addTicketReducer: CaseReducer<ticketingState, PayloadAction<{
             price: (action.payload.concessions)
                 ? addConcessionPrice(ticketData)
                 : ticketData.ticket_price,
-            desc: (action.payload.concessions)
-                ? ticketData.admission_type + ' + concessions'
-                : ticketData.admission_type,
+            desc: makeTicketDesc(ticketData, action.payload.concessions),
             qty: action.payload.qty,
             product_img_url: state.plays.find(p => p.id===ticketData.playid)!.image_url,
         }
@@ -113,9 +104,7 @@ const addTicketReducer: CaseReducer<ticketingState, PayloadAction<{
     
     return {
         ...state,
-        cart: (newCartItem)
-            ? [...state.cart, newCartItem]
-            : [...state.cart]
+        cart: (newCartItem) ? [...state.cart, newCartItem] : [...state.cart]
     }
 }
 
@@ -132,6 +121,17 @@ const editQtyReducer: CaseReducer<ticketingState, PayloadAction<{id: number, qty
             : item
         )
     })
+
+const INITIAL_STATE: ticketingState = {
+    cart: [],
+    tickets: [],
+    plays: [],
+    status: 'idle',
+    selection: {
+        selectedTicket: null,
+        qty: '',
+    }
+}
 
 const ticketingSlice = createSlice({
     name: 'cart',

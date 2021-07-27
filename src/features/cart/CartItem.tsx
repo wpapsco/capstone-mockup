@@ -14,30 +14,33 @@ const useStyles = makeStyles(() =>
     createStyles({
         cartItem: {
             display: 'flex',
-            flexDirection: 'row',
             alignItems: 'center',
             justifyContent: 'space-between',
             padding: '10px 30px',
             margin: '15px',
         },
         image: {
-            width: '100px',
+            width: '150px',
             borderRadius: '3px',
-            marginRight: '15px',
         },
         itemDescriptors: {
-            width: '43%',
+            width: '250px',
             color: 'rgb(64, 88, 96)',
         },
         itemName: {
             fontSize: '1.1rem',
             fontWeight: 'bold',
         },
-        qtyPicker: {
+        qtyValue: {
             fontSize: '1.2rem',
             border: 'none',
             margin: '1.2rem',
         },
+        qtyPicker: {
+            width: '100px',
+            display: 'flex',
+            alignItems: 'center',
+        }
     })
 )
 
@@ -76,9 +79,9 @@ const CartRow = (props: CartItem) => {
                 <p>{props.desc}</p>
             </span>
 
-            <div className={classes.itemDescriptors}>
+            <div className={classes.qtyPicker}>
                 <RemoveOutlinedIcon onClick={decrement}></RemoveOutlinedIcon>
-                <span className={classes.qtyPicker}>{props.qty}</span>
+                <span className={classes.qtyValue}>{props.qty}</span>
                 <AddOutlinedIcon
                     onClick={() => dispatch(editItemQty({id: props.product_id, qty: props.qty+1}))}>
                 </AddOutlinedIcon>
