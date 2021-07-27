@@ -1,6 +1,7 @@
 import Paper from '@material-ui/core/Paper';
 import YourOrder from '../features/cart/YourOrder'
-import { selectCartContents, selectDonation } from '../features/cart/cartSlice'
+// import { selectCartContents, selectDonation } from '../features/cart/cartSlice'
+import { selectCartContents } from '../features/ticketing/ticketingSlice'
 import { appSelector } from '../app/hooks'
 import { loadStripe } from '@stripe/stripe-js';
 import { useState } from "react";
@@ -9,9 +10,11 @@ import CompleteOrderForm, { CheckoutFormInfo } from "./CompleteOrderForm"
 
 const stripePromise = loadStripe("pk_test_51J5bpwGEweatMRnmGFUKgE6Q3wn7GmOJDAJ3Zag8DIhZjh324DdDUCFiEOLa0HQZFonkf2pc6lAOpPuheQs9N8AC00zNa4xALV")
 
+// TODO: Donation
 export default function CheckoutPage() {
     const cartItems = appSelector(selectCartContents)
-    const donation = appSelector(selectDonation)
+    // const donation = appSelector(selectDonation)
+    const donation = 0
     const [checkoutStep, setCheckoutStep] = useState("donation");
 
     const doCheckout = async (formData: CheckoutFormInfo) => {
