@@ -11,7 +11,7 @@ export interface Ticket {
     eventid: number,             // references showtime.id in database
     playid: string,
     event_title: string,
-    desc: string,
+    admission_type: string,
     eventdate: string,
     starttime: string,
     ticket_price: string,

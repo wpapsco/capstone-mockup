@@ -78,7 +78,7 @@ const byEventId = (id: number) => (obj: Ticket) => obj.eventid===id
 const getPartialCartData = (ticket: Ticket) => ({
     product_id: ticket.eventid,
     name: 'Ticket(s) to ' + ticket.event_title,
-    desc: ticket.desc,
+    desc: ticket.admission_type,
     price: ticket.ticket_price.slice(1),
 })
 

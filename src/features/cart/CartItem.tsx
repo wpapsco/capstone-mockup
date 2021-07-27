@@ -17,13 +17,12 @@ const useStyles = makeStyles(() =>
             flexDirection: 'row',
             alignItems: 'center',
             justifyContent: 'space-between',
-            padding: '15px 30px',
+            padding: '10px 30px',
             margin: '15px',
         },
         image: {
             width: '100px',
-            height: '100%',
-            borderRadius: '5px',
+            borderRadius: '3px',
         },
         itemDescriptors: {
             width: '33%',
@@ -61,7 +60,7 @@ const CartRow = (props: CartItem) => {
         <Paper elevation={1} className={classes.cartItem}>
             <img src={props.product_img_url} className={classes.image} alt='foo'/>
             <span className={classes.itemDescriptors}>
-                <Typography component='h2' variant="h5" color="textPrimary">{props.name}</Typography>
+                <Typography component='h2' variant="h6" color="textPrimary">{props.name}</Typography>
                 <p>{props.desc}</p>
             </span>
 
