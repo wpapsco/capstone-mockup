@@ -2,7 +2,6 @@ import { createSlice, createAsyncThunk, PayloadAction, CaseReducer } from '@redu
 import { RootState } from '../../app/store'
 import { CartItem, Play, Ticket, ticketingState } from './ticketingTypes'
 import { titleCase } from '../../utils'
-import { isTemplateLiteralToken } from 'typescript'
 
 const fetchData = async (url: string) => {
     try {
@@ -117,7 +116,6 @@ const INITIAL_STATE: ticketingState = {
     status: 'idle',
     selection: {
         selectedTicket: null,
-        qty: '',
     }
 }
 
@@ -133,7 +131,7 @@ const ticketingSlice = createSlice({
         }),
         selectTicket: selectTicketReducer,
         setQty: setQtyReducer,
-        clearSelection: (state) => ({ ...state, selection: {selectedTicket: null, qty: ''}})
+        clearSelection: (state) => ({ ...state, selection: {selectedTicket: null}})
     },
     extraReducers: builder => {
         builder
@@ -156,7 +154,6 @@ const ticketingSlice = createSlice({
 })
 
 export const selectSelectedTicket = (state: RootState) => state.ticketing.selection.selectedTicket
-export const selectTicketQty = (state: RootState) => state.ticketing.selection.qty
 export const selectCartContents = (state: RootState): CartItem[] => state.ticketing.cart
-export const { addTicketToCart, selectTicket, clearSelection, setQty, editItemQty, removeTicketFromCart } = ticketingSlice.actions
+export const { addTicketToCart, editItemQty, selectTicket, clearSelection, removeTicketFromCart } = ticketingSlice.actions
 export default ticketingSlice.reducer

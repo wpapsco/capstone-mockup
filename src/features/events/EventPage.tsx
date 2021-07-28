@@ -10,6 +10,7 @@ import {
     Button,
     Checkbox,
     FormControlLabel,
+    TextField,
     Typography,
     FormControl
 } from '@material-ui/core';
@@ -17,11 +18,9 @@ import { openSnackbar } from '../snackbarSlice'
 import { titleCase } from '../../utils'
 
 import TicketPicker from '../ticketing/ticketPicker'
-import QuantityField from '../ticketing/quantityField'
 import {
     addTicketToCart,
     selectSelectedTicket,
-    selectTicketQty,
     clearSelection
 } from '../ticketing/ticketingSlice'
 
@@ -29,7 +28,7 @@ type EventPageProps = {playid: string}
 const EventPage = () => {
     const classes = eventPageStyles()
     const dispatch = useAppDispatch()
-    const qty = appSelector(selectTicketQty)
+    const [qty, setQty] = useState(0)
     const selectedTicket = appSelector(selectSelectedTicket)
     const [concessions, setConcessions] = useState(false)
 
@@ -61,7 +60,20 @@ const EventPage = () => {
                     <CardActions className={classes.cardActions}>
 
                         <TicketPicker playid={playid}/>
-                        <QuantityField />
+
+                        <FormControl className={classes.formControl}>
+                            <TextField
+                                label="Quantity"
+                                className={classes.formInput}
+                                required
+                                type="number"
+                                value={qty || undefined}
+                                onChange={e => {
+                                    const val = Number.parseInt(e.target.value)
+                                    setQty((val > 0) ? val : 0)
+                                }}
+                            />
+                        </FormControl>
                         
                         <FormControl className={classes.formControl}>
                             <FormControlLabel

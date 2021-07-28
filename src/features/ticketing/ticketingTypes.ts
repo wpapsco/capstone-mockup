@@ -33,7 +33,6 @@ export interface ticketingState {
     status: LoadStatus,
     selection: {
         selectedTicket: number | null,
-        qty: number | '',
     }
 }
 
