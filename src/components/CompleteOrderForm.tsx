@@ -3,6 +3,7 @@ import Button from '@material-ui/core/Button';
 import { TextField, Checkboxes } from 'mui-rff';
 import Grid  from '@material-ui/core/Grid';
 import { Form } from 'react-final-form'
+import {makeStyles} from '@material-ui/core';
 
 export interface CheckoutFormInfo {
     'opt-in':                boolean,
@@ -34,10 +35,18 @@ function validateEmail(email: string) {
     return valid ? undefined : "Invalid e-mail"
 }
 
+const useStyles = makeStyles({
+    pageTitle: {
+        marginBottom: "0.5em"
+    },
+    contactTitle: {}
+})
+
 export default function CompleteOrderForm({onSubmit, onBack, disabled}: CompleteOrderFormProps) {
+    const classes = useStyles()
     return (<>
-        <Typography variant="h3">Complete Order</Typography>
-        <Typography variant="h4">Contact</Typography>
+        <Typography variant="h3" className={classes.pageTitle}>Complete Order</Typography>
+        <Typography variant="h4" gutterBottom className={classes.contactTitle}>Contact</Typography>
         <Form 
             onSubmit={onSubmit}
             initialValues={{"opt-in": false, "seating-accommodation": false}}
@@ -69,19 +78,19 @@ export default function CompleteOrderForm({onSubmit, onBack, disabled}: Complete
                             <TextField name="visit-source" label="How did you hear about us?" variant="outlined" fullWidth/>
                         </Grid>
                         <Grid item xs={12}>
-                            <Checkboxes name="opt-in" data={{ label: 'Email opt-in', value: true }} />
+                            <Checkboxes name="opt-in" data={{ label: 'I would like to recieve email info from portland playhouse', value: true }} />
                         </Grid>
                         <Grid item xs={12}>
-                            <Checkboxes name="seating-accommodation" data={{ label: 'I Need Seating Accommodations', value: true }} />
+                            <Checkboxes name="seating-accommodation" data={{ label: 'I need seating accommodations', value: true }} />
                         </Grid>
                         <Grid item xs={12}>
                             <TextField name="comments" label="Comments" variant="outlined" fullWidth multiline/>
                         </Grid>
                         <Grid item xs={6}>
-                            <Button variant="contained" onClick={onBack} style={{width: "100%"}}>Back</Button>
+                            <Button variant="contained" onClick={onBack} fullWidth>Back</Button>
                         </Grid>
                         <Grid item xs={6}>
-                            <Button disabled={disabled || !valid} type="submit" variant="contained" color="primary" style={{width: "100%"}}>Next</Button>
+                            <Button disabled={disabled || !valid} type="submit" variant="contained" color="primary" fullWidth>Next</Button>
                         </Grid>
                     </Grid>
                     {false && JSON.stringify(values)}

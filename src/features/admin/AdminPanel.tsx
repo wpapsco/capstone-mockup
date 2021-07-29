@@ -1,4 +1,4 @@
-import { Grid, Card } from "@material-ui/core";
+import { Grid, Card, Button } from "@material-ui/core";
 import { List, ListItem, ListItemIcon, ListItemText } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core";
 import AssessmentIcon from '@material-ui/icons/Assessment';
@@ -13,7 +13,9 @@ import CreateIcon from '@material-ui/icons/Create';
 import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
 import MeetingRoomIcon from '@material-ui/icons/MeetingRoom';
 import { Typography } from "@material-ui/core";
-import {NavLink} from "react-router-dom";
+import {NavLink, useHistory} from "react-router-dom";
+import {useAppDispatch} from "../../app/hooks";
+import {openSnackbar} from "../snackbarSlice";
 
 const useStyles = makeStyles({
     root: {
@@ -38,10 +40,21 @@ const LinkTo = (path: string) => (props: any) =>
 
 export default function AdminPanel() {
     const classes = useStyles();
+    const history = useHistory();
+    const dispatch = useAppDispatch()
+
+    const onLogout = async () => {
+        await fetch('/logout', {credentials: "include"})
+        dispatch(openSnackbar("Logged out"))
+        history.push("/")
+    }
 
     return (
         <>
-        <h1>Admin Panel</h1>
+        <div style={{display: "flex", alignItems: "center", justifyContent: "space-between"}}>
+            <h1>Admin Panel</h1>
+            <Button variant="contained" color="primary" onClick={onLogout}>logout</Button>
+        </div>
         <Grid container className={classes.root} spacing={2}>
             <Grid item xs={6}>
                 <Card variant="outlined" >

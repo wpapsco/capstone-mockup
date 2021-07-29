@@ -13,7 +13,7 @@ export default function DonationPage({onNext}: {onNext: () => any}) {
     // const [amount, setAmount] = useState(donation)
     const [amount, setAmount] = useState(0)
     return(
-        <Grid container spacing={3} alignItems="flex-end">
+        <Grid container spacing={3} alignItems="center">
             <Typography variant="h3">Please consider making a donation</Typography>
             <Grid item xs={9}>
                 <TextField label="donation amount" 

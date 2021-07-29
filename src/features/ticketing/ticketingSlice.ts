@@ -27,26 +27,6 @@ export const fetchTicketingData = createAsyncThunk(
 const someInList = <T>(list: Array<T>, prop: keyof T) => (value: T[keyof T]) =>
     list.some(i => i[prop]===value)
 
-const selectTicketReducer = (state: ticketingState, action: PayloadAction<number>) => {
-    const idInTickets = someInList(state.tickets, 'eventid')
-    return {
-        ...state,
-        selection: {
-            ...state.selection,
-            selectedTicket: (idInTickets(action.payload))
-                ? action.payload
-                : null
-        }
-    }
-}
-
-// TODO: Don't allow more than available
-const setQtyReducer = (state: ticketingState, action: PayloadAction<number>) => ({
-    ...state,
-    selection: {...state.selection, qty: (action.payload > 0) ? action.payload : 0}
-})
-
-
 const byEventId = (id: number) => (obj: Ticket) => obj.eventid===id
 
 const applyConcession = (c_price: number) => (item: CartItem) => {
@@ -114,9 +94,6 @@ const INITIAL_STATE: ticketingState = {
     tickets: [],
     plays: [],
     status: 'idle',
-    selection: {
-        selectedTicket: null,
-    }
 }
 
 const ticketingSlice = createSlice({
@@ -129,9 +106,6 @@ const ticketingSlice = createSlice({
             ...state,
             cart: state.cart.filter(item => item.product_id!==action.payload)
         }),
-        selectTicket: selectTicketReducer,
-        setQty: setQtyReducer,
-        clearSelection: (state) => ({ ...state, selection: {selectedTicket: null}})
     },
     extraReducers: builder => {
         builder
@@ -153,7 +127,6 @@ const ticketingSlice = createSlice({
     }
 })
 
-export const selectSelectedTicket = (state: RootState) => state.ticketing.selection.selectedTicket
 export const selectCartContents = (state: RootState): CartItem[] => state.ticketing.cart
-export const { addTicketToCart, editItemQty, selectTicket, clearSelection, removeTicketFromCart } = ticketingSlice.actions
+export const { addTicketToCart, editItemQty, removeTicketFromCart } = ticketingSlice.actions
 export default ticketingSlice.reducer

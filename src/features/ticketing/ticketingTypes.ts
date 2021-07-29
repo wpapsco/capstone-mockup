@@ -31,9 +31,6 @@ export interface ticketingState {
     tickets: Ticket[],
     plays: Play[],
     status: LoadStatus,
-    selection: {
-        selectedTicket: number | null,
-    }
 }
 
 export type LoadStatus = 'idle' | 'loading' | 'success' | 'failed'

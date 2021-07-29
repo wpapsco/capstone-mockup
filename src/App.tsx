@@ -45,7 +45,7 @@ function App() {
         dispatch(closeSnackbar())
     }
 
-    const [dates, setDates] = useState<Date[]>([])
+    const [dates, setDates] = useState<Date[]>([new Date()])
 
     return (
         <Container maxWidth="md">
@@ -54,7 +54,7 @@ function App() {
                     <Navbar />
                     <Switch>
                         <Route path="/testcalendar">
-                            <MultiSelectCalendar value={dates} onChange={setDates}/>
+                            <MultiSelectCalendar disabled value={dates} onChange={setDates} onDateClicked={d => console.log(d)}/>
                             <Button onClick={() => setDates([])}>Clear</Button>
                             {dates.map(d => <p>{d.toLocaleString()}</p>)}
                         </Route>

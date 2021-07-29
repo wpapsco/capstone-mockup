@@ -5,7 +5,6 @@ import cors from 'cors';
 import Stripe from "stripe"
 import {CheckoutFormInfo} from "../src/components/CompleteOrderForm"
 import {CartItem, Ticket} from '../src/features/ticketing/ticketingTypes'
-import {dayMonthDate, militaryToCivilian} from '../src/utils';
 
 import passport from "passport"
 import {Strategy as LocalStrategy} from "passport-local"
@@ -91,6 +90,7 @@ app.get("/api/event-list", async (req, res) => {
         from showtimes as shwtm join plays on shwtm.playid = plays.id 
         where plays.active = true and shwtm.salestatus = true`);
     res.json(events.rows);
+    console.log(events.rowCount);
   } catch (err) {
     console.error(err.message);
   }
@@ -421,8 +421,6 @@ const toTicket = (row): Ticket => ({
     playid: row.playid.toString(),
     ticket_price: parseMoneyString(row.ticket_price),
     concession_price: parseMoneyString(row.concession_price),
-    eventdate: dayMonthDate(row.eventdate),
-    starttime: militaryToCivilian(row.starttime),
 })
 
 app.get('/api/tickets', async (req, res) => {
@@ -441,6 +439,11 @@ app.get('/api/tickets', async (req, res) => {
         console.error(err.message)
     }
 })
+
+app.get('/logout', function(req, res){
+    req.logout();
+    res.sendStatus(200);
+});
 
 // tslint:disable-next-line:no-console
 app.listen(port, () => console.log(`Listening on port ${port}`));
