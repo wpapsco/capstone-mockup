@@ -7,6 +7,7 @@ import ShowingsPage from "../../components/ShowingsPage";
 import NewsletterCreate from "../newsletter/NewsletterCreate";
 import AdminPanel from "./AdminPanel";
 import EmailSubscriptions from "./EmailSubscriptions";
+import ChangePassword from "../../components/ChangePassword";
 
 export default function AdminSwitch() {
     const { path } = useRouteMatch();
@@ -31,6 +32,9 @@ export default function AdminSwitch() {
         </Route>
         <Route path={`${path}/newsletter_create`}>
             <NewsletterCreate />
+        </Route>
+        <Route path={`${path}/changePassword`}>
+            <ChangePassword />
         </Route>
     </Switch>
 }

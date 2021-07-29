@@ -2,7 +2,7 @@ import { Grid, Card, Button } from "@material-ui/core";
 import { List, ListItem, ListItemIcon, ListItemText } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core";
 import AssessmentIcon from '@material-ui/icons/Assessment';
-import { AddBox } from "@material-ui/icons";
+import { AddBox, ExitToApp, VpnKey } from "@material-ui/icons";
 import ViewListIcon from "@material-ui/icons/ViewList";
 import { DeleteForever } from "@material-ui/icons";
 import { ConfirmationNumber } from "@material-ui/icons";
@@ -10,12 +10,14 @@ import PeopleIcon from "@material-ui/icons/People";
 import MonetizationOnIcon from '@material-ui/icons/MonetizationOn';
 import EventIcon from '@material-ui/icons/Event';
 import CreateIcon from '@material-ui/icons/Create';
+import AccountBoxIcon from '@material-ui/icons/AccountBox';
 import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
 import MeetingRoomIcon from '@material-ui/icons/MeetingRoom';
 import { Typography } from "@material-ui/core";
 import {NavLink, useHistory} from "react-router-dom";
 import {useAppDispatch} from "../../app/hooks";
 import {openSnackbar} from "../snackbarSlice";
+import {ReactNode} from 'react';
 
 const useStyles = makeStyles({
     root: {
@@ -49,102 +51,97 @@ export default function AdminPanel() {
         history.push("/")
     }
 
+    type PanelProps = {
+        title: string,
+        icon: ReactNode
+        buttons: {
+            text: string,
+            icon: ReactNode,
+            link?: string,
+            onClick?: () => void
+        }[]
+    }
+    const Panel = (props: PanelProps) => 
+        <Card variant="outlined" >
+            <Typography className={ classes.title } >
+                {props.icon}
+                {props.title}
+            </Typography>
+            <List>
+                {props.buttons.map(e => {
+                    const compProps = e.link ? {component: LinkTo(e.link)} : e.onClick ? {onClick: e.onClick} : {}
+                    return <ListItem button {...compProps}>
+                        <ListItemIcon>
+                            {e.icon}
+                        </ListItemIcon>
+                        <ListItemText primary={e.text}/>
+                    </ListItem>
+                }
+                )}
+            </List>
+        </Card>
+
     return (
         <>
-        <div style={{display: "flex", alignItems: "center", justifyContent: "space-between"}}>
-            <h1>Admin Panel</h1>
-            <Button variant="contained" color="primary" onClick={onLogout}>logout</Button>
-        </div>
+        <h1>Admin Panel</h1>
         <Grid container className={classes.root} spacing={2}>
             <Grid item xs={6}>
-                <Card variant="outlined" >
-                    <Typography className={ classes.title } >
-                        <AssessmentIcon fontSize="large" className={ classes.icon }/>
-                        Reports
-                    </Typography>
-                    <List>
-                        <ListItem button>
-                            <ListItemIcon>
-                                <MonetizationOnIcon />
-                            </ListItemIcon>
-                            <ListItemText primary="Donations" />
-                        </ListItem>
-                        <ListItem button>
-                            <ListItemIcon>
-                                <ConfirmationNumber />
-                            </ListItemIcon>
-                            <ListItemText primary="Ticket sales" />
-                        </ListItem>
-                        <ListItem button>
-                            <ListItemIcon>
-                            <PeopleIcon /> 
-                            </ListItemIcon>
-                            <ListItemText primary="Users" /> 
-                        </ListItem>
-                        <ListItem button>
-                            <ListItemIcon>
-                                <MoreHorizIcon />
-                            </ListItemIcon>
-                            <ListItemText primary="More" />
-                        </ListItem>
-                    </List>
-                </Card>
+                <Panel title="Reports" icon={<AssessmentIcon fontSize="large" className={classes.icon}/>} buttons={[{
+                    text: "Donations",
+                    icon: <MonetizationOnIcon />
+                }, {
+                    text: "Ticket sales",
+                    icon: <ConfirmationNumber />
+                }, {
+                    text: "Users",
+                    icon: <PeopleIcon /> 
+                }, {
+                    text: "More",
+                    icon: <MoreHorizIcon />
+                }]} />
             </Grid>
             <Grid item xs={6}>
-                <Card variant="outlined">
-                    <Typography className={ classes.title } >
-                        <EventIcon fontSize="large" className={ classes.icon }/>
-                        Events 
-                    </Typography>
-                    <List>
-                        <ListItem button component={LinkTo("admin/CreateEvents")}>
-                            <ListItemIcon>
-                                <AddBox />
-                            </ListItemIcon>
-                            <ListItemText primary="Create an event" />
-                        </ListItem>
-                        <ListItem button component={LinkTo("/admin/DeleteEvents")}>
-                            <ListItemIcon>
-                                <DeleteForever />
-                            </ListItemIcon>
-                            <ListItemText primary="Delete an event" />
-                        </ListItem>
-                        <ListItem button component={LinkTo("/events")}>
-                            <ListItemIcon>
-                                <ViewListIcon />
-                            </ListItemIcon>
-                            <ListItemText primary="View events" />
-                        </ListItem>
-                        <ListItem button component={LinkTo("/admin/doorlist")}>
-                            <ListItemIcon>
-                                <MeetingRoomIcon />
-                            </ListItemIcon>
-                            <ListItemText primary="Door list" />
-                        </ListItem>
-                        <ListItem button>
-                            <ListItemIcon>
-                                <MoreHorizIcon />
-                            </ListItemIcon>
-                            <ListItemText primary="More" />
-                        </ListItem>
-                    </List>
-                </Card>
+                <Panel title="Events" icon={<EventIcon fontSize="large" className={ classes.icon }/>} buttons={[{
+                    link: "/admin/CreateEvents",
+                    text: "Create an event",
+                    icon: <AddBox />
+                }, {
+                    link: "/admin/DeleteEvents",
+                    text: "Delete an event",
+                    icon: <DeleteForever />
+                }, {
+                    link: "/events",
+                    text: "View events",
+                    icon: <ViewListIcon />
+                }, {
+                    link: "/admin/doorlist",
+                    text: "Door list",
+                    icon: <MeetingRoomIcon />
+                }, 
+                // {
+                //     link: "",
+                //     text: "More",
+                //     icon: <MoreHorizIcon />
+                // }
+                ]} />
             </Grid>
             <Grid item xs={6}>
-                <Card variant="outlined">
-                    <Typography className={ classes.title } >
-                        <CreateIcon fontSize="large" className={ classes.icon } />
-                        Newsletter
-                    </Typography>
-                    <List>
-                        <ListItem button component="a" href="/admin/newsletter_create">
-                            <ListItemIcon>
-                                <AddBox />
-                            </ListItemIcon>
-                            <ListItemText primary="Create newsletter" />
-                        </ListItem>
-                    </List>
-                </Card>
+                <Panel title="Events" icon={<EventIcon fontSize="large" className={ classes.icon }/>} buttons={[{
+                    link: "/admin/newsletter_create",
+                    text: "Create newsletter",
+                    icon: <AddBox />
+                }]} />
+            </Grid>
+            <Grid item xs={6}>
+                <Panel title="Accounts" icon={<AccountBoxIcon fontSize="large" className={classes.icon}/>} buttons={[{
+                    link: "/admin/changePassword",
+                    text: "Change admin password",
+                    icon: <VpnKey />
+                }, {
+                    onClick: onLogout,
+                    text: "Logout",
+                    icon: <ExitToApp />
+                }]} />
             </Grid>
         </Grid>
     </>

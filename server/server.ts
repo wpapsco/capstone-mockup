@@ -93,7 +93,6 @@ app.get("/api/event-list", async (req, res) => {
         from showtimes as shwtm join plays on shwtm.playid = plays.id 
         where plays.active = true and shwtm.salestatus = true`);
     res.json(events.rows);
-    console.log(events.rowCount);
   } catch (err) {
     console.error(err.message);
   }
@@ -399,8 +398,15 @@ app.post("/webhook", async(req, res) =>{
       res.json({received: true});
 })
 
-app.get('/logout', function(req, res){
+app.get('/logout', (req, res) => {
     req.logout();
+    res.sendStatus(200);
+});
+
+app.post('/api/passwordChange', passport.authenticate('local'), async (req, res) => {
+    const newHash = await bcrypt.hash(req.body.newPassword, 10)
+    const sql = "UPDATE users SET pass_hash = $1 WHERE id = $2;"
+    await pool.query(sql, [newHash, req.user.id])
     res.sendStatus(200);
 });
 
