@@ -1,5 +1,5 @@
 import React, {useState} from 'react'
-import isSameDay from "date-fns/isSameDay";
+import {isSameDay} from "../../utils";
 import {useAppDispatch, appSelector} from '../../app/hooks'
 import {useParams} from 'react-router-dom'
 import {selectEventData, Showing} from './eventsSlice'

@@ -4,6 +4,13 @@ export const titleCase = (s: string) => s.split(' ').map(w => capitalize(w)).joi
 
 type time = {hours: number, minutes: number, ampm?: 'AM'|'PM'}
 
+export function isSameDay(a: Date, b: Date) {
+    const sameDay = a.getDate() == b.getDate()
+    const sameMonth = a.getMonth() == b.getMonth()
+    const sameYear = a.getFullYear() == b.getFullYear()
+    return sameDay && sameMonth && sameYear
+}
+
 const serializeTime = (datestr: string): time => {
     const hours_minutes = datestr.split(':')
     return {
