@@ -425,7 +425,7 @@ const toTicket = (row): Ticket => ({
 
 app.get('/api/tickets', async (req, res) => {
     try {
-        const qs = `SELECT sh.id eventid, playid, playname event_title, eventdate, starttime, availableseats, tt.name admission_type, price ticket_price, concessions concession_price
+        const qs = `SELECT sh.id AS eventid, playid, playname AS event_title, eventdate, starttime, availableseats, tt.name AS admission_type, price AS ticket_price, concessions AS concession_price
             FROM showtimes sh
                 JOIN linkedtickets lt ON sh.id=lt.showid
                 JOIN tickettype tt ON lt.ticket_type=tt.id

@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk, PayloadAction, CaseReducer } from '@reduxjs/toolkit'
 import { RootState } from '../../app/store'
 import { CartItem, Play, Ticket, ticketingState } from './ticketingTypes'
-import { titleCase } from '../../utils'
+import { titleCase, dayMonthDate, militaryToCivilian } from '../../utils'
 
 const fetchData = async (url: string) => {
     try {
@@ -24,56 +24,42 @@ export const fetchTicketingData = createAsyncThunk(
     }
 )
 
-const someInList = <T>(list: Array<T>, prop: keyof T) => (value: T[keyof T]) =>
-    list.some(i => i[prop]===value)
 
-const byEventId = (id: number) => (obj: Ticket) => obj.eventid===id
-
-const applyConcession = (c_price: number) => (item: CartItem) => {
+const applyConcession = (c_price: number, item: CartItem) => {
     const name = item.name + ' + Concessions'
     const price = c_price + item.price
     const desc = `${item.desc} with concessions ticket`
     return ({...item, name, price, desc})
 }
 
-const makeTicketDesc = (t: Ticket) => `${t.admission_type} - ${t.eventdate}, ${t.starttime}`
-
 const toPartialCartItem = (t: Ticket) => ({
     product_id: t.eventid,
     name: t.event_title + ' ticket(s)',
     price: t.ticket_price,
-    desc: makeTicketDesc(t),
+    desc: `${t.admission_type} - ${dayMonthDate(t.eventdate)}, ${militaryToCivilian(t.starttime)}`,
 })
 
-const addTicketReducer: CaseReducer<ticketingState, PayloadAction<{
-    id: number,
-    qty: number,
-    concessions: boolean
-}>> = (state, action) => {
-    const idInTickets = someInList(state.tickets, 'eventid')
-    const ticketData = (idInTickets(action.payload.id))
-        ? state.tickets.find(byEventId(action.payload.id))
-        : null
-    
-    if (ticketData===null || ticketData===undefined) {
-        return state
-    }
-    else {
-        const addConcession = applyConcession(ticketData.concession_price)
-        const newCartItem = {
+const isTicket = (obj: any): obj is Ticket => Object.keys(obj).some(key => key==='eventid')
+const byId = (id: number|string) => (obj: Ticket|Play) => (isTicket(obj)) ? obj.eventid===id: obj.id===id
+
+const addTicketReducer: CaseReducer<ticketingState, PayloadAction<{ id: number, qty: number, concessions: boolean }>> = (state, action) => {
+    const ticketData = state.tickets.find(byId(action.payload.id))
+    const cartItem = (ticketData)
+        ? {
             ...toPartialCartItem(ticketData),
             qty: action.payload.qty,
-            product_img_url: state.plays.find(p => p.id===ticketData.playid)!.image_url,
-        }
-
-        return {
+            product_img_url: state.plays.find(byId(ticketData.playid))!.image_url,
+        } : ticketData
+        
+    return (cartItem)
+        ? {
             ...state,
             cart: (action.payload.concessions)
-                ? [...state.cart, addConcession(newCartItem)]
-                : [...state.cart, newCartItem]
+                    ? [...state.cart, applyConcession(ticketData!.concession_price, cartItem)]
+                    : [...state.cart, cartItem]
         }
+        : state
     }
-}
 
 const editQtyReducer: CaseReducer<ticketingState, PayloadAction<{id: number, qty: number}>> =
     (state, action) => ({
