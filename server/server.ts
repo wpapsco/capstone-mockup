@@ -429,8 +429,8 @@ app.get('/api/tickets', async (req, res) => {
             FROM showtimes sh
                 JOIN linkedtickets lt ON sh.id=lt.showid
                 JOIN tickettype tt ON lt.ticket_type=tt.id
-                JOIN plays pl ON sh.playid=pl.id
-            WHERE isseason=false AND availableseats > 0;`
+            WHERE isseason=false AND availableseats > 0
+            ORDER BY eventdate;`
         const query_res = await pool.query(qs)
         const ticketData = query_res.rows.map(toTicket)
         res.json(ticketData);
