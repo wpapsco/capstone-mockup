@@ -1,4 +1,4 @@
-// import bodyParser from 'body-parser';
+//import bodyParser from 'body-parser';
 import express from 'express';
 import {pool} from './db';
 import cors from 'cors';
@@ -246,8 +246,8 @@ app.post('/api/checkout', async (req, res) => {
 
     for(let i = 0; i<cartSize;++i){
         let newOrder = {
-            id: req.body.cartItems[i].id.toString(),
-            quantity: req.body.cartItems[i].qty.toString(),
+            id: req.body.cartItems[i].id,
+            quantity: req.body.cartItems[i].qty,
 
         };
         orders.push(newOrder);
@@ -271,9 +271,15 @@ app.post('/api/checkout', async (req, res) => {
         mode: "payment",
         success_url: "http://localhost:3000/success",
         cancel_url: "http://localhost:3000",
-        metadata: {
-            orders: JSON.stringify(orders),
-            custid: customerID
+        payment_intent_data:{
+            metadata: {
+                orders: JSON.stringify(orders),
+                custid: customerID
+            }
+        },
+         metadata: {
+             orders: JSON.stringify(orders),
+             custid: customerID
         }
     })
     console.log(session);
@@ -377,18 +383,63 @@ app.get('/api/email_subscriptions/volunteers', isAuthenticated, async (req, res)
         console.error(err.message);
     }
 });
-const fulfillOrder = (session) => {
+const fulfillOrder = async (session) => {
     // TODO: fill me in
-    console.log("Fulfilling order", session);
+       // TODO: fill me in
+    // gather the data from the session object and send it off to db
+    // make this async function
+    // added_stuff by Ad
+    const stripe_meta_data = JSON.parse(session.data.object.metadata.orders);
+    const temp = [];
+    var counter = 0;
+    while(counter < stripe_meta_data.length)
+    {
+        temp[counter] = stripe_meta_data[counter];
+        counter = counter + 1;
+    }
+    counter = 0;
+    while(counter < temp.length)
+    {
+        var other_counter = 0;
+        while(other_counter < temp[counter].quantity)
+        {
+            try {
+                const addedTicket = await pool.query(
+                `INSERT INTO tickets (eventid, custid, paid) 
+                values ($1, $2, $3)`
+                ,[temp[counter].id, session.data.object.metadata.custid, true])
+            } catch (error) {
+                console.log(error);
+                other_counter = other_counter - 1;
+            }
+            other_counter = other_counter + 1;
+        }
+        counter = counter + 1;
   }
-
+}
+const endpointSecret = "whsec_j1KXStqqnfS85ViFcglBPOWBMmbyI4sQ";    
 app.post("/webhook", async(req, res) =>{
+    // TESTING WIHT SOME SIGNATURE VERIFICATION
+    // const payload = req.body;
+    // console.log("PAYLOAD:   ");
+    // console.log(payload);
+    // const signature = req.headers['stripe-signature'];
+    // console.log("SIGNATURE:   ");
+    // console.log(signature);
+    // let event;
+    // try {
+    //     event = stripe.webhooks.constructEvent(payload, signature, endpointSecret);
+    // } catch (error) {
+    //     console.log(error);
+    //     return;
+    // }
     const event = req.body;
-    console.log(event);
+
     switch (event.type) {
         case 'payment_intent.succeeded':
           const paymentIntent = event.data.object;
           console.log('PaymentIntent was successful');
+          fulfillOrder(event);
           break;
         // ... handle other event types
         default:
