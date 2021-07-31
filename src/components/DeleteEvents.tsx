@@ -2,19 +2,17 @@ import { DataGrid } from '@material-ui/data-grid';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import React, { useState, useEffect } from "react";
+import {dayMonthDate, militaryToCivilian} from '../utils';
 
 export default function DeleteEvents() {
     async function deleteEvent() {
         const data = {
             id: selectedRow.id,
-            playname: selectedRow.playname,
-            playdescription: selectedRow.playdescription,
-            eventdate: selectedRow.eventdate,
-            starttime: selectedRow.starttime
         }
 
         const response = await fetch("http://localhost:5000/api/delete-event",
         {
+           credentials: 'include',
            method: 'POST',
            headers:
            {
@@ -57,6 +55,10 @@ export default function DeleteEvents() {
         try {
             const response = await fetch("http://localhost:5000/api/event-list");
             const jsonData = await response.json();
+            Object.keys(jsonData).forEach(function(key) {
+                jsonData[key].eventdate = dayMonthDate(jsonData[key].eventdate);
+                jsonData[key].starttime = militaryToCivilian(jsonData[key].starttime);
+            });
             setEventList(jsonData);
         } catch (error) {
             console.error(error.message)

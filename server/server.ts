@@ -287,7 +287,7 @@ app.post('/api/checkout', async (req, res) => {
 });
 
 // End point for the create event page. 
-app.post("/api/create-event", async (req, res) => {
+app.post("/api/create-event", isAuthenticated, async (req, res) => {
     try {
         let body = req.body;
         const values = [body.eventName, body.eventDate, body.eventTime, body.eventTickets, null];
@@ -302,11 +302,11 @@ app.post("/api/create-event", async (req, res) => {
 });
 
 // Updates salestatus in showtimes table when given an id, date, and time
-app.post("/api/delete-event", async (req, res) => {
+app.post("/api/delete-event", isAuthenticated, async (req, res) => {
     try {
         let body = req.body;
-        const values = [body.id, body.eventdate, body.starttime];
-        const query = "update showtimes set salestatus = false where id = $1 and eventdate = $2 and starttime = $3";
+        const values = [body.id];
+        const query = "update showtimes set salestatus = false where id = $1";
         const remove_event = await pool.query(query, values);
         res.json(remove_event.rows)
     } catch (error) {

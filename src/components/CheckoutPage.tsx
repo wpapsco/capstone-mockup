@@ -38,7 +38,7 @@ export default function CheckoutPage() {
             <YourOrder />
             <Paper style={{flexGrow: 8, height: "100%", margin: "10px", paddingLeft: "5%", paddingTop: "50px", paddingRight: "10%"}} variant="outlined">
                 {checkoutStep === "donation" && <DonationPage onNext={() => setCheckoutStep("form")}/>}
-                {checkoutStep === "form" && <CompleteOrderForm disabled={cartItems.length == 0} onSubmit={doCheckout} onBack={() => setCheckoutStep("donation")}/>}
+                {checkoutStep === "form" && <CompleteOrderForm disabled={cartItems.length === 0} onSubmit={doCheckout} onBack={() => setCheckoutStep("donation")}/>}
             </Paper>
         </div>
     )

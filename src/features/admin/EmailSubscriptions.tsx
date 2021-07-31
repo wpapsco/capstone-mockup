@@ -74,7 +74,7 @@ export default function EmailSubscriptions()
       for(var it_index in json_data)
       {
          var it = json_data[it_index].email;
-         if(+it_index == json_data.length - 1)
+         if(+it_index === json_data.length - 1)
          {
             string_builder += it;
          }
@@ -107,7 +107,7 @@ export default function EmailSubscriptions()
       for(var it_index in json_data)
       {
          var it = json_data[it_index].email;
-         if(+it_index == json_data.length - 1)
+         if(+it_index === json_data.length - 1)
          {
             string_builder += it;
          }
