@@ -44,8 +44,9 @@ export const createCartItem = (data: {ticket: Ticket, play: Play, qty: number}):
         .map(appendCartField('qty', data.qty))
         .map(appendCartField('product_img_url', data.play.image_url))[0]
 
+type PlayId = string
 const isTicket = (obj: any): obj is Ticket => Object.keys(obj).some(key => key==='eventid')
-const byId = (id: number|string) => (obj: Ticket|Play) => (isTicket(obj)) ? obj.eventid===id: obj.id===id
+const byId = (id: number|PlayId) => (obj: Ticket|Play) => (isTicket(obj)) ? obj.eventid===id: obj.id===id
 
 const addTicketReducer: CaseReducer<ticketingState, PayloadAction<{ id: number, qty: number, concessions: boolean }>> = (state, action) => {
     const {id, qty, concessions} = action.payload
@@ -118,5 +119,39 @@ const ticketingSlice = createSlice({
 })
 
 export const selectCartContents = (state: RootState): CartItem[] => state.ticketing.cart
+
+const parseTicketDate = (t: Ticket) => ({...t, date: [...t.eventdate.split('T'), t.starttime]})
+const convertDate = (obj: Ticket & {date: string[]}) => {
+    const {eventdate, starttime, ...rest} = obj
+    return {...rest, date: new Date(obj.date.join('T'))}
+}
+/* Returns play data with shape: {
+    title, description, image_url,
+    tickets: [{
+        eventid,
+        playid,
+        admission_type,
+        date: Date
+        ticket_price: number,
+        concession_price: number,
+        available: number,
+    }]
+} */
+export const selectPlayData = (state: RootState, playId: PlayId) => {
+    const play = state.ticketing.plays.find(byId(playId))
+    if (play) {
+        const {id, ...playData} = play
+        const tickets = state.ticketing.tickets
+            .filter(t => t.playid===playId)
+            .map(parseTicketDate)
+            .map(convertDate)
+            
+        return {...playData, tickets}
+    }
+    else {
+        return undefined
+    }
+}
+
 export const { addTicketToCart, editItemQty, removeTicketFromCart } = ticketingSlice.actions
 export default ticketingSlice.reducer
