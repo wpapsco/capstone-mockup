@@ -10,8 +10,7 @@ export interface CartItem {
 export interface Ticket {
     eventid: number,             // references showtime.id in database
     playid: string,
-    event_title: string,
-    admission_type: string,
+    admission_type: 'General Admission',
     eventdate: string,
     starttime: string,
     ticket_price: number,
