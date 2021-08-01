@@ -417,7 +417,7 @@ const fulfillOrder = async (session) => {
         counter = counter + 1;
   }
 }
-const endpointSecret = "whsec_j1KXStqqnfS85ViFcglBPOWBMmbyI4sQ";    
+  
 app.post("/webhook", async(req, res) =>{
     // TESTING WIHT SOME SIGNATURE VERIFICATION
     // const payload = req.body;
