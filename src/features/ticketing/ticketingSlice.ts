@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk, PayloadAction, CaseReducer } from '@reduxjs/toolkit'
 import { RootState } from '../../app/store'
 import { CartItem, Play, Ticket, ticketingState } from './ticketingTypes'
-import { dayMonthDate, militaryToCivilian } from '../../utils'
+import format from "date-fns/format";
 
 const fetchData = async (url: string) => {
     try {
@@ -30,13 +30,21 @@ const applyConcession = (c_price: number, item: CartItem) => {
     return ({...item, name, price, desc})
 }
 
-const appendCartField = <T extends CartItem>(key: keyof T, val: T[typeof key]) => (obj: any) => ({...obj, [key]: val})
-
+const DAYS = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat']
+const toCivilian = (n: number) => (n > 12) ? n - 12 : n
+const formatDate = (d: Date) => {
+    const date = new Date(d)
+    const hr = date.getHours()
+    date.setHours(toCivilian(hr))
+    return `${DAYS[date.getDay()]} ${format(date, 'MMM d, H:mm')} ${hr > 12 ? 'PM' : 'AM'}`
+}
 export const toPartialCartItem = (t: Ticket) => ({
     product_id: t.eventid,
     price: t.ticket_price,
-    desc: `${t.admission_type} - ${dayMonthDate(t.eventdate)}, ${militaryToCivilian(t.starttime)}`,
+    desc: `${t.admission_type} - ${formatDate(t.date)}`,
 })
+
+const appendCartField = <T extends CartItem>(key: keyof T, val: T[typeof key]) => (obj: any) => ({...obj, [key]: val})
 
 export const createCartItem = (data: {ticket: Ticket, play: Play, qty: number}): CartItem =>
     [data.ticket].map(toPartialCartItem)
@@ -64,7 +72,7 @@ const addTicketReducer: CaseReducer<ticketingState, PayloadAction<{ id: number, 
                     : [...state.cart, cartItem]
         }
         : state
-    }
+}
 
 const editQtyReducer: CaseReducer<ticketingState, PayloadAction<{id: number, qty: number}>> =
     (state, action) => ({
@@ -119,12 +127,6 @@ const ticketingSlice = createSlice({
 })
 
 export const selectCartContents = (state: RootState): CartItem[] => state.ticketing.cart
-
-const parseTicketDate = (t: Ticket) => ({...t, date: [...t.eventdate.split('T'), t.starttime]})
-const convertDate = (obj: Ticket & {date: string[]}) => {
-    const {eventdate, starttime, ...rest} = obj
-    return {...rest, date: new Date(obj.date.join('T'))}
-}
 /* Returns play data with shape: {
     title, description, image_url,
     tickets: [{
@@ -141,11 +143,7 @@ export const selectPlayData = (state: RootState, playId: PlayId) => {
     const play = state.ticketing.plays.find(byId(playId))
     if (play) {
         const {id, ...playData} = play
-        const tickets = state.ticketing.tickets
-            .filter(t => t.playid===playId)
-            .map(parseTicketDate)
-            .map(convertDate)
-            
+        const tickets = state.ticketing.tickets.filter(t => t.playid===playId)
         return {...playData, tickets}
     }
     else {
