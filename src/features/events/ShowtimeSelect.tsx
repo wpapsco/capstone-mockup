@@ -1,5 +1,6 @@
 import {List, ListItem, ListItemText, makeStyles} from "@material-ui/core";
 import {useState} from "react";
+import {Ticket} from '../ticketing/ticketingTypes'
 import format from "date-fns/format";
 
 const useStyles = makeStyles({
@@ -10,23 +11,23 @@ const useStyles = makeStyles({
     }
 })
 
-type DateShowing = {id: number, date: Date}
-export default function ShowtimeSelect(props: {showings: DateShowing[], showingSelected?: (dateShowing: DateShowing) => void}) {
+interface ShowtimeSelectProps {showings: Ticket[], showingSelected?: (dateShowing: Ticket) => void}
+export default function ShowtimeSelect(props: ShowtimeSelectProps) {
     
     const [selectedId, setSelectedId] = useState(-1)
-    const handleClick = (showtime: DateShowing) => () => {
-        setSelectedId(showtime.id)
+    const handleClick = (showtime: Ticket) => () => {
+        setSelectedId(showtime.eventid)
         if (props.showingSelected) props.showingSelected(showtime)
     }
     const classes = useStyles()
     
-    return <> 
+    return (
         <List component="nav" className={classes.root}>
             {props.showings.map(s => 
-                <ListItem button selected={s.id === selectedId} onClick={handleClick(s)}>
+                <ListItem button selected={s.eventid===selectedId} onClick={handleClick(s)}>
                     <ListItemText primary={format(s.date, "h:mm a")}/>
                 </ListItem>
             )}
         </List>
-    </>
+    )
 }

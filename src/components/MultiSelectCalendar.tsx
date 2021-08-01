@@ -70,7 +70,7 @@ function MultiSelectCalendar({value, onChange, disabled, onDateClicked, bindDate
         if (onDateClicked) onDateClicked(date)
         if (disabled) return
         const idx = dates.findIndex(d => isSameDay(d, date))
-        if (idx == -1) {
+        if (idx === -1) {
             setDates([date, ...dates]);
         } else {
             setDates(dates.slice(0, idx).concat(dates.slice(idx + 1)));
@@ -78,7 +78,7 @@ function MultiSelectCalendar({value, onChange, disabled, onDateClicked, bindDate
 
         if (!value || !onChange) return;
         const _idx = value.findIndex(d => isSameDay(d, date))
-        if (idx == -1) {
+        if (idx === -1) {
             onChange([date, ...value])
         } else {
             onChange(value.slice(0, _idx).concat(value.slice(_idx + 1)))

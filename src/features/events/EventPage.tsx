@@ -18,11 +18,11 @@ import {
 } from '@material-ui/core';
 import { openSnackbar } from '../snackbarSlice'
 import { titleCase } from '../../utils'
-import { addTicketToCart } from '../ticketing/ticketingSlice'
+import { addTicketToCart, selectPlayData } from '../ticketing/ticketingSlice'
+import { Ticket } from '../ticketing/ticketingTypes'
 import MultiSelectCalendar from '../../components/MultiSelectCalendar'
 import ShowtimeSelect from './ShowtimeSelect';
 
-type EventDate = {id: number, date: Date}
 type EventPageProps = {playid: string}
 const EventPage = () => {
     const classes = eventPageStyles()
@@ -30,28 +30,18 @@ const EventPage = () => {
 
     const [qty, setQty] = useState(0)
     const [concessions, setConcessions] = useState(false)
-    const [selectedShowing, setSelectedShowing] = useState<EventDate | null>(null)
-    const [displayedShowings, setDisplayedShowings] = useState<EventDate[]>([])
+    const [selectedShowing, setSelectedShowing] = useState<Ticket | null>(null)
+    const [displayedShowings, setDisplayedShowings] = useState<Ticket[]>([])
     const {playid} = useParams<EventPageProps>()
 
-    const eventData = appSelector(state => state.ticketing.plays.find(p => p.id===playid))
+    const eventData = appSelector(state => selectPlayData(state, playid))
     if (eventData === undefined) return <p>Whoops! Event not found</p>
-    const {title, description, image_url} = eventData
-
-    const showingsDates: EventDate[] = appSelector(state =>
-        state.ticketing.tickets
-            .filter(ticket => ticket.playid===playid)
-            .map(ticket => ({
-                id: ticket.eventid,
-                date: Array.of(ticket.eventdate.split('T')[0]).concat(ticket.starttime)
-            }))
-            .map(item => ({...item, date: new Date(item.date.join('T'))}))
-    )
+    const {title, description, image_url, tickets} = eventData
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault()
         if (selectedShowing!==null && qty) {
-            dispatch(addTicketToCart({id: selectedShowing.id, qty, concessions}))
+            dispatch(addTicketToCart({id: selectedShowing.eventid, qty, concessions}))
             dispatch(openSnackbar(`Added ${qty} ticket${qty === 1 ? "" : "s"} to cart!`))
             setQty(0)
             setSelectedShowing(null)
@@ -60,7 +50,7 @@ const EventPage = () => {
     }
 
     const dateClicked = (date: Date) => {
-        const sameDayShowings = showingsDates.filter(d => isSameDay(date, d.date))
+        const sameDayShowings = tickets.filter(d => isSameDay(date, d.date))
         setDisplayedShowings(sameDayShowings)
     }
 
@@ -81,7 +71,7 @@ const EventPage = () => {
                 <Typography component="h2" variant="h4">Event Description</Typography>
                 <p>{(description) ? description : ''}</p>
 
-                <MultiSelectCalendar value={showingsDates.map(s => s.date)} onDateClicked={dateClicked} bindDates/>
+                <MultiSelectCalendar value={tickets.map(t => t.date)} onDateClicked={dateClicked} bindDates/>
                 <ShowtimeSelect showings={displayedShowings} showingSelected={setSelectedShowing}/>
 
                 <div className={classes.form}>
