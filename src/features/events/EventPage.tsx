@@ -74,10 +74,12 @@ const EventPage = () => {
             </section>
             <section>
                 <Grid container>
+
                     <Grid item xs={8}>
                         <Typography component="h2" variant="h4">Event Description</Typography>
                         <p>{(description) ? description : ''}</p>
                     </Grid>
+                    
                     <Grid item xs={4}>
                         <MultiSelectCalendar value={tickets.map(t => t.date)} onDateClicked={dateClicked} bindDates/>
                         <ShowtimeSelect showings={displayedShowings} showingSelected={setSelectedShowing}/>
