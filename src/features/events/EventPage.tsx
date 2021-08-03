@@ -14,9 +14,9 @@ import {
     TextField,
     Typography,
     FormControl,
-    CardActions,
-    Grid
+    CardActions
 } from '@material-ui/core';
+import SplitPane from '../../components/SplitPane';
 import { openSnackbar } from '../snackbarSlice'
 import { titleCase } from '../../utils'
 import { addTicketToCart, selectPlayData } from '../ticketing/ticketingSlice'
@@ -73,56 +73,57 @@ const EventPage = () => {
                 </Card>
             </section>
             <section>
-                <Grid container>
+                <SplitPane spacing={2}
+                    left={
+                        <div>
+                            <Typography component="h2" variant="h4">Event Description</Typography>
+                            <p>{(description) ? description : ''}</p>
+                        </div>
+                    }
+                    right={
+                        <div>
+                            <MultiSelectCalendar value={tickets.map(t => t.date)} onDateClicked={dateClicked} bindDates/>
+                            <ShowtimeSelect showings={displayedShowings} showingSelected={setSelectedShowing}/>
 
-                    <Grid item xs={8}>
-                        <Typography component="h2" variant="h4">Event Description</Typography>
-                        <p>{(description) ? description : ''}</p>
-                    </Grid>
-                    
-                    <Grid item xs={4}>
-                        <MultiSelectCalendar value={tickets.map(t => t.date)} onDateClicked={dateClicked} bindDates/>
-                        <ShowtimeSelect showings={displayedShowings} showingSelected={setSelectedShowing}/>
-
-                        <Typography variant="h5" gutterBottom align="center">
-                            {!selectedShowing ? "Please select a showing" : format(selectedShowing.date, "MMM dd yyyy h:mm a")}
-                        </Typography>
-                        <FormControl className={classes.formControl}>
-                            <TextField
-                                label="Quantity"
-                                type="number"
-                                required
-                                className={classes.formInput}
-                                value={qty || undefined}
-                                onChange={e => {
-                                    const val = +e.target.value
-                                    setQty((val > 0) ? val : 0)
-                                }}
-                            />
-                        </FormControl>
-                        <FormControl className={classes.formControl}>
-                            <FormControlLabel
-                                label='Add concessions'
-                                control={
-                                    <Checkbox
-                                        checked={concessions}
-                                        onChange={e => setConcessions(!concessions)} name='concessions' />
-                                }
-                            />
-                        </FormControl>
-                        <FormControl className={classes.formControl}>
-                            <Button
-                                disabled={!qty || !selectedShowing}
-                                color="primary"
-                                variant="contained"
-                                onClick={handleSubmit}
-                            >
-                                Get Tickets
-                            </Button>
-                        </FormControl>
-                    </Grid>
-
-                </Grid>
+                            <Typography variant="h5" gutterBottom align="center">
+                                {!selectedShowing ? "Please select a showing" : format(selectedShowing.date, "MMM dd yyyy h:mm a")}
+                            </Typography>
+                            <FormControl className={classes.formControl}>
+                                <TextField
+                                    label="Quantity"
+                                    type="number"
+                                    required
+                                    className={classes.formInput}
+                                    value={qty || undefined}
+                                    onChange={e => {
+                                        const val = +e.target.value
+                                        setQty((val > 0) ? val : 0)
+                                    }}
+                                />
+                            </FormControl>
+                            <FormControl className={classes.formControl}>
+                                <FormControlLabel
+                                    label='Add concessions'
+                                    control={
+                                        <Checkbox
+                                            checked={concessions}
+                                            onChange={e => setConcessions(!concessions)} name='concessions' />
+                                    }
+                                />
+                            </FormControl>
+                            <FormControl className={classes.formControl}>
+                                <Button
+                                    disabled={!qty || !selectedShowing}
+                                    color="primary"
+                                    variant="contained"
+                                    onClick={handleSubmit}
+                                >
+                                    Get Tickets
+                                </Button>
+                            </FormControl>
+                        </div>
+                    }
+                />
             </section>
         </main>
     )
