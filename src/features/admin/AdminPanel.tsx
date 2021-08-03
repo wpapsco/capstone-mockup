@@ -52,13 +52,12 @@ export default function AdminPanel() {
         history.push("/")
     }
 
-    //TODO: possibly move this into redux state
+    //TODO: possibly move this into redux state (not here but after logging in)
     const getUser = () => { (async () => {
         const r = await fetch('/api/user', {credentials: 'include'})
         if (!r.ok) 
             return
         const data = await r.json()
-        console.log(data)
         setUser(data)
     })()}
     useEffect(getUser, [])
@@ -81,21 +80,19 @@ export default function AdminPanel() {
                 {props.title}
             </Typography>
             <List>
-                {props.buttons.map(e => {
+                {props.buttons.map((e, i) => {
                     const compProps = e.link ? {component: LinkTo(e.link)} : e.onClick ? {onClick: e.onClick} : {}
-                    return <ListItem disabled={e.disabled} button {...compProps}>
+                    return <ListItem key={i} disabled={e.disabled} button {...compProps}>
                         <ListItemIcon>
                             {e.icon}
                         </ListItemIcon>
                         <ListItemText primary={e.text}/>
                     </ListItem>
-                }
-                )}
+                })}
             </List>
         </Card>
 
-    return (
-        <>
+    return <>
         <h1>Admin Panel</h1>
         <Grid container className={classes.root} spacing={2}>
             <Grid item xs={6}>
@@ -163,7 +160,6 @@ export default function AdminPanel() {
             </Grid>
         </Grid>
     </>
-  );
 }
 
 /* All features here should have an administrator login required */

@@ -5,7 +5,7 @@ import ShoppingCartIcon from '@material-ui/icons/ShoppingCart'
 import { Theme, makeStyles, createStyles } from '@material-ui/core/styles'
 import theme from '../theme'
 
-import { NavLink } from 'react-router-dom'
+import { NavLink, useLocation } from 'react-router-dom'
 
 const useStyles = makeStyles((theme: Theme) => 
     createStyles({
@@ -29,14 +29,22 @@ const useStyles = makeStyles((theme: Theme) =>
 // TODO: Remove visited link color from shopping cart icon
 export default function Navbar()  {
     const classes = useStyles(theme)
+    const location = useLocation()
+    const [_, tabname] = location.pathname.split('/')
+    let currtab = 0;
+    if (tabname) {
+        currtab = {
+            "events": 0,
+            "completeorder": 1,
+            "admin": 2
+        }[tabname] || 0
+    }
 
     return (
         <Paper square className={classes.navbar}>
-            <Tabs>
+            <Tabs value={currtab}>
                 <Tab label="Events" component={NavLink} to="/events" />
                 <Tab label="Complete Order" component={NavLink} to="/completeorder"/>
-                
-                {/* TODO: This should only show if user is logged in!! */}
                 <Tab label="Admin" component={NavLink} to="/admin" />
             </Tabs>
             <NavLink to="/cart"><ShoppingCartIcon /></NavLink>

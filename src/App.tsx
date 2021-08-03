@@ -53,7 +53,7 @@ function App() {
                         <Route path="/testcalendar">
                             <MultiSelectCalendar value={dates} onChange={setDates} onDateClicked={d => console.log(d)}/>
                             <Button onClick={() => setDates([])}>Clear</Button>
-                            {dates.map(d => <p>{d.toLocaleString()}</p>)}
+                            {dates.map(d => <p key={d.getTime()}>{d.toLocaleString()}</p>)}
                         </Route>
                         <Route path="/events/:playid">
                             <EventPage />
