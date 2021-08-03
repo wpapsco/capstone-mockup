@@ -77,7 +77,6 @@ const isAuthenticated = function (req, res, next) {
 }
 
 const isSuperadmin = (req, res, next) => {
-    console.log(req.user)
     if (req.user && req.user.is_superadmin)
         return next()
     else
@@ -96,8 +95,13 @@ app.get('/api/users', isSuperadmin, async (req, res) => {
 
 app.post('/api/newUser', isSuperadmin, async (req, res) => {
     const passHash = await bcrypt.hash(req.body.password, 10);
-    await pool.query('INSERT INTO users (username, pass_hash) VALUES ($1, $2);', [req.body.username, passHash]);
-    res.sendStatus(200);
+    try {
+        await pool.query('INSERT INTO users (username, pass_hash) VALUES ($1, $2);', [req.body.username, passHash]);
+    } catch (e)  {
+        res.json({error: "USER_EXISTS"})
+        return
+    }
+    res.json({})
 })
 
 app.post('/api/changeUser', isSuperadmin, async (req, res) => {

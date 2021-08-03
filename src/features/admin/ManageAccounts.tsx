@@ -1,6 +1,8 @@
 import {Button, makeStyles, Paper, TextField, Typography} from '@material-ui/core';
 import {DataGrid, GridColumns, GridCellParams, GridCellEditCommitParams, MuiEvent} from '@material-ui/data-grid';
 import {SyntheticEvent, useEffect, useState} from 'react';
+import {useAppDispatch} from '../../app/hooks';
+import {openSnackbar} from '../snackbarSlice';
 
 const useStyles = makeStyles({
     newuser: {
@@ -20,7 +22,7 @@ const useStyles = makeStyles({
         marginBottom: "10px"
     }, 
     datagrid: {
-        height: 400,
+        height: "40em",
         width: "100%"
     }
 })
@@ -31,6 +33,7 @@ export default function ManageAccounts() {
     const [username, setUsername] = useState('')
     const [password, setPassword] = useState('')
     const classes = useStyles()
+    const dispatch = useAppDispatch()
 
     const getAccounts = async () => {
         const r = await fetch('/api/users', {
@@ -39,9 +42,12 @@ export default function ManageAccounts() {
         })
         if (r.ok) {
             const accounts = await r.json()
+            // const accounts = await r.text()
+            console.log(accounts)
             setRows(accounts)
         } else {
             setRows([])
+            dispatch(openSnackbar('Unauthorized'))
         }
     }
     useEffect(() => {getAccounts()}, [])
@@ -53,8 +59,10 @@ export default function ManageAccounts() {
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({id: userid})
         })
-        if (r.ok)
+        if (r.ok) {
             await getAccounts()
+            dispatch(openSnackbar('User deleted'))
+        }
     }
 
     const submitNewUser = async () => {
@@ -64,8 +72,18 @@ export default function ManageAccounts() {
             method: 'post',
             headers: {'Content-type': 'application/json'}
         })
-        if (r.ok)
+        if (r.ok) {
+            const j = await r.json()
+            if (j.error) {
+                console.log(j.error)
+                dispatch(openSnackbar('User already exists'))
+                return
+            }
             await getAccounts()
+            dispatch(openSnackbar('User created'))
+            setUsername('')
+            setPassword('')
+        }
     }
 
     const editUser = async (userid: number, user: {}) => {
@@ -75,6 +93,7 @@ export default function ManageAccounts() {
             method: 'post',
             headers: {'Content-type': 'application/json'}
         })
+        dispatch(openSnackbar('User changed'))
     }
 
     const renderButton = (params: GridCellParams) => 
@@ -108,7 +127,6 @@ export default function ManageAccounts() {
         renderCell: renderButton,
         width: 130
     }]
-
 
     const editCommit = (params: GridCellEditCommitParams, event: MuiEvent<SyntheticEvent<Element, Event>>) => 
         editUser(+params.id.toString(), {[params.field]: params.value})
