@@ -5,6 +5,7 @@ const HeroBanner: React.FC<{imgUrl: string}> = ({imgUrl, children}) => {
 
     return (
         <section className={classes.hero}>
+            <img className={classes.heroImage} src={imgUrl} alt='people singing on stage' />
             <div className={classes.heroContent}>
                 {children}
             </div>
@@ -17,30 +18,41 @@ export default HeroBanner
 const useStyles = (imgUrl: string) => makeStyles((theme) => ({
     hero: {
         position: 'relative',
-        left: '-27.5vw',
-        width: '100vw',
+        textAlign: 'center',
+        left: '-25.5vw',
+        width: '110vw',
         height: '50vh',
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
-
-        backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(${imgUrl})`,
-        backgroundRepeat: 'no-repeat',
-        backgroundSize: 'cover',
-        backgroundPosition: 'center center',
+        overflow: 'clip',
         '&:before': {
             height: '100%',
+            backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.8)), url(${imgUrl})`,
+            backgroundRepeat: 'no-repeat',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center center',
+            filter: 'blur(10px)',
             content: '""',
             position: 'absolute',
             top: 0,
             left: 0,
             width: '100%',
+        },
+        '& h1': {
+            fontWeight: 800
         }
     },
     heroContent: {
-        position: 'relative',
+        position: 'absolute',
         color: 'white',
     },
+    heroImage: {
+        position: 'absolute',
+        width: '55%',
+        // height: '100%',
+        filter: 'brightness(0.6)',
+    }
 }))
 
 /*

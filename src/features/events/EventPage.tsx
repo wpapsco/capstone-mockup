@@ -59,7 +59,7 @@ const EventPage = () => {
     return (
         <>
             <HeroBanner imgUrl={image_url}>
-                <Typography variant='h3' component='h1'>{titleCase(title)}</Typography>
+                <Typography variant='h2' component='h1'>{titleCase(title)}</Typography>
             </HeroBanner>
             <section>
                 <SplitPane spacing={2}
