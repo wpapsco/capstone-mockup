@@ -57,7 +57,7 @@ export default function CheckoutPage() {
             <YourOrder />
             <Paper className={classes.paper} variant="outlined">
                 {checkoutStep === "donation" && <DonationPage onNext={() => setCheckoutStep("form")}/>}
-                {checkoutStep === "form" && <CompleteOrderForm disabled={cartItems.length == 0} onSubmit={doCheckout} onBack={() => setCheckoutStep("donation")}/>}
+                {checkoutStep === "form" && <CompleteOrderForm disabled={cartItems.length === 0} onSubmit={doCheckout} onBack={() => setCheckoutStep("donation")}/>}
             </Paper>
         </div>
     )

@@ -97,7 +97,7 @@ export default function AdminPanel() {
                         Events 
                     </Typography>
                     <List>
-                        <ListItem button component={LinkTo("admin/CreateEvents")}>
+                        <ListItem button component={LinkTo("/admin/CreateEvents")}>
                             <ListItemIcon>
                                 <AddBox />
                             </ListItemIcon>
