@@ -15,14 +15,15 @@ import {
     Typography,
     FormControl,
     CardActions
-} from '@material-ui/core';
-import SplitPane from '../../components/SplitPane';
+} from '@material-ui/core'
+import SplitPane from '../../components/SplitPane'
+import HeroBanner from '../../components/HeroBanner'
 import { openSnackbar } from '../snackbarSlice'
 import { titleCase } from '../../utils'
 import { addTicketToCart, selectPlayData } from '../ticketing/ticketingSlice'
 import { Ticket } from '../ticketing/ticketingTypes'
 import MultiSelectCalendar from '../../components/MultiSelectCalendar'
-import ShowtimeSelect from './ShowtimeSelect';
+import ShowtimeSelect from './ShowtimeSelect'
 
 type EventPageProps = {playid: string}
 const EventPage = () => {
@@ -56,27 +57,15 @@ const EventPage = () => {
     }
 
     return (
-        <main>
-            <section>
-                <Card className={classes.cardRoot}>
-                    <CardMedia
-                        className={classes.heroImage}
-                        image={image_url} />
-                    <CardContent className={classes.cardContents}>
-                        <Typography component="h1" variant="h3" align="center" gutterBottom>{titleCase(title)}</Typography>
-                        <Typography variant="body1"> {
-                            (selectedShowing)
-                                ? 'Selected showing: ' + format(selectedShowing.date, "MMM dd yyyy h:mm a")
-                                : `Please select a showing (${tickets.length} available)`
-                        } </Typography>
-                    </CardContent>
-                </Card>
-            </section>
+        <>
+            <HeroBanner imgUrl={image_url}>
+                <Typography variant='h3' component='h1'>{title}</Typography>
+            </HeroBanner>
             <section>
                 <SplitPane spacing={2}
                     left={
                         <div>
-                            <Typography component="h2" variant="h4">Event Description</Typography>
+                            <Typography component="h2" variant="h5">Event Description</Typography>
                             <p>{(description) ? description : ''}</p>
                         </div>
                     }
@@ -125,7 +114,7 @@ const EventPage = () => {
                     }
                 />
             </section>
-        </main>
+        </>
     )
 }
 export default EventPage

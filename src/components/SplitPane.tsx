@@ -6,7 +6,7 @@ interface SplitPaneProps {
     spacing?: GridSpacing
 }
 const SplitPane = ({left, right, spacing}: SplitPaneProps) =>
-    <Grid container spacing={spacing ? spacing : 2}>
+    <Grid container spacing={spacing ? spacing : 2} style={{marginTop: '30px'}}>
         <Grid item xs={8}>
             {left}
         </Grid>
