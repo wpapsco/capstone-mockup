@@ -1,4 +1,5 @@
 import { configureStore } from '@reduxjs/toolkit';
+import userSlice from '../features/admin/userSlice';
 import shopReducer from '../features/cart/cartSlice';
 import eventsReducer from '../features/events/eventsSlice';
 import snackbarReducer from '../features/snackbarSlice';
@@ -8,7 +9,8 @@ const store = configureStore(
         reducer: {
             shop: shopReducer,
             events: eventsReducer,
-            snackbar: snackbarReducer
+            snackbar: snackbarReducer,
+            user: userSlice
         }
     },
 );

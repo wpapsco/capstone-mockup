@@ -4,18 +4,23 @@ import {SyntheticEvent, useEffect, useState} from 'react';
 import {useAppDispatch} from '../../app/hooks';
 import {openSnackbar} from '../snackbarSlice';
 
-const useStyles = makeStyles({
+const useStyles = makeStyles(theme => ({
     newuser: {
         padding: "20px",
         marginTop: "20px",
         marginLeft: "20px",
-        width: "20em",
+        width: "15em",
         display: "flex",
         flexDirection: "column"
     },
     root: {
         display: "flex",
-        flexDirection: "row",
+        [theme.breakpoints.down('md')]: {
+            flexDirection: "column",
+        },
+        [theme.breakpoints.up('md')]: {
+            flexDirection: "row",
+        },
         alignItems: "flex-end"
     },
     item: {
@@ -25,7 +30,7 @@ const useStyles = makeStyles({
         height: "40em",
         width: "100%"
     }
-})
+}))
 
 export default function ManageAccounts() {
 
@@ -42,8 +47,6 @@ export default function ManageAccounts() {
         })
         if (r.ok) {
             const accounts = await r.json()
-            // const accounts = await r.text()
-            console.log(accounts)
             setRows(accounts)
         } else {
             setRows([])
@@ -65,7 +68,8 @@ export default function ManageAccounts() {
         }
     }
 
-    const submitNewUser = async () => {
+    const submitNewUser = async (e: any) => {
+        e.preventDefault()
         const r = await fetch('/api/newUser', {
             body: JSON.stringify({username, password}),
             credentials: "include",
@@ -98,7 +102,7 @@ export default function ManageAccounts() {
 
     const renderButton = (params: GridCellParams) => 
         <Button 
-            disabled={!!params.getValue(params.id, 'is_superadmin')} 
+            disabled={params.row.is_superadmin} 
             onClick={deleteUser(+params.id.toString())} 
             variant="contained" 
             color="secondary">
@@ -134,18 +138,20 @@ export default function ManageAccounts() {
     return <>
         <Typography variant="h3" gutterBottom>Manage Accounts</Typography>
         <div className={classes.root}>
-            <div className={classes.datagrid}>
                 <DataGrid
                     columns={columns}
                     rows={rows}
                     disableSelectionOnClick
                     onCellEditCommit={editCommit}
+                    autoHeight
+                    style={{width: "100%"}}
                     pageSize={10} />
-            </div>
             <Paper variant="outlined" className={classes.newuser}>
-                <TextField className={classes.item} fullWidth value={username} onChange={e => setUsername(e.target.value)} label="username" variant="outlined" />
-                <TextField className={classes.item} fullWidth value={password} onChange={e => setPassword(e.target.value)} label="password" variant="outlined" />
-                <Button disabled={!username || !password} fullWidth onClick={submitNewUser} variant="contained" color="primary">create user</Button>
+                <form>
+                    <TextField className={classes.item} fullWidth value={username} onChange={e => setUsername(e.target.value)} label="username" variant="outlined" />
+                    <TextField className={classes.item} fullWidth value={password} onChange={e => setPassword(e.target.value)} label="password" variant="outlined" />
+                    <Button type="submit" disabled={!username || !password} fullWidth onClick={submitNewUser} variant="contained" color="primary">create user</Button>
+                </form>
             </Paper>
         </div>
     </>

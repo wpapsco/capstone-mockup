@@ -36,7 +36,8 @@ export default function Navbar()  {
         currtab = {
             "events": 0,
             "completeorder": 1,
-            "admin": 2
+            "admin": 2,
+            "login": 2
         }[tabname] || 0
     }
 

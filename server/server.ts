@@ -43,15 +43,24 @@ passport.use(new LocalStrategy(async (username, password, done) => {
     const user = users.rows[0];
     const validated = await bcrypt.compare(password, user.pass_hash);
     if (validated) {
+        delete user.pass_hash
+        console.log(user)
         return done(null, user);
     } else {
         return done(null, false);
     }
 }))
 
+
+export interface User {
+    username: string;
+    id: number;
+    is_superadmin: boolean;
+}
+
 declare global {
     namespace Express {
-        interface User {
+        export interface User {
             username: string;
             id: number;
             is_superadmin: boolean;
@@ -66,7 +75,9 @@ passport.serializeUser((user, done) => {
 passport.deserializeUser(async (id, done) => {
     const users = await pool.query("SELECT * FROM users WHERE id = $1;", [id]);
     if (users.rows.length <= 0) return done("no such user", false);
-    return done(null, users.rows[0]);
+    const user = users.rows[0]
+    delete user.pass_hash
+    return done(null, user);
 })
 
 const isAuthenticated = function (req, res, next) {
@@ -90,6 +101,7 @@ app.get('/api/user', isAuthenticated, (req, res) => {
 app.get('/api/users', isSuperadmin, async (req, res) => {
     console.log('getusers')
     const users = await pool.query('SELECT * FROM users;')
+    users.rows.forEach(e => delete e.pass_hash);
     res.json(users.rows)
 })
 

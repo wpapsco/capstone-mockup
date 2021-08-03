@@ -15,9 +15,11 @@ import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
 import MeetingRoomIcon from '@material-ui/icons/MeetingRoom';
 import { Typography } from "@material-ui/core";
 import {NavLink, useHistory} from "react-router-dom";
-import {useAppDispatch} from "../../app/hooks";
+import {appSelector, useAppDispatch} from "../../app/hooks";
 import {openSnackbar} from "../snackbarSlice";
 import {ReactNode, useEffect, useState} from 'react';
+import {clearUser, selectUser} from "./userSlice";
+import {User} from "../../../server/server";
 
 const useStyles = makeStyles({
     root: {
@@ -44,23 +46,26 @@ export default function AdminPanel() {
     const classes = useStyles();
     const history = useHistory();
     const dispatch = useAppDispatch()
-    const [user, setUser] = useState<any>({})
+    // const [user, setUser] = useState<User | null>(null)
 
     const onLogout = async () => {
         await fetch('/logout', {credentials: "include"})
         dispatch(openSnackbar("Logged out"))
+        dispatch(clearUser())
         history.push("/")
     }
 
-    //TODO: possibly move this into redux state (not here but after logging in)
-    const getUser = () => { (async () => {
-        const r = await fetch('/api/user', {credentials: 'include'})
-        if (!r.ok) 
-            return
-        const data = await r.json()
-        setUser(data)
-    })()}
-    useEffect(getUser, [])
+    ////TODO: possibly move this into redux state (not here but after logging in)
+    //const getUser = () => { (async () => {
+    //    const r = await fetch('/api/user', {credentials: 'include'})
+    //    if (!r.ok) 
+    //        return
+    //    const data = await r.json()
+    //    setUser(data)
+    //})()}
+    //useEffect(getUser, [])
+
+    const user = appSelector(selectUser)
 
     type PanelProps = {
         title: string,
@@ -150,7 +155,7 @@ export default function AdminPanel() {
                 }, {
                     link: "/admin/accountManagement",
                     text: "Manage accounts",
-                    disabled: !user.is_superadmin,
+                    disabled: !user || !user.is_superadmin,
                     icon: <AccountTree />
                 }, {
                     onClick: onLogout,
