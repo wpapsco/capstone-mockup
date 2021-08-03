@@ -5,9 +5,14 @@ import format from "date-fns/format";
 
 const useStyles = makeStyles({
     root: {
-        height: "250px",
-        minWidth: "8em",
-        overflow: "auto"
+        marginLeft: '20px',
+        width: "100%",
+        overflow: "auto",
+        display: 'flex',
+        justifyContent: 'start',
+        '& .MuiListItem-root': {
+            textAlign: 'center'
+        }
     }
 })
 
@@ -24,10 +29,11 @@ export default function ShowtimeSelect(props: ShowtimeSelectProps) {
     return (
         <List component="nav" className={classes.root}>
             {props.showings.map(s => 
-                <ListItem button selected={s.eventid===selectedId} onClick={handleClick(s)}>
+                <ListItem button alignItems="flex-start" selected={s.eventid===selectedId} onClick={handleClick(s)}>
                     <ListItemText primary={format(s.date, "h:mm a")}/>
                 </ListItem>
             )}
         </List>
     )
 }
+

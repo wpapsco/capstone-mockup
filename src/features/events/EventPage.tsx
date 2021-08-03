@@ -59,7 +59,7 @@ const EventPage = () => {
     return (
         <>
             <HeroBanner imgUrl={image_url}>
-                <Typography variant='h3' component='h1'>{title}</Typography>
+                <Typography variant='h3' component='h1'>{titleCase(title)}</Typography>
             </HeroBanner>
             <section>
                 <SplitPane spacing={2}
@@ -70,13 +70,17 @@ const EventPage = () => {
                         </div>
                     }
                     right={
-                        <div>
+                        <>
+                            <Typography variant="subtitle1" gutterBottom align="center">
+                                {selectedShowing
+                                    ? format(selectedShowing.date, "MMM dd yyyy h:mm a")
+                                    : `Select a showing (${tickets.length} available)`
+                                }
+                            </Typography>
+
                             <MultiSelectCalendar value={tickets.map(t => t.date)} onDateClicked={dateClicked} bindDates/>
                             <ShowtimeSelect showings={displayedShowings} showingSelected={setSelectedShowing}/>
 
-                            <Typography variant="h5" gutterBottom align="center">
-                                {!selectedShowing ? "Please select a showing" : format(selectedShowing.date, "MMM dd yyyy h:mm a")}
-                            </Typography>
                             <FormControl className={classes.formControl}>
                                 <TextField
                                     label="Quantity"
@@ -110,7 +114,7 @@ const EventPage = () => {
                                     Get Tickets
                                 </Button>
                             </FormControl>
-                        </div>
+                        </>
                     }
                 />
             </section>

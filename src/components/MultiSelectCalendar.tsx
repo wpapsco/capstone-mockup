@@ -9,6 +9,12 @@ import clsx from 'clsx';
 import {DatePickerToolbar} from "@material-ui/pickers/DatePicker/DatePickerToolbar";
 
 const useStyles = makeStyles(theme => ({
+    root: {
+        minHeight: '175px',
+        '& .MuiPickersCalendar-transitionContainer': {
+            minHeight: '175px',
+        }
+    },
     day: {
         width: 36,
         height: 36,
@@ -85,41 +91,43 @@ function MultiSelectCalendar({value, onChange, disabled, onDateClicked, bindDate
         }
     }
 
-    return <>
-        <MuiPickersUtilsProvider utils={DateFnsUtils}>
-            <DatePicker
-                variant="static"
-                openTo="date"
-                orientation="landscape"
-                value={selDate}
-                onChange={handleChange}
-                onYearChange={date => {
-                    if (!date) return;
-                    updateDate = false;
-                }}
-                minDate={!bindDates || !value ? undefined : value.reduce((a, b) => a < b ? a : b)}
-                maxDate={!bindDates || !value ? undefined : value.reduce((a, b) => a > b ? a : b)}
-                disableToolbar={bindDates}
-                renderDay={(day, selectedDate, dayInCurrentMonth, dayComponent) => {
-                    if (!day) return <div />
-                    const daySelected = (value || dates).some(d => isSameDay(d, day))
-                    const wrapperClassName = clsx({
-                        [classes.wrapper]: daySelected,
-                        [classes.highlight]: daySelected && dayInCurrentMonth,
-                        [classes.highlightOutside]: daySelected && !dayInCurrentMonth
-                    })
-                    const dayClassName = clsx(classes.day, {
-                        [classes.nonCurrentMonthDay]: !dayInCurrentMonth && !daySelected,
-                        [classes.selectedNonCurrentMonthDay]: !dayInCurrentMonth && daySelected
-                    });
-                    return <div className={wrapperClassName}>
-                        <IconButton className={dayClassName}>
-                            <span> {format(day, "d")} </span>
-                        </IconButton>
-                    </div>
-                }}
-            />
-        </MuiPickersUtilsProvider>
-    </>
+    return (
+        <div className={classes.root}>
+            <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                <DatePicker
+                    variant="static"
+                    openTo="date"
+                    orientation="landscape"
+                    value={selDate}
+                    onChange={handleChange}
+                    onYearChange={date => {
+                        if (!date) return;
+                        updateDate = false;
+                    }}
+                    minDate={!bindDates || !value ? undefined : value.reduce((a, b) => a < b ? a : b)}
+                    maxDate={!bindDates || !value ? undefined : value.reduce((a, b) => a > b ? a : b)}
+                    disableToolbar={bindDates}
+                    renderDay={(day, selectedDate, dayInCurrentMonth, dayComponent) => {
+                        if (!day) return <div />
+                        const daySelected = (value || dates).some(d => isSameDay(d, day))
+                        const wrapperClassName = clsx({
+                            [classes.wrapper]: daySelected,
+                            [classes.highlight]: daySelected && dayInCurrentMonth,
+                            [classes.highlightOutside]: daySelected && !dayInCurrentMonth
+                        })
+                        const dayClassName = clsx(classes.day, {
+                            [classes.nonCurrentMonthDay]: !dayInCurrentMonth && !daySelected,
+                            [classes.selectedNonCurrentMonthDay]: !dayInCurrentMonth && daySelected
+                        });
+                        return <div className={wrapperClassName}>
+                            <IconButton className={dayClassName}>
+                                <span> {format(day, "d")} </span>
+                            </IconButton>
+                        </div>
+                    }}
+                />
+            </MuiPickersUtilsProvider>
+        </div>
+    )
 }
 export default MultiSelectCalendar;
