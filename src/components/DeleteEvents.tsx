@@ -20,6 +20,7 @@ export default function DeleteEvents() {
            },
            body: JSON.stringify(data),
         });
+        getEvents();
         return response.json();
     }
 
