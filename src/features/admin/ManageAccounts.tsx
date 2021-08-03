@@ -1,13 +1,36 @@
-import {Button, TextField} from '@material-ui/core';
+import {Button, makeStyles, Paper, TextField, Typography} from '@material-ui/core';
 import {DataGrid, GridColumns, GridCellParams, GridCellEditCommitParams, MuiEvent} from '@material-ui/data-grid';
 import {SyntheticEvent, useEffect, useState} from 'react';
 
+const useStyles = makeStyles({
+    newuser: {
+        padding: "20px",
+        marginTop: "20px",
+        marginLeft: "20px",
+        width: "20em",
+        display: "flex",
+        flexDirection: "column"
+    },
+    root: {
+        display: "flex",
+        flexDirection: "row",
+        alignItems: "flex-end"
+    },
+    item: {
+        marginBottom: "10px"
+    }, 
+    datagrid: {
+        height: 400,
+        width: "100%"
+    }
+})
 
 export default function ManageAccounts() {
 
     const [rows, setRows] = useState([])
     const [username, setUsername] = useState('')
     const [password, setPassword] = useState('')
+    const classes = useStyles()
 
     const getAccounts = async () => {
         const r = await fetch('/api/users', {
@@ -16,13 +39,12 @@ export default function ManageAccounts() {
         })
         if (r.ok) {
             const accounts = await r.json()
-            console.log(accounts)
             setRows(accounts)
         } else {
-            console.log('some kind of error')
             setRows([])
         }
     }
+    useEffect(() => {getAccounts()}, [])
 
     const deleteUser = (userid: number) => async () => {
         const r = await fetch('/api/deleteUser', {
@@ -64,7 +86,6 @@ export default function ManageAccounts() {
                 Delete
         </Button>
 
-
     const columns: GridColumns = [{
         field: 'id',
         headerName: 'ID',
@@ -88,23 +109,26 @@ export default function ManageAccounts() {
         width: 130
     }]
 
-    useEffect(() => {getAccounts()}, [])
 
-    const editCommit = (params: GridCellEditCommitParams, event: MuiEvent<SyntheticEvent<Element, Event>>) => {
+    const editCommit = (params: GridCellEditCommitParams, event: MuiEvent<SyntheticEvent<Element, Event>>) => 
         editUser(+params.id.toString(), {[params.field]: params.value})
-    }
 
     return <>
-        <div style={{height: 400}}>
-            <DataGrid
-                columns={columns}
-                rows={rows}
-                disableSelectionOnClick
-                onCellEditCommit={editCommit}
-                pageSize={10} />
+        <Typography variant="h3" gutterBottom>Manage Accounts</Typography>
+        <div className={classes.root}>
+            <div className={classes.datagrid}>
+                <DataGrid
+                    columns={columns}
+                    rows={rows}
+                    disableSelectionOnClick
+                    onCellEditCommit={editCommit}
+                    pageSize={10} />
+            </div>
+            <Paper variant="outlined" className={classes.newuser}>
+                <TextField className={classes.item} fullWidth value={username} onChange={e => setUsername(e.target.value)} label="username" variant="outlined" />
+                <TextField className={classes.item} fullWidth value={password} onChange={e => setPassword(e.target.value)} label="password" variant="outlined" />
+                <Button disabled={!username || !password} fullWidth onClick={submitNewUser} variant="contained" color="primary">create user</Button>
+            </Paper>
         </div>
-        <TextField value={username} onChange={e => setUsername(e.target.value)} label="username" variant="outlined" />
-        <TextField value={password} onChange={e => setPassword(e.target.value)} label="password" variant="outlined" />
-        <Button onClick={submitNewUser} variant="contained" color="primary">create user</Button>
     </>
 }
