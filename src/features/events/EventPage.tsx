@@ -81,7 +81,7 @@ const EventPage = () => {
             <Typography variant='h6' component='h2' gutterBottom align='center'>
                 Select a Showing
             </Typography>
-            <Typography variant='body1' align='center'>{`(${tickets.length} available)`}</Typography>
+            <Typography variant='body2' align='center'>{`(${tickets.length} available)`}</Typography>
         </div>
 
     return (
@@ -92,22 +92,22 @@ const EventPage = () => {
             <section>
                 <SplitPane spacing={10}
                     left={
-                        <>
+                        <div className={classes.leftPanel}>
                             <section>
                                 <Typography component="h2" variant="h5">
                                     Event Description
                                 </Typography>
-                                <p>{(description) ? description : ''}</p>
+                                <Typography variant='body1'>{(description) ? description : ''}</Typography>
                             </section>
                             <section>
                                 <Typography component="h2" variant="h5">
                                     Concessions Tickets
                                 </Typography>
-                                <p>
+                                <Typography variant='body1'>
                                     Lorem ipsum dolor, sit amet consectetur adipisicing elit. Vel, numquam. Harum, magni nostrum, incidunt dolores quia quo placeat libero molestiae totam cum reprehenderit, accusantium facilis adipisci ad mollitia rerum accusamus!
-                                </p>
+                                </Typography>
                             </section>
-                        </>
+                        </div>
                     }
                     right={
                         <section className={classes.rightPanel}>

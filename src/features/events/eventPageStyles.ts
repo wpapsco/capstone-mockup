@@ -33,5 +33,13 @@ export default makeStyles((theme: Theme) => ({
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
+    },
+    leftPanel: {
+        '& section': {
+            marginTop: theme.spacing(8)
+        },
+        '& section:first-of-type': {
+            marginTop: 0
+        },
     }
 }))
