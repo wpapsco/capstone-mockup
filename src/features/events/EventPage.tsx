@@ -7,11 +7,11 @@ import format from "date-fns/format";
 import {
     Button,
     Checkbox,
+    Collapse,
     FormControlLabel,
+    FormControl,
     TextField,
     Typography,
-    FormControl,
-    CardActions
 } from '@material-ui/core'
 import SplitPane from '../../components/SplitPane'
 import HeroBanner from '../../components/HeroBanner'
@@ -28,6 +28,7 @@ const EventPage = () => {
     const dispatch = useAppDispatch()
 
     const [calOpen, setCalOpen] = useState(true)
+    const [timePickerShown, setTimePickerShown] = useState(true)
     const [qty, setQty] = useState(0)
     const [concessions, setConcessions] = useState(false)
     const [selectedShowing, setSelectedShowing] = useState<Ticket | null>(null)
@@ -45,6 +46,8 @@ const EventPage = () => {
         setSelectedShowing(null)
         setSelectedDate(null)
         setCalOpen(true)
+        setTimePickerShown(true)
+        setDisplayedShowings([])
     }
 
     const handleSubmit = (e: React.FormEvent) => {
@@ -61,6 +64,7 @@ const EventPage = () => {
         setDisplayedShowings(sameDayShowings)
         setSelectedDate(date)
         setCalOpen(false)
+        setTimePickerShown(true)
     }
 
     const dateSelectionClicked = () => {
@@ -68,6 +72,19 @@ const EventPage = () => {
             setCalOpen(true)
 
         }
+    }
+
+    const onShowingSelected = (ticket: Ticket) => {
+        setSelectedShowing(ticket)
+        setTimePickerShown(!timePickerShown)
+    }
+
+    const resetShowSelection = () => {
+        setCalOpen(true)
+        setTimePickerShown(true)
+        setDisplayedShowings([])
+        setSelectedDate(null)
+        setSelectedShowing(null)
     }
 
     return (
@@ -94,8 +111,14 @@ const EventPage = () => {
                                 }
                             </Typography>
 
+                            <Collapse in={!calOpen}>
+                                <Button onClick={() => resetShowSelection()}>Select different date</Button>
+                            </Collapse>
                             <MultiSelectCalendar value={tickets.map(t => t.date)} onDateClicked={dateClicked} isCollapsed={calOpen} bindDates/>
-                            <ShowtimeSelect showings={displayedShowings} showingSelected={setSelectedShowing}/>
+
+                            <Collapse in={timePickerShown}>
+                                <ShowtimeSelect showings={displayedShowings} showingSelected={onShowingSelected}/>
+                            </Collapse>
 
                             <FormControl className={classes.formControl}>
                                 <TextField
