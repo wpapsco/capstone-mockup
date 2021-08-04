@@ -30,9 +30,11 @@ const EventPage = () => {
     const classes = eventPageStyles()
     const dispatch = useAppDispatch()
 
+    const [calOpen, setCalOpen] = useState(true)
     const [qty, setQty] = useState(0)
     const [concessions, setConcessions] = useState(false)
     const [selectedShowing, setSelectedShowing] = useState<Ticket | null>(null)
+    const [selectedDate, setSelectedDate] = useState<Date|null>(null)
     const [displayedShowings, setDisplayedShowings] = useState<Ticket[]>([])
     const {playid} = useParams<EventPageProps>()
 
@@ -40,20 +42,35 @@ const EventPage = () => {
     if (eventData === undefined) return <p>Whoops! Event not found</p>
     const {title, description, image_url, tickets} = eventData
 
+    const resetForm = () => {
+        setConcessions(false)
+        setQty(0)
+        setSelectedShowing(null)
+        setSelectedDate(null)
+        setCalOpen(true)
+    }
+
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault()
         if (selectedShowing!==null && qty) {
             dispatch(addTicketToCart({id: selectedShowing.eventid, qty, concessions}))
             dispatch(openSnackbar(`Added ${qty} ticket${qty === 1 ? "" : "s"} to cart!`))
-            setQty(0)
-            setSelectedShowing(null)
-            setConcessions(false)
+            resetForm()
         }
     }
 
     const dateClicked = (date: Date) => {
         const sameDayShowings = tickets.filter(d => isSameDay(date, d.date))
         setDisplayedShowings(sameDayShowings)
+        setSelectedDate(date)
+        setCalOpen(false)
+    }
+
+    const dateSelectionClicked = () => {
+        if (!calOpen) {
+            setCalOpen(true)
+
+        }
     }
 
     return (
@@ -62,7 +79,7 @@ const EventPage = () => {
                 <Typography variant='h2' component='h1'>{titleCase(title)}</Typography>
             </HeroBanner>
             <section>
-                <SplitPane spacing={2}
+                <SplitPane spacing={3}
                     left={
                         <div>
                             <Typography component="h2" variant="h5">Event Description</Typography>
@@ -71,14 +88,16 @@ const EventPage = () => {
                     }
                     right={
                         <>
-                            <Typography variant="subtitle1" gutterBottom align="center">
-                                {selectedShowing
-                                    ? format(selectedShowing.date, "MMM dd yyyy h:mm a")
+                            <Typography variant="subtitle1" gutterBottom align="center" onClick={() => dateSelectionClicked()}>
+                                {selectedDate
+                                    ? (selectedShowing)
+                                        ? format(selectedShowing.date, "MMM dd yyyy h:mm a")
+                                        : format(selectedDate, 'MMM dd') + ' select time:'
                                     : `Select a showing (${tickets.length} available)`
                                 }
                             </Typography>
 
-                            <MultiSelectCalendar value={tickets.map(t => t.date)} onDateClicked={dateClicked} bindDates/>
+                            <MultiSelectCalendar value={tickets.map(t => t.date)} onDateClicked={dateClicked} isCollapsed={calOpen} bindDates/>
                             <ShowtimeSelect showings={displayedShowings} showingSelected={setSelectedShowing}/>
 
                             <FormControl className={classes.formControl}>
