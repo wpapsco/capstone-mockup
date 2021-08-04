@@ -1,5 +1,5 @@
 import { Grid, GridSpacing } from '@material-ui/core'
-import { makeStyles } from '@material-ui/core'
+import { makeStyles, Theme } from '@material-ui/core'
 
 interface SplitPaneProps {
     left: React.ReactNode,
@@ -9,7 +9,7 @@ interface SplitPaneProps {
 const SplitPane = ({left, right, spacing}: SplitPaneProps) => {
     const classes = useStyles()
     return (
-        <Grid container spacing={spacing ? spacing : 2} style={{marginTop: '30px'}}>
+        <Grid container spacing={spacing ? spacing : 2} className={classes.root}>
             <Grid item xs={8}>
                 {left}
             </Grid>
@@ -24,12 +24,16 @@ const SplitPane = ({left, right, spacing}: SplitPaneProps) => {
 
 export default SplitPane
 
-const useStyles = makeStyles({
+const useStyles = makeStyles((theme: Theme) => ({
+    root: {
+        marginTop: theme.spacing(1),
+        minHeight: '100vh',
+    },
     rightPanel: {
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
     }
-})
+}))
 
 
