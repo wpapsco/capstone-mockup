@@ -93,7 +93,7 @@ const EventPage = () => {
                 <Typography variant='h2' component='h1'>{titleCase(title)}</Typography>
             </HeroBanner>
             <section>
-                <SplitPane spacing={3}
+                <SplitPane spacing={10}
                     left={
                         <div>
                             <Typography component="h2" variant="h5">Event Description</Typography>
