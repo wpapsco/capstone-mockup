@@ -38,6 +38,7 @@ const useStyles = (imgUrl: string) => makeStyles((theme) => ({
             top: 0,
             left: 0,
             width: '100%',
+            transform: 'scale(1.2)'
         },
         '& h1': {
             fontWeight: 800
