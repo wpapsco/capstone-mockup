@@ -103,7 +103,10 @@ const EventPage = () => {
                             <Collapse in={!calOpen}>
                                 <Button onClick={() => resetShowSelection()}>Select different date</Button>
                             </Collapse>
-                            <MultiSelectCalendar value={tickets.map(t => t.date)} onDateClicked={dateClicked} isCollapsed={calOpen} bindDates/>
+
+                            <Collapse in={calOpen}>
+                                <MultiSelectCalendar value={tickets.map(t => t.date)} onDateClicked={dateClicked} bindDates/>
+                            </Collapse>
 
                             <Collapse in={timePickerShown}>
                                 <ShowtimeSelect showings={displayedShowings} showingSelected={onShowingSelected}/>
@@ -119,6 +122,7 @@ const EventPage = () => {
                                     onChange={e => {setQty((+e.target.value > 0) ? +e.target.value : 0)}}
                                 />
                             </FormControl>
+                            
                             <FormControl className={classes.formControl}>
                                 <FormControlLabel
                                     label='Add concessions'

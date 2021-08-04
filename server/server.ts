@@ -539,15 +539,23 @@ const toTicket = (row): Ticket => {
 
 app.get('/api/tickets', async (req, res) => {
     try {
-        const qs = `SELECT sh.id AS eventid, playid, eventdate, starttime, availableseats, tt.name AS admission_type, price AS ticket_price, concessions AS concession_price
+        const qs =
+            `SELECT
+                sh.id AS eventid,
+                playid,
+                eventdate,
+                starttime,
+                availableseats,
+                tt.name AS admission_type,
+                price AS ticket_price,
+                concessions AS concession_price
             FROM showtimes sh
                 JOIN linkedtickets lt ON sh.id=lt.showid
                 JOIN tickettype tt ON lt.ticket_type=tt.id
             WHERE isseason=false AND availableseats > 0
-            ORDER BY eventdate;`
+            ORDER BY playid, eventid;`
         const query_res = await pool.query(qs)
-        const ticketData = query_res.rows.map(toTicket)
-        res.json(ticketData);
+        res.json(query_res.rows.map(toTicket));
         console.log('# tickets:', query_res.rowCount)
     }
     catch (err) {

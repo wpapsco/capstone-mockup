@@ -15,7 +15,7 @@ const fetchData = async (url: string) => {
 }
 
 export const fetchTicketingData = createAsyncThunk(
-    'events/fetch',
+    'ticketing/fetch',
     async () => {
         const plays: Play[] = await fetchData('/api/plays')
         const tickets: Ticket[] = await fetchData('/api/tickets')
