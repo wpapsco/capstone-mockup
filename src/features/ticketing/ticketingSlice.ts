@@ -2,6 +2,7 @@ import { createSlice, createAsyncThunk, PayloadAction, CaseReducer } from '@redu
 import { RootState } from '../../app/store'
 import { CartItem, Play, Ticket, ticketingState } from './ticketingTypes'
 import format from "date-fns/format";
+import { titleCase } from '../../utils'
 
 const fetchData = async (url: string) => {
     try {
@@ -48,7 +49,7 @@ const appendCartField = <T extends CartItem>(key: keyof T, val: T[typeof key]) =
 
 export const createCartItem = (data: {ticket: Ticket, play: Play, qty: number}): CartItem =>
     [data.ticket].map(toPartialCartItem)
-        .map(appendCartField('name', `${data.play.title} Ticket${(data.qty>1) ? 's' : ''}`))
+        .map(appendCartField('name', `${titleCase(data.play.title)} Ticket${(data.qty>1) ? 's' : ''}`))
         .map(appendCartField('qty', data.qty))
         .map(appendCartField('product_img_url', data.play.image_url))[0]
 
