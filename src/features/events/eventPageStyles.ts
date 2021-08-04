@@ -28,5 +28,10 @@ export default makeStyles((theme: Theme) => ({
         marginBottom: theme.spacing(1.5),
         // textDecoration: 'underline',
         padding: theme.spacing(1),
+    },
+    rightPanel: {
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
     }
 }))

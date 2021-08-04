@@ -14,9 +14,7 @@ const SplitPane = ({left, right, spacing}: SplitPaneProps) => {
                 {left}
             </Grid>
             <Grid item xs={4}>
-                <div className={classes.rightPanel}>
-                    {right}
-                </div>
+                {right}
             </Grid>
         </Grid>
     )
@@ -29,11 +27,6 @@ const useStyles = makeStyles((theme: Theme) => ({
         marginTop: theme.spacing(1),
         minHeight: '100vh',
     },
-    rightPanel: {
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-    }
 }))
 
 

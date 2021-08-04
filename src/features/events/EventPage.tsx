@@ -78,14 +78,14 @@ const EventPage = () => {
 
     const selectShowingPrompt =
         <div>
-            <Typography variant='h6' component='p' gutterBottom align='center'>
+            <Typography variant='h6' component='h2' gutterBottom align='center'>
                 Select a Showing
             </Typography>
             <Typography variant='body1' align='center'>{`(${tickets.length} available)`}</Typography>
         </div>
 
     return (
-        <>
+        <main>
             <HeroBanner imgUrl={image_url}>
                 <Typography variant='h2' component='h1'>{titleCase(title)}</Typography>
             </HeroBanner>
@@ -93,26 +93,38 @@ const EventPage = () => {
                 <SplitPane spacing={10}
                     left={
                         <>
-                            <Typography component="h2" variant="h5">Event Description</Typography>
-                            <p>{(description) ? description : ''}</p>
+                            <section>
+                                <Typography component="h2" variant="h5">
+                                    Event Description
+                                </Typography>
+                                <p>{(description) ? description : ''}</p>
+                            </section>
+                            <section>
+                                <Typography component="h2" variant="h5">
+                                    Concessions Tickets
+                                </Typography>
+                                <p>
+                                    Lorem ipsum dolor, sit amet consectetur adipisicing elit. Vel, numquam. Harum, magni nostrum, incidunt dolores quia quo placeat libero molestiae totam cum reprehenderit, accusantium facilis adipisci ad mollitia rerum accusamus!
+                                </p>
+                            </section>
                         </>
                     }
                     right={
-                        <>
+                        <section className={classes.rightPanel}>
                             <Collapse in={!calOpen}>
                                 <Button
                                     onClick={() =>resetShowSelection()}
                                     className={classes.changeDateBtnStyle}
                                     variant='outlined'
                                 >
-                                    Select different date
+                                    Choose different date
                                 </Button>
                             </Collapse>
                             {
                                 selectedDate
                                     ? (selectedShowing)
-                                        ? format(selectedShowing.date, "MMM, dd yyyy - h:mm a")
-                                        : format(selectedDate, 'MMM dd') + ' - Select Time Below:'
+                                        ? <Typography variant='subtitle1' component='h2'>{format(selectedShowing.date, "MMM, dd yyyy - h:mm a")}</Typography>
+                                        : <Typography variant='subtitle1' component='h2'>{format(selectedDate, 'MMM dd') + ' - Select Time Below:'}</Typography>
                                     : selectShowingPrompt
                             }
                             <Collapse in={calOpen}>
@@ -154,11 +166,11 @@ const EventPage = () => {
                                     Get Tickets
                                 </Button>
                             </FormControl>
-                        </>
+                        </section>
                     }
                 />
             </section>
-        </>
+        </main>
     )
 }
 export default EventPage
