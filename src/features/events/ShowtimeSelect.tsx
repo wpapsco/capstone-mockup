@@ -5,7 +5,6 @@ import format from "date-fns/format";
 
 const useStyles = makeStyles({
     root: {
-        marginLeft: '20px',
         width: "100%",
         overflow: "auto",
         display: 'flex',

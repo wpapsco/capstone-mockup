@@ -76,6 +76,14 @@ const EventPage = () => {
         setTimePickerShown(!timePickerShown)
     }
 
+    const selectShowingPrompt =
+        <div>
+            <Typography variant='h6' component='p' gutterBottom align='center'>
+                Select a Showing
+            </Typography>
+            <Typography variant='body1' align='center'>{`(${tickets.length} available)`}</Typography>
+        </div>
+
     return (
         <>
             <HeroBanner imgUrl={image_url}>
@@ -91,19 +99,22 @@ const EventPage = () => {
                     }
                     right={
                         <>
-                            <Typography variant="subtitle1" gutterBottom align="center">
-                                {selectedDate
-                                    ? (selectedShowing)
-                                        ? format(selectedShowing.date, "MMM dd yyyy h:mm a")
-                                        : format(selectedDate, 'MMM dd') + ' select time:'
-                                    : `Select a showing (${tickets.length} available)`
-                                }
-                            </Typography>
-
                             <Collapse in={!calOpen}>
-                                <Button onClick={() => resetShowSelection()}>Select different date</Button>
+                                <Button
+                                    onClick={() =>resetShowSelection()}
+                                    className={classes.changeDateBtnStyle}
+                                    variant='outlined'
+                                >
+                                    Select different date
+                                </Button>
                             </Collapse>
-
+                            {
+                                selectedDate
+                                    ? (selectedShowing)
+                                        ? format(selectedShowing.date, "MMM, dd yyyy - h:mm a")
+                                        : format(selectedDate, 'MMM dd') + ' - Select Time Below:'
+                                    : selectShowingPrompt
+                            }
                             <Collapse in={calOpen}>
                                 <MultiSelectCalendar value={tickets.map(t => t.date)} onDateClicked={dateClicked} bindDates/>
                             </Collapse>
@@ -122,7 +133,7 @@ const EventPage = () => {
                                     onChange={e => {setQty((+e.target.value > 0) ? +e.target.value : 0)}}
                                 />
                             </FormControl>
-                            
+
                             <FormControl className={classes.formControl}>
                                 <FormControlLabel
                                     label='Add concessions'
