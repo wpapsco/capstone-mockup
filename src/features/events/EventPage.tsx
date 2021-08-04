@@ -40,14 +40,18 @@ const EventPage = () => {
     if (eventData === undefined) return <p>Whoops! Event not found</p>
     const {title, description, image_url, tickets} = eventData
 
-    const resetForm = () => {
-        setConcessions(false)
-        setQty(0)
-        setSelectedShowing(null)
-        setSelectedDate(null)
+    const resetShowSelection = () => {
         setCalOpen(true)
         setTimePickerShown(true)
         setDisplayedShowings([])
+        setSelectedDate(null)
+        setSelectedShowing(null)
+    }
+
+    const resetForm = () => {
+        setConcessions(false)
+        setQty(0)
+        resetShowSelection()
     }
 
     const handleSubmit = (e: React.FormEvent) => {
@@ -67,24 +71,9 @@ const EventPage = () => {
         setTimePickerShown(true)
     }
 
-    const dateSelectionClicked = () => {
-        if (!calOpen) {
-            setCalOpen(true)
-
-        }
-    }
-
     const onShowingSelected = (ticket: Ticket) => {
         setSelectedShowing(ticket)
         setTimePickerShown(!timePickerShown)
-    }
-
-    const resetShowSelection = () => {
-        setCalOpen(true)
-        setTimePickerShown(true)
-        setDisplayedShowings([])
-        setSelectedDate(null)
-        setSelectedShowing(null)
     }
 
     return (
@@ -95,14 +84,14 @@ const EventPage = () => {
             <section>
                 <SplitPane spacing={10}
                     left={
-                        <div>
+                        <>
                             <Typography component="h2" variant="h5">Event Description</Typography>
                             <p>{(description) ? description : ''}</p>
-                        </div>
+                        </>
                     }
                     right={
                         <>
-                            <Typography variant="subtitle1" gutterBottom align="center" onClick={() => dateSelectionClicked()}>
+                            <Typography variant="subtitle1" gutterBottom align="center">
                                 {selectedDate
                                     ? (selectedShowing)
                                         ? format(selectedShowing.date, "MMM dd yyyy h:mm a")
@@ -123,14 +112,11 @@ const EventPage = () => {
                             <FormControl className={classes.formControl}>
                                 <TextField
                                     label="Quantity"
-                                    type="number"
+                                    type={"number"}
                                     required
                                     className={classes.formInput}
                                     value={qty || undefined}
-                                    onChange={e => {
-                                        const val = +e.target.value
-                                        setQty((val > 0) ? val : 0)
-                                    }}
+                                    onChange={e => {setQty((+e.target.value > 0) ? +e.target.value : 0)}}
                                 />
                             </FormControl>
                             <FormControl className={classes.formControl}>
