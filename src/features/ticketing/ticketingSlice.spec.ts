@@ -18,8 +18,7 @@ const ticket: Ticket = {
     eventid: 1,
     playid: '1',
     admission_type: 'General Admission',
-    eventdate: '2021-07-31',
-    starttime: '19:00:00',
+    date: new Date('2021-07-31T19:00:00'),
     ticket_price: 15.99,
     concession_price: 4.99,
     available: 34
@@ -28,8 +27,7 @@ const ticket2: Ticket = {
     eventid: 2,
     playid: '1',
     admission_type: 'General Admission',
-    eventdate: '2021-08-07',
-    starttime: '16:00:00',
+    date: new Date('2021-08-07T16:00:00'),
     ticket_price: 19.99,
     concession_price: 9.99,
     available: 20
@@ -54,7 +52,7 @@ describe('ticketing slice', () => {
         product_id: ticket.eventid,
         qty: 1,
         name: 'Play 1 Ticket',
-        desc: 'General Admission - Fri, Jul 30, 7:00 PM',
+        desc: 'General Admission - Sat, Jul 31, 7:00 PM',
         product_img_url: 'https://image',
         price: 15.99,
     }
@@ -99,6 +97,12 @@ describe('ticketing slice', () => {
                     date: new Date('2021-08-07T16:00:00')
                 }]
             })
+    })
+
+    it('selectPlayData returns tickets w/ proper date type', () => {
+        const playid = '1'
+        const playData = selectPlayData(ROOT_INIT_STATE, playid)
+        expect(playData!.tickets[0].date instanceof Date).toEqual(true)
     })
 })
 

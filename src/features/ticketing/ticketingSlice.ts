@@ -37,7 +37,7 @@ const formatDate = (d: Date) => {
     const date = new Date(d)
     const hr = date.getHours()
     date.setHours(toCivilian(hr))
-    return `${DAYS[date.getDay()]} ${format(date, 'MMM d, H:mm')} ${hr > 12 ? 'PM' : 'AM'}`
+    return `${DAYS[date.getDay()]}, ${format(date, 'MMM d, H:mm')} ${hr > 12 ? 'PM' : 'AM'}`
 }
 export const toPartialCartItem = (t: Ticket) => ({
     product_id: t.eventid,
@@ -144,7 +144,9 @@ export const selectPlayData = (state: RootState, playId: PlayId) => {
     const play = state.ticketing.plays.find(byId(playId))
     if (play) {
         const {id, ...playData} = play
-        const tickets = state.ticketing.tickets.filter(t => t.playid===playId)
+        const tickets = state.ticketing.tickets
+            .filter(t => t.playid===playId)
+            .map(t => ({...t, date: new Date(t.date)}))
         return {...playData, tickets}
     }
     else {
