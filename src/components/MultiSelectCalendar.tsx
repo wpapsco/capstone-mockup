@@ -2,10 +2,9 @@ import Collapse from '@material-ui/core/Collapse';
 import {DatePicker, MuiPickersUtilsProvider} from "@material-ui/pickers";
 import DateFnsUtils from "@date-io/date-fns";
 import {MaterialUiPickersDate} from "@material-ui/pickers/typings/date";
-import { isSameDay } from "../utils";
 import {useState} from "react";
 import {IconButton, makeStyles} from "@material-ui/core";
-import format from "date-fns/format";
+import {format, isSameDay} from "date-fns";
 import clsx from 'clsx';
 
 const useStyles = makeStyles(theme => ({
