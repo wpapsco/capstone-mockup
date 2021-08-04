@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import "./App.css";
 import { ThemeProvider } from '@material-ui/core/styles';
 import theme from './theme'
 import CheckoutPage from "./components/CheckoutPage";
@@ -54,9 +53,9 @@ function App() {
                     <Navbar />
                     <Switch>
                         <Route path="/testcalendar">
-                            <MultiSelectCalendar disabled value={dates} onChange={setDates} onDateClicked={d => console.log(d)}/>
+                            <MultiSelectCalendar value={dates} onChange={setDates} onDateClicked={d => console.log(d)}/>
                             <Button onClick={() => setDates([])}>Clear</Button>
-                            {dates.map(d => <p>{d.toLocaleString()}</p>)}
+                            {dates.map(d => <p key={d.getTime()}>{d.toLocaleString()}</p>)}
                         </Route>
                         <Route path="/events/:playid">
                             <EventPage />
@@ -89,7 +88,6 @@ function App() {
                         <Route path="/login/:redirect?" >
                             <LoginPage />
                         </Route>
-                        
                         <Route path="/admin">
                             <RequireLogin redirectTo="/admin">
                                 <AdminSwitch />

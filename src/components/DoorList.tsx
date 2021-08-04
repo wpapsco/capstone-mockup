@@ -1,12 +1,11 @@
-import { CellParams, DataGrid } from '@material-ui/data-grid'
+import { DataGrid, GridCellParams } from '@material-ui/data-grid'
 import { Checkbox, Typography } from '@material-ui/core'
 import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import RequireLogin from './RequireLogin'
 import { titleCase, dayMonthDate, militaryToCivilian } from '../utils'
-import {withStyles} from '@material-ui/styles'
 
-const renderCheckbox = ((params: CellParams) => <Checkbox checked={params.value as boolean} />)
+const renderCheckbox = ((params: GridCellParams) => <Checkbox checked={params.value as boolean} />)
 
 const checkInGuest = async (isCheckedIn: boolean, ticketID: string) => {
     try {
@@ -23,11 +22,11 @@ const checkInGuest = async (isCheckedIn: boolean, ticketID: string) => {
     }
 }
 
-const renderCheckin = ((params: CellParams) =>
+const renderCheckin = ((params: GridCellParams) =>
     <Checkbox
         color='primary'
         defaultChecked={params.value as boolean}
-        onChange={e => checkInGuest(e.target.checked, params.getValue('ticketno') as string)}
+        onChange={e => checkInGuest(e.target.checked, params.getValue(params.id, 'ticketno') as string)}
     />)
 
 const columns = [

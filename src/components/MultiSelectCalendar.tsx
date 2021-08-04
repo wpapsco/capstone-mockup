@@ -2,12 +2,11 @@ import Collapse from '@material-ui/core/Collapse';
 import {DatePicker, MuiPickersUtilsProvider} from "@material-ui/pickers";
 import DateFnsUtils from "@date-io/date-fns";
 import {MaterialUiPickersDate} from "@material-ui/pickers/typings/date";
-import isSameDay from "date-fns/isSameDay";
+import { isSameDay } from "../utils";
 import {useState} from "react";
 import {IconButton, makeStyles} from "@material-ui/core";
 import format from "date-fns/format";
 import clsx from 'clsx';
-import {DatePickerToolbar} from "@material-ui/pickers/DatePicker/DatePickerToolbar";
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -44,6 +43,13 @@ const useStyles = makeStyles(theme => ({
     }
 }))
 
+// const isSameDay = (a: Date, b: Date) => {
+//     const sameDay = a.getDate() == b.getDate()
+//     const sameMonth = a.getMonth() == b.getMonth()
+//     const sameYear = a.getFullYear() == b.getFullYear()
+//     return sameDay && sameMonth && sameYear
+// }
+
 export type MultiSelectCalendarProps = {
     value?: Date[],
     onChange?: (a: Date[]) => void,
@@ -75,19 +81,15 @@ function MultiSelectCalendar({value, onChange, disabled, onDateClicked, bindDate
     const toggleDate = (date: Date) => {
         if (onDateClicked) onDateClicked(date)
         if (disabled) return
-        const idx = dates.findIndex(d => isSameDay(d, date))
-        if (idx === -1) {
-            setDates([date, ...dates]);
-        } else {
-            setDates(dates.slice(0, idx).concat(dates.slice(idx + 1)));
-        }
 
-        if (!value || !onChange) return;
-        const _idx = value.findIndex(d => isSameDay(d, date))
+        const cb = (value && onChange) ? onChange : setDates;
+        const ds = (value && onChange) ? value : dates;
+        const idx = ds.findIndex(d => isSameDay(d, date))
+
         if (idx === -1) {
-            onChange([date, ...value])
+            cb([date, ...ds]);
         } else {
-            onChange(value.slice(0, _idx).concat(value.slice(_idx + 1)))
+            cb(ds.slice(0, idx).concat(ds.slice(idx + 1)));
         }
     }
 
@@ -110,7 +112,7 @@ function MultiSelectCalendar({value, onChange, disabled, onDateClicked, bindDate
                         disableToolbar={bindDates}
                         renderDay={(day, selectedDate, dayInCurrentMonth, dayComponent) => {
                             if (!day) return <div />
-                            const daySelected = (value || dates).some(d => isSameDay(d, day))
+                            const daySelected = (value || dates).some(d => isSameDay(new Date(d), day))
                             const wrapperClassName = clsx({
                                 [classes.wrapper]: daySelected,
                                 [classes.highlight]: daySelected && dayInCurrentMonth,

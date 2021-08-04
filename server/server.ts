@@ -40,17 +40,27 @@ passport.use(new LocalStrategy(async (username, password, done) => {
     const user = users.rows[0];
     const validated = await bcrypt.compare(password, user.pass_hash);
     if (validated) {
+        delete user.pass_hash
+        console.log(user)
         return done(null, user);
     } else {
         return done(null, false);
     }
 }))
 
+
+export interface User {
+    username: string;
+    id: number;
+    is_superadmin: boolean;
+}
+
 declare global {
     namespace Express {
-        interface User {
+        export interface User {
             username: string;
             id: number;
+            is_superadmin: boolean;
         }
     }
 }
@@ -62,7 +72,9 @@ passport.serializeUser((user, done) => {
 passport.deserializeUser(async (id, done) => {
     const users = await pool.query("SELECT * FROM users WHERE id = $1;", [id]);
     if (users.rows.length <= 0) return done("no such user", false);
-    return done(null, users.rows[0]);
+    const user = users.rows[0]
+    delete user.pass_hash
+    return done(null, user);
 })
 
 const isAuthenticated = function (req, res, next) {
@@ -72,8 +84,54 @@ const isAuthenticated = function (req, res, next) {
         return res.sendStatus(401)
 }
 
+const isSuperadmin = (req, res, next) => {
+    if (req.user && req.user.is_superadmin)
+        return next()
+    else
+        return res.sendStatus(401)
+}
+
 app.get('/api/user', isAuthenticated, (req, res) => {
     return res.send(req.user);
+})
+
+app.get('/api/users', isSuperadmin, async (req, res) => {
+    console.log('getusers')
+    const users = await pool.query('SELECT * FROM users;')
+    users.rows.forEach(e => delete e.pass_hash);
+    res.json(users.rows)
+})
+
+app.post('/api/newUser', isSuperadmin, async (req, res) => {
+    const passHash = await bcrypt.hash(req.body.password, 10);
+    try {
+        await pool.query('INSERT INTO users (username, pass_hash) VALUES ($1, $2);', [req.body.username, passHash]);
+    } catch (e)  {
+        res.json({error: "USER_EXISTS"})
+        return
+    }
+    res.json({})
+})
+
+app.post('/api/changeUser', isSuperadmin, async (req, res) => {
+    let sql = ''
+    let vals = []
+    if (req.body.username) {
+        sql = 'UPDATE users SET username = $1 WHERE id = $2;'
+        vals = [req.body.username, req.body.id]
+    } else if (req.body.password) {
+        const passHash = await bcrypt.hash(req.body.password, 10);
+        sql = 'UPDATE users SET pass_hash = $1 WHERE id = $2;'
+        vals = [passHash, req.body.id]
+    } else
+        res.sendStatus(200)
+    await pool.query(sql, vals)
+    res.sendStatus(200)
+})
+
+app.post('/api/deleteUser', isSuperadmin, async (req, res) => {
+    await pool.query('DELETE FROM users WHERE id = $1;', [req.body.id])
+    res.sendStatus(200)
 })
 
 app.post('/api/login', passport.authenticate('local'), (req, res) => {
@@ -90,7 +148,6 @@ app.get("/api/event-list", async (req, res) => {
         from showtimes as shwtm join plays on shwtm.playid = plays.id 
         where plays.active = true and shwtm.salestatus = true`);
     res.json(events.rows);
-    console.log(events.rowCount);
   } catch (err) {
     console.error(err.message);
   }
@@ -498,8 +555,15 @@ app.get('/api/tickets', async (req, res) => {
     }
 })
 
-app.get('/logout', function(req, res){
+app.get('/logout', (req, res) => {
     req.logout();
+    res.sendStatus(200);
+});
+
+app.post('/api/passwordChange', passport.authenticate('local'), async (req, res) => {
+    const newHash = await bcrypt.hash(req.body.newPassword, 10)
+    const sql = "UPDATE users SET pass_hash = $1 WHERE id = $2;"
+    await pool.query(sql, [newHash, req.user.id])
     res.sendStatus(200);
 });
 

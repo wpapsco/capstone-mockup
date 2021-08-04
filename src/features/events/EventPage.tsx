@@ -5,9 +5,6 @@ import isSameDay from "date-fns/isSameDay";
 import eventPageStyles from './eventPageStyles'
 import format from "date-fns/format";
 import {
-    Card,
-    CardMedia,
-    CardContent,
     Button,
     Checkbox,
     FormControlLabel,

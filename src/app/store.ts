@@ -1,14 +1,16 @@
 import { configureStore } from '@reduxjs/toolkit';
+import userSlice from '../features/admin/userSlice';
 import eventsReducer from '../features/events/eventsSlice';
 import snackbarReducer from '../features/snackbarSlice';
-import ticketingReducer_v2 from '../features/ticketing/ticketingSlice';
+import ticketingReducer from '../features/ticketing/ticketingSlice';
 
 const store = configureStore(
     {
         reducer: {
             events: eventsReducer,
             snackbar: snackbarReducer,
-            ticketing: ticketingReducer_v2,
+            ticketing: ticketingReducer,
+            user: userSlice
         }
     },
 );
