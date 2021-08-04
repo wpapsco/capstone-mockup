@@ -107,7 +107,7 @@ const CartRow = (props: CartItem) => {
 
             {toDollarAmount(cost)}
 
-            <CloseOutlinedIcon onClick={() => dispatch(removeTicketFromCart(props.product_id))}> </CloseOutlinedIcon>
+            <CloseOutlinedIcon onClick={() => setModalOpen(true)}> </CloseOutlinedIcon>
 
             <Modal
                 aria-labelledby="transition-modal-title"
