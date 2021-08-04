@@ -111,7 +111,7 @@ function MultiSelectCalendar({value, onChange, disabled, onDateClicked, bindDate
                         disableToolbar={bindDates}
                         renderDay={(day, selectedDate, dayInCurrentMonth, dayComponent) => {
                             if (!day) return <div />
-                            const daySelected = (value || dates).some(d => isSameDay(new Date(d), day))
+                            const daySelected = (value || dates).some(d => isSameDay(d, day))
                             const wrapperClassName = clsx({
                                 [classes.wrapper]: daySelected,
                                 [classes.highlight]: daySelected && dayInCurrentMonth,
