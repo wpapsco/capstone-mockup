@@ -1,16 +1,15 @@
 import { useState, useEffect } from 'react'
-import { CartItem } from '../ticketing/ticketingTypes'
-import { editItemQty, selectNumAvailable } from '../ticketing/ticketingSlice'
-import { appSelector, useAppDispatch } from '../../app/hooks'
+import { CartItem } from '../ticketingTypes'
+import { editItemQty, selectNumAvailable } from '../ticketingSlice'
+import { appSelector, useAppDispatch } from '../../../app/hooks'
 import { IconButton, Paper, Typography } from '@material-ui/core'
 import { createStyles, makeStyles } from '@material-ui/core/styles'
 import AddOutlinedIcon from '@material-ui/icons/AddOutlined'
 import RemoveOutlinedIcon from '@material-ui/icons/RemoveOutlined'
 import CloseOutlinedIcon from '@material-ui/icons/CloseOutlined';
-import theme from '../../theme'
-import { toDollarAmount } from '../../utils'
+import theme from '../../../theme'
+import { toDollarAmount } from '../../../utils'
 
-// TODO: do not allow purchase qty > available seats
 interface CartRowProps {item: CartItem, removeHandler: (id: number) => void}
 const CartRow = ({item, removeHandler}: CartRowProps) => {
     const dispatch = useAppDispatch()

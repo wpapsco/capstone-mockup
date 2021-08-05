@@ -1,10 +1,10 @@
 import { useState } from 'react'
-import { appSelector, useAppDispatch } from '../../app/hooks'
+import { appSelector, useAppDispatch } from '../../../app/hooks'
 import CartRow from './CartItem'
 import { Backdrop, Button, Divider, Fade, Modal, Paper, Typography } from '@material-ui/core'
 import { createStyles, makeStyles } from '@material-ui/core/styles'
-import { toDollarAmount } from '../../utils'
-import { removeTicketFromCart, selectCartContents } from '../ticketing/ticketingSlice'
+import { toDollarAmount } from '../../../utils'
+import { removeTicketFromCart, selectCartContents } from '../ticketingSlice'
 
 const useStyles = makeStyles(() =>
     createStyles({

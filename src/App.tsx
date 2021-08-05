@@ -8,7 +8,7 @@ import {
      Switch,
      Route,
 } from 'react-router-dom';
-import Cart from './features/cart/Cart';
+import Cart from './features/ticketing/cart/Cart';
 import NewsletterSignup from "./features/newsletter/NewsletterSignup";
 import CheckoutSuccess from "./components/CheckoutSuccess";
 import { Button, Container } from "@material-ui/core";

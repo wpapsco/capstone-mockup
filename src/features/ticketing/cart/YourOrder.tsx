@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react'
-import { appSelector } from '../../app/hooks'
+import { appSelector } from '../../../app/hooks'
 import Paper from '@material-ui/core/Paper'
 import Typography from '@material-ui/core/Typography'
 import Divider from '@material-ui/core/Divider';
 import Button from '@material-ui/core/Button'
 import {makeStyles} from '@material-ui/core';
-import { selectCartContents } from '../ticketing/ticketingSlice'
-import { CartItem } from '../ticketing/ticketingTypes'
+import { selectCartContents } from '../ticketingSlice'
+import { CartItem } from '../ticketingTypes'
 
 // TODO: Proper rowitem component
 const Item = (props: CartItem) => <div>{props.name}, {props.price} x {props.qty}: {props.price*props.qty}</div>

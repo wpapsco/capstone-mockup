@@ -1,5 +1,5 @@
 import Paper from '@material-ui/core/Paper';
-import YourOrder from '../features/cart/YourOrder'
+import YourOrder from '../features/ticketing/cart/YourOrder'
 // import { selectCartContents, selectDonation } from '../features/cart/cartSlice'
 import { selectCartContents } from '../features/ticketing/ticketingSlice'
 import { appSelector } from '../app/hooks'
