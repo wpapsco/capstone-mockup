@@ -29,10 +29,12 @@ export default function NewEvent({eventSaved, eventTitle} : NewEventProps) {
     const [id, setId] = useState(1); // Needs to be set 1 more than marquee.id
     const [eventImage, setEventImage] = useState({});
     // TODO (Greg) are we using a location??
-    // This should be fetched from the server
+    // This should be fetched from the server?
+    /*
     const [location, setLocation] = useState(
     "Portland Playhouse, 602 NW Prescott St., Portland, OR, 97211"
     );
+    */
 
     const onTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setTitle(e.target.value);
