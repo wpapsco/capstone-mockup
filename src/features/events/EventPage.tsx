@@ -97,6 +97,16 @@ const EventPage = () => {
             </Typography>
             <Typography variant='body2' align='center'>({tickets.length} available)</Typography>
         </div>
+    
+    const qtyFieldLabel = (selectedShowing)
+        ? `Quantity (${selectedShowing.availableseats} available)`
+        : 'Quantity'
+
+    const qtyIsInvalid = () => {
+        const input = qty ? qty : 0
+        const available = selectedShowing ? selectedShowing.availableseats : 0
+        return input > available
+    }
 
     return (
         <main>
@@ -151,14 +161,10 @@ const EventPage = () => {
 
                             <FormControl className={classes.formControl}>
                                 <TextField
-                                    label={`Quantity ${selectedShowing
-                                        ? '(' + selectedShowing.availableseats.toString() + ' available)'
-                                        : ''}`
-                                    }
+                                    label={qtyFieldLabel}
                                     type={"number"}
                                     required
-                                    error={(qty?qty:0) > (selectedShowing?selectedShowing.availableseats:0)}
-                                    // error={(selectedShowing && qty!==undefined && qty > selectedShowing.availableseats) | undefined}
+                                    error={qtyIsInvalid()}
                                     disabled={!selectedShowing}
                                     className={classes.formInput}
                                     value={qty || undefined}
