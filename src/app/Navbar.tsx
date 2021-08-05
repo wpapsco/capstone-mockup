@@ -1,10 +1,9 @@
 import Paper from '@material-ui/core/Paper'
 import Tabs from '@material-ui/core/Tabs'
 import Tab from '@material-ui/core/Tab'
-import ShoppingCartIcon from '@material-ui/icons/ShoppingCart'
 import { Theme, makeStyles, createStyles } from '@material-ui/core/styles'
 import theme from '../theme'
-
+import CartIconLink from '../features/ticketing/cart/CartLink'
 import { NavLink, useLocation } from 'react-router-dom'
 
 const useStyles = makeStyles((theme: Theme) => 
@@ -16,17 +15,9 @@ const useStyles = makeStyles((theme: Theme) =>
             paddingRight: '30px',
             marginBottom: '30px',
         },
-        // link: {
-        //     '&::visited': {
-        //         color: 'grey'
-        //     }
-        // },
     })
 )
 
-
-// TODO: Create shopping cart icon component (with number of items in cart)
-// TODO: Remove visited link color from shopping cart icon
 export default function Navbar()  {
     const classes = useStyles(theme)
     const location = useLocation()
@@ -48,7 +39,7 @@ export default function Navbar()  {
                 <Tab label="Complete Order" component={NavLink} to="/completeorder"/>
                 <Tab label="Admin" component={NavLink} to="/admin" />
             </Tabs>
-            <NavLink to="/cart"><ShoppingCartIcon /></NavLink>
+            <CartIconLink />
         </Paper>
     )
 }

@@ -127,6 +127,7 @@ const ticketingSlice = createSlice({
     }
 })
 
+export const selectNumInCart = (state: RootState) => state.ticketing.cart.length
 export const selectCartContents = (state: RootState): CartItem[] => state.ticketing.cart
 /* Returns play data with shape: {
     title, description, image_url,
