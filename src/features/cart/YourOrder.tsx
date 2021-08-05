@@ -5,12 +5,14 @@ import Typography from '@material-ui/core/Typography'
 import Divider from '@material-ui/core/Divider';
 import Button from '@material-ui/core/Button'
 import {makeStyles} from '@material-ui/core';
-import CartItemRow from './CartItem'
 import { selectCartContents } from '../ticketing/ticketingSlice'
 import { CartItem } from '../ticketing/ticketingTypes'
 
+// TODO: Proper rowitem component
+const Item = (props: CartItem) => <div>{props.name}, {props.price} x {props.qty}: {props.price*props.qty}</div>
+
 const toDollar = (x: number) => `$${(Math.round(x * 100) / 100).toFixed(2)}`
-const toCartItemRow = (data: CartItem) => <CartItemRow {...data} />
+const toCartItemRow = (data: CartItem) => <Item {...data} />
 
 const useStyles = makeStyles({
     paper: {minWidth: "20%", flexGrow: 2, height: "100%", margin: "10px", paddingLeft: "2%", paddingRight: "2%", paddingTop: "30px"},

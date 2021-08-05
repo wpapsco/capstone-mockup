@@ -154,5 +154,12 @@ export const selectPlayData = (state: RootState, playId: PlayId) => {
     }
 }
 
+export const selectNumAvailable = (state: RootState, ticketid: number) => {
+    const play = state.ticketing.tickets.find(byId(ticketid))
+    return (play)
+        ? play.availableseats
+        : play
+}
+
 export const { addTicketToCart, editItemQty, removeTicketFromCart } = ticketingSlice.actions
 export default ticketingSlice.reducer

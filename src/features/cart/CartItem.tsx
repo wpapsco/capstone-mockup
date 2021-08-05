@@ -1,43 +1,42 @@
 import { useState, useEffect } from 'react'
 import { CartItem } from '../ticketing/ticketingTypes'
-import { editItemQty, removeTicketFromCart, selectNumAvailable } from '../ticketing/ticketingSlice'
-import { useAppDispatch } from '../../app/hooks'
-import { Button, Paper, Typography } from '@material-ui/core'
+import { editItemQty, selectNumAvailable } from '../ticketing/ticketingSlice'
+import { appSelector, useAppDispatch } from '../../app/hooks'
+import { IconButton, Paper, Typography } from '@material-ui/core'
 import { createStyles, makeStyles } from '@material-ui/core/styles'
 import AddOutlinedIcon from '@material-ui/icons/AddOutlined'
 import RemoveOutlinedIcon from '@material-ui/icons/RemoveOutlined'
 import CloseOutlinedIcon from '@material-ui/icons/CloseOutlined';
 import theme from '../../theme'
 import { toDollarAmount } from '../../utils'
-import Modal from '@material-ui/core/Modal';
-import Backdrop from '@material-ui/core/Backdrop';
-import Fade from '@material-ui/core/Fade';
 
 // TODO: do not allow purchase qty > available seats
-const CartRow = (props: CartItem) => {
+interface CartRowProps {item: CartItem, removeHandler: (id: number) => void}
+const CartRow = ({item, removeHandler}: CartRowProps) => {
     const dispatch = useAppDispatch()
     const classes = useStyles(theme)
-    const [cost, setCost] = useState(props.price * props.qty)
-    const [modalOpen, setModalOpen] = useState(false)
+    const [cost, setCost] = useState(item.price * item.qty)
+    const numAvailable = appSelector(state => selectNumAvailable(state, item.product_id))
 
-    useEffect(() => setCost(props.qty * props.price), [props.qty])
+    useEffect(() => setCost(item.qty * item.price), [item.qty])
 
     const decrement = () => {
-        if (props.qty > 1) {
-            dispatch(editItemQty({id: props.product_id, qty: props.qty-1}))
+        if (item.qty > 1) {
+            dispatch(editItemQty({id: item.product_id, qty: item.qty-1}))
         } else {
-            setModalOpen(true)
+            removeHandler(item.product_id)
         }
     }
 
-    const handleRemove = () => {
-        setModalOpen(false)
-        dispatch(removeTicketFromCart(props.product_id))
+    const handleIncrement = () => {
+        if (numAvailable && item.qty < numAvailable) {
+            dispatch(editItemQty({id: item.product_id, qty: item.qty+1}))
+        }
     }
 
     return (
         <Paper elevation={1} className={classes.cartItem}>
-            <img src={props.product_img_url} className={classes.image} alt='foo'/>
+            <img src={item.product_img_url} className={classes.image} alt='foo'/>
             <span className={classes.itemDescriptors}>
                 <Typography
                     component='h2'
@@ -45,44 +44,28 @@ const CartRow = (props: CartItem) => {
                     color='textPrimary'
                     className={classes.itemName}
                 >
-                    {props.name}
+                    {item.name}
                 </Typography>
-                <p>{props.desc}</p>
+                <p>{item.desc}</p>
             </span>
 
             <div className={classes.qtyPicker}>
-                <RemoveOutlinedIcon onClick={decrement}></RemoveOutlinedIcon>
-                <span className={classes.qtyValue}>{props.qty}</span>
-                <AddOutlinedIcon
-                    onClick={() => dispatch(editItemQty({id: props.product_id, qty: props.qty+1}))}>
-                </AddOutlinedIcon>
+                <IconButton aira-label={`remove one ${item.name} to cart`} onClick={decrement}>
+                    <RemoveOutlinedIcon />
+                </IconButton>
+                <span className={classes.qtyValue}>{item.qty}</span>
+                <IconButton aria-label={`add one ${item.name} to cart`} onClick={handleIncrement}>
+                    <AddOutlinedIcon />
+                </IconButton>
             </div>
 
             {toDollarAmount(cost)}
-
-            <CloseOutlinedIcon onClick={() => setModalOpen(true)}> </CloseOutlinedIcon>
-
-            <Modal
-                aria-labelledby="modal-title"
-                aria-describedby="modal-description"
-                className={classes.modal}
-                open={modalOpen}
-                onClose={() => setModalOpen(false)}
-                closeAfterTransition
-                BackdropComponent={Backdrop}
-                BackdropProps={{ timeout: 500, }}
+            <IconButton
+                aria-label={`Remove ${item.name} from cart`}
+                onClick={() => removeHandler(item.product_id)}
             >
-                <Fade in={modalOpen}>
-                    <Paper className={classes.modalContent}>
-                        <Typography variant='h6' align='center' component='h2' id='modal-title'>Confirm removal</Typography>
-                        <p id='modal-description'>Do you want to remove this from your cart?</p>
-                        <div className={classes.btnGroup}>
-                            <Button variant="outlined" onClick={() => setModalOpen(false)}>Cancel</Button>
-                            <Button variant="contained" color="secondary" onClick={handleRemove}>Yes, remove</Button>
-                        </div>
-                    </Paper>
-                </Fade>
-            </Modal>
+                <CloseOutlinedIcon />
+            </IconButton>
         </Paper>
     )
 }
@@ -120,19 +103,6 @@ const useStyles = makeStyles(() =>
             display: 'flex',
             alignItems: 'center',
         },
-        modal: {
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-        },
-        modalContent: {
-            padding: '15px',
-        },
-        btnGroup: {
-            display: 'flex',
-            margin: '10px auto',
-            justifyContent: 'space-around',
-        }
     })
 )
 
