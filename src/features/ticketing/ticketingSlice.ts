@@ -54,8 +54,15 @@ export const createCartItem = (data: {ticket: Ticket, play: Play, qty: number}):
         .map(appendCartField('product_img_url', data.play.image_url))[0]
 
 type PlayId = string
-const isTicket = (obj: any): obj is Ticket => Object.keys(obj).some(key => key==='eventid')
-const byId = (id: number|PlayId) => (obj: Ticket|Play) => (isTicket(obj)) ? obj.eventid===id: obj.id===id
+const isTicket = (obj: any): obj is Ticket => Object.keys(obj).some(k => k==='eventid')
+const isCartItem = (obj: any): obj is CartItem => Object.keys(obj).some(k => k==='product_id')
+
+const byId = (id: number|PlayId) => (obj: Ticket|Play|CartItem) =>
+    (isTicket(obj))
+        ? obj.eventid===id
+        : isCartItem(obj)
+            ? obj.product_id===id
+            : obj.id===id
 
 const addTicketReducer: CaseReducer<ticketingState, PayloadAction<{ id: number, qty: number, concessions: boolean }>> = (state, action) => {
     const {id, qty, concessions} = action.payload
@@ -127,7 +134,10 @@ const ticketingSlice = createSlice({
     }
 })
 
+export const selectTicketsInCart = (state: RootState) => state.ticketing.cart.map(i => i.product_id)
+
 export const selectNumInCart = (state: RootState) => state.ticketing.cart.length
+
 export const selectCartContents = (state: RootState): CartItem[] => state.ticketing.cart
 /* Returns play data with shape: {
     title, description, image_url,

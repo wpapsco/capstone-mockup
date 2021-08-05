@@ -10,7 +10,6 @@ import {
     Collapse,
     FormControlLabel,
     FormControl,
-    TextField,
     Typography,
     Select,
     MenuItem,
@@ -20,7 +19,7 @@ import SplitPane from '../../components/SplitPane'
 import HeroBanner from '../../components/HeroBanner'
 import { openSnackbar } from '../snackbarSlice'
 import { titleCase } from '../../utils'
-import { addTicketToCart, selectPlayData } from '../ticketing/ticketingSlice'
+import { addTicketToCart, selectPlayData, selectTicketsInCart } from '../ticketing/ticketingSlice'
 import { Ticket } from '../ticketing/ticketingTypes'
 import MultiSelectCalendar from '../../components/MultiSelectCalendar'
 import ShowtimeSelect from './ShowtimeSelect'
@@ -35,20 +34,24 @@ type EventPageProps = {playid: string}
 const EventPage = () => {
     const classes = eventPageStyles()
     const dispatch = useAppDispatch()
-    
     const {playid} = useParams<EventPageProps>()
+    // Ticket picker state
     const [calOpen, setCalOpen] = useState(true)
     const [timePickerShown, setTimePickerShown] = useState(true)
     const [selectedDate, setSelectedDate] = useState<Date|null>(null)
     const [displayedShowings, setDisplayedShowings] = useState<Ticket[]>([])
-
+    // State for rest of form
     const [qty, setQty] = useState<number|null>(null)
     const [concessions, setConcessions] = useState(false)
     const [selectedShowing, setSelectedShowing] = useState<Ticket | undefined>(undefined)
+    const ticketsInCart = appSelector(selectTicketsInCart) //list of event/ticket IDs
     
     const eventData = appSelector(state => selectPlayData(state, playid))
     if (eventData === undefined) return <p>Whoops! Event not found</p>
     const {title, description, image_url, tickets} = eventData
+
+    // filter by tickets not already in cart
+    const availableTickets = tickets.filter(t => !ticketsInCart.some(id => id===t.eventid))
 
     const resetShowSelection = () => {
         setCalOpen(true)
@@ -70,7 +73,7 @@ const EventPage = () => {
     }
 
     const dateClicked = (date: Date) => {
-        const sameDayShowings = tickets.filter(d => isSameDay(date, d.date))
+        const sameDayShowings = availableTickets.filter(d => isSameDay(date, d.date))
         setDisplayedShowings(sameDayShowings)
         setSelectedDate(date)
         setCalOpen(false)
@@ -87,18 +90,12 @@ const EventPage = () => {
             <Typography variant='h6' component='h2' gutterBottom align='center'>
                 Select a Showing
             </Typography>
-            <Typography variant='body2' align='center'>({tickets.length} available)</Typography>
+            <Typography variant='body2' align='center'>({availableTickets.length} available)</Typography>
         </div>
     
     const qtyFieldLabel = (selectedShowing)
         ? `Quantity (${selectedShowing.availableseats} available)`
         : 'Quantity'
-
-    const qtyIsInvalid = () => {
-        const input = qty ? qty : 0
-        const available = selectedShowing ? selectedShowing.availableseats : 0
-        return input > available
-    }
 
     return (
         <main>
@@ -144,7 +141,7 @@ const EventPage = () => {
                                     : selectShowingPrompt
                             }
                             <Collapse in={calOpen}>
-                                <MultiSelectCalendar value={tickets.map(t => t.date)} onDateClicked={dateClicked} bindDates/>
+                                <MultiSelectCalendar value={availableTickets.map(t => t.date)} onDateClicked={dateClicked} bindDates/>
                             </Collapse>
 
                             <Collapse in={timePickerShown}>
@@ -152,16 +149,6 @@ const EventPage = () => {
                             </Collapse>
 
                             <FormControl className={classes.formControl}>
-                                {/* <TextField
-                                    label={qtyFieldLabel}
-                                    type={"number"}
-                                    required
-                                    error={qtyIsInvalid()}
-                                    disabled={!selectedShowing}
-                                    className={classes.formInput}
-                                    value={qty || undefined}
-                                    onChange={handleSetQty}
-                                /> */}
                                 <InputLabel id="qty-select-label">{qtyFieldLabel}</InputLabel>
                                 <Select
                                     labelId="qty-select-label"
