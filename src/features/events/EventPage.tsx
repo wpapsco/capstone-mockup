@@ -83,7 +83,6 @@ const EventPage = () => {
         } else {
             setQty((isNaN(input))
                 ? qty
-                // : (selectedShowing && input > 0 && input <= selectedShowing.availableseats)
                 : (selectedShowing && input > 0)
                     ? input
                     : qty
@@ -96,7 +95,7 @@ const EventPage = () => {
             <Typography variant='h6' component='h2' gutterBottom align='center'>
                 Select a Showing
             </Typography>
-            <Typography variant='body2' align='center'>{`(${tickets.length} available)`}</Typography>
+            <Typography variant='body2' align='center'>({tickets.length} available)</Typography>
         </div>
 
     return (
@@ -179,7 +178,7 @@ const EventPage = () => {
                             </FormControl>
                             <FormControl className={classes.formControl}>
                                 <Button
-                                    disabled={!qty || !selectedShowing}
+                                    disabled={!qty || !selectedShowing || qty > selectedShowing.availableseats}
                                     color="primary"
                                     variant="contained"
                                     onClick={handleSubmit}
