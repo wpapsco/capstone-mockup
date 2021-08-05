@@ -13,7 +13,8 @@ import {
     TextField,
     Typography,
     Select,
-    MenuItem
+    MenuItem,
+    InputLabel
 } from '@material-ui/core'
 import SplitPane from '../../components/SplitPane'
 import HeroBanner from '../../components/HeroBanner'
@@ -29,21 +30,22 @@ const range = (n: number, zeroIndexed = true) => zeroIndexed
     ? Array.from(Array(n).keys())
     : Array.from(Array(n).keys()).map(add1)
 
+// TODO: need to know 
 type EventPageProps = {playid: string}
 const EventPage = () => {
     const classes = eventPageStyles()
     const dispatch = useAppDispatch()
-
+    
+    const {playid} = useParams<EventPageProps>()
     const [calOpen, setCalOpen] = useState(true)
     const [timePickerShown, setTimePickerShown] = useState(true)
+    const [selectedDate, setSelectedDate] = useState<Date|null>(null)
+    const [displayedShowings, setDisplayedShowings] = useState<Ticket[]>([])
+
     const [qty, setQty] = useState<number|null>(null)
     const [concessions, setConcessions] = useState(false)
     const [selectedShowing, setSelectedShowing] = useState<Ticket | undefined>(undefined)
-    const [selectedDate, setSelectedDate] = useState<Date|null>(null)
-    const [displayedShowings, setDisplayedShowings] = useState<Ticket[]>([])
-    const {playid} = useParams<EventPageProps>()
-
-    const [amtAvailable, setAmtAvailable] = useState<number>(0)
+    
     const eventData = appSelector(state => selectPlayData(state, playid))
     if (eventData === undefined) return <p>Whoops! Event not found</p>
     const {title, description, image_url, tickets} = eventData
@@ -55,12 +57,7 @@ const EventPage = () => {
         setSelectedDate(null)
         setSelectedShowing(undefined)
         setQty(null)
-    }
-
-    const resetForm = () => {
         setConcessions(false)
-        setQty(null)
-        resetShowSelection()
     }
 
     const handleSubmit = (e: React.FormEvent) => {
@@ -68,7 +65,7 @@ const EventPage = () => {
         if (selectedShowing && qty) {
             dispatch(addTicketToCart({id: selectedShowing.eventid, qty, concessions}))
             dispatch(openSnackbar(`Added ${qty} ticket${qty === 1 ? "" : "s"} to cart!`))
-            resetForm()
+            resetShowSelection()
         }
     }
 
@@ -82,7 +79,6 @@ const EventPage = () => {
 
     const onShowingSelected = (ticket: Ticket) => {
         setSelectedShowing(ticket)
-        setAmtAvailable(ticket.availableseats)
         setTimePickerShown(!timePickerShown)
     }
 
@@ -95,7 +91,7 @@ const EventPage = () => {
         </div>
     
     const qtyFieldLabel = (selectedShowing)
-        ? `Quantity (${amtAvailable} available)`
+        ? `Quantity (${selectedShowing.availableseats} available)`
         : 'Quantity'
 
     const qtyIsInvalid = () => {
@@ -173,9 +169,12 @@ const EventPage = () => {
                                     disabled={selectedShowing===undefined}
                                     onChange={e => setQty(e.target.value as number)}
                                 >
-                                    {range(amtAvailable, false).map(n =>
-                                        <MenuItem key={n} value={n}>{n}</MenuItem>
-                                    )}
+                                    {
+                                        range(selectedShowing
+                                            ? selectedShowing.availableseats
+                                            : 0
+                                        , false).map(n => <MenuItem key={n} value={n}>{n}</MenuItem>)
+                                    }
                                 </Select>
                             </FormControl>
 
