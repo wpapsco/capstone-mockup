@@ -28,7 +28,7 @@ export default function ShowtimeSelect(props: ShowtimeSelectProps) {
     return (
         <List component="nav" className={classes.root}>
             {props.showings.map(s => 
-                <ListItem button alignItems="flex-start" selected={s.eventid===selectedId} onClick={handleClick(s)}>
+                <ListItem key={s.eventid} button alignItems="flex-start" selected={s.eventid===selectedId} onClick={handleClick(s)}>
                     <ListItemText primary={format(s.date, "h:mm a")}/>
                 </ListItem>
             )}
