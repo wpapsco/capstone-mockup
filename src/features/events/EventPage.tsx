@@ -76,6 +76,21 @@ const EventPage = () => {
         setTimePickerShown(!timePickerShown)
     }
 
+    const handleSetQty = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const input = Number.parseInt(e.target.value)
+        if (e.target.value === '') {
+            setQty(0)
+        } else {
+            setQty((isNaN(input))
+                ? qty
+                // : (selectedShowing && input > 0 && input <= selectedShowing.availableseats)
+                : (selectedShowing && input > 0)
+                    ? input
+                    : qty
+            )
+        }
+    }
+
     const selectShowingPrompt =
         <div>
             <Typography variant='h6' component='h2' gutterBottom align='center'>
@@ -137,12 +152,18 @@ const EventPage = () => {
 
                             <FormControl className={classes.formControl}>
                                 <TextField
-                                    label="Quantity"
+                                    label={`Quantity ${selectedShowing
+                                        ? '(' + selectedShowing.availableseats.toString() + ' available)'
+                                        : ''}`
+                                    }
                                     type={"number"}
                                     required
+                                    error={(qty?qty:0) > (selectedShowing?selectedShowing.availableseats:0)}
+                                    // error={(selectedShowing && qty!==undefined && qty > selectedShowing.availableseats) | undefined}
+                                    disabled={!selectedShowing}
                                     className={classes.formInput}
                                     value={qty || undefined}
-                                    onChange={e => {setQty((+e.target.value > 0) ? +e.target.value : 0)}}
+                                    onChange={handleSetQty}
                                 />
                             </FormControl>
 

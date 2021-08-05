@@ -14,7 +14,7 @@ export interface Ticket {
     date: Date,
     ticket_price: number,
     concession_price: number,
-    available: number,
+    availableseats: number,
 }
 
 export interface Play {
