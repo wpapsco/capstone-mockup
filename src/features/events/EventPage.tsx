@@ -12,6 +12,8 @@ import {
     FormControl,
     TextField,
     Typography,
+    Select,
+    MenuItem
 } from '@material-ui/core'
 import SplitPane from '../../components/SplitPane'
 import HeroBanner from '../../components/HeroBanner'
@@ -22,6 +24,11 @@ import { Ticket } from '../ticketing/ticketingTypes'
 import MultiSelectCalendar from '../../components/MultiSelectCalendar'
 import ShowtimeSelect from './ShowtimeSelect'
 
+const add1 = (n: number) => n+1
+const range = (n: number, zeroIndexed = true) => zeroIndexed
+    ? Array.from(Array(n).keys())
+    : Array.from(Array(n).keys()).map(add1)
+
 type EventPageProps = {playid: string}
 const EventPage = () => {
     const classes = eventPageStyles()
@@ -29,13 +36,14 @@ const EventPage = () => {
 
     const [calOpen, setCalOpen] = useState(true)
     const [timePickerShown, setTimePickerShown] = useState(true)
-    const [qty, setQty] = useState(0)
+    const [qty, setQty] = useState<number|null>(null)
     const [concessions, setConcessions] = useState(false)
-    const [selectedShowing, setSelectedShowing] = useState<Ticket | null>(null)
+    const [selectedShowing, setSelectedShowing] = useState<Ticket | undefined>(undefined)
     const [selectedDate, setSelectedDate] = useState<Date|null>(null)
     const [displayedShowings, setDisplayedShowings] = useState<Ticket[]>([])
     const {playid} = useParams<EventPageProps>()
 
+    const [amtAvailable, setAmtAvailable] = useState<number>(0)
     const eventData = appSelector(state => selectPlayData(state, playid))
     if (eventData === undefined) return <p>Whoops! Event not found</p>
     const {title, description, image_url, tickets} = eventData
@@ -45,18 +53,19 @@ const EventPage = () => {
         setTimePickerShown(true)
         setDisplayedShowings([])
         setSelectedDate(null)
-        setSelectedShowing(null)
+        setSelectedShowing(undefined)
+        setQty(null)
     }
 
     const resetForm = () => {
         setConcessions(false)
-        setQty(0)
+        setQty(null)
         resetShowSelection()
     }
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault()
-        if (selectedShowing!==null && qty) {
+        if (selectedShowing && qty) {
             dispatch(addTicketToCart({id: selectedShowing.eventid, qty, concessions}))
             dispatch(openSnackbar(`Added ${qty} ticket${qty === 1 ? "" : "s"} to cart!`))
             resetForm()
@@ -73,21 +82,8 @@ const EventPage = () => {
 
     const onShowingSelected = (ticket: Ticket) => {
         setSelectedShowing(ticket)
+        setAmtAvailable(ticket.availableseats)
         setTimePickerShown(!timePickerShown)
-    }
-
-    const handleSetQty = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const input = Number.parseInt(e.target.value)
-        if (e.target.value === '') {
-            setQty(0)
-        } else {
-            setQty((isNaN(input))
-                ? qty
-                : (selectedShowing && input > 0)
-                    ? input
-                    : qty
-            )
-        }
     }
 
     const selectShowingPrompt =
@@ -99,7 +95,7 @@ const EventPage = () => {
         </div>
     
     const qtyFieldLabel = (selectedShowing)
-        ? `Quantity (${selectedShowing.availableseats} available)`
+        ? `Quantity (${amtAvailable} available)`
         : 'Quantity'
 
     const qtyIsInvalid = () => {
@@ -160,7 +156,7 @@ const EventPage = () => {
                             </Collapse>
 
                             <FormControl className={classes.formControl}>
-                                <TextField
+                                {/* <TextField
                                     label={qtyFieldLabel}
                                     type={"number"}
                                     required
@@ -169,7 +165,18 @@ const EventPage = () => {
                                     className={classes.formInput}
                                     value={qty || undefined}
                                     onChange={handleSetQty}
-                                />
+                                /> */}
+                                <InputLabel id="qty-select-label">{qtyFieldLabel}</InputLabel>
+                                <Select
+                                    labelId="qty-select-label"
+                                    value={qty}
+                                    disabled={selectedShowing===undefined}
+                                    onChange={e => setQty(e.target.value as number)}
+                                >
+                                    {range(amtAvailable, false).map(n =>
+                                        <MenuItem key={n} value={n}>{n}</MenuItem>
+                                    )}
+                                </Select>
                             </FormControl>
 
                             <FormControl className={classes.formControl}>
