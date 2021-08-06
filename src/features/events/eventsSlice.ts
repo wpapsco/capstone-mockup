@@ -52,14 +52,14 @@ export interface EventsState {
     status: 'idle' | 'loading' | 'success' | 'failed'
 }
 
-const initialState: EventsState = {
+export const INITIAL_STATE: EventsState = {
     data: {},
     status: 'idle'
 }
 
 const eventsSlice = createSlice({
     name: 'events',
-    initialState,
+    initialState: INITIAL_STATE,
     reducers: {},
     extraReducers: (builder) => {
         builder

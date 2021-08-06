@@ -2,18 +2,18 @@ import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import Grid  from '@material-ui/core/Grid';
-import { selectDonation, setDonation } from '../features/cart/cartSlice'
-import { appSelector } from '../app/hooks'
-import { useAppDispatch } from "../app/hooks"
+// import { selectDonation, setDonation } from '../features/cart/cartSlice'
+// import { appSelector, useAppDispatch } from '../app/hooks'
 import { useState } from "react";
 import InputAdornment  from "@material-ui/core/InputAdornment"
 
 export default function DonationPage({onNext}: {onNext: () => any}) {
-    const dispatch = useAppDispatch()
-    const donation = appSelector(selectDonation)
-    const [amount, setAmount] = useState(donation)
+    // const dispatch = useAppDispatch()
+    // const donation = appSelector(selectDonation)
+    // const [amount, setAmount] = useState(donation)
+    const [amount, setAmount] = useState(0)
     return(
-        <Grid container spacing={3} alignItems="flex-end">
+        <Grid container spacing={3} alignItems="center">
             <Typography variant="h3">Please consider making a donation</Typography>
             <Grid item xs={9}>
                 <TextField label="donation amount" 
@@ -26,7 +26,10 @@ export default function DonationPage({onNext}: {onNext: () => any}) {
                 />
             </Grid>
             <Grid item xs={3}>
-                <Button fullWidth color="primary" variant="contained" onClick={() => {dispatch(setDonation(amount)); onNext()}}>Confirm</Button>
+                <Button fullWidth color="primary" variant="contained" onClick={() => {
+                    // dispatch(setDonation(amount));
+                    onNext();
+                }}>Confirm</Button>
             </Grid>
         </Grid>
     )

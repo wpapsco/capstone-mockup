@@ -1,31 +1,45 @@
 import { makeStyles, Theme } from '@material-ui/core/styles'
 
 export default makeStyles((theme: Theme) => ({
-    cardRoot: {
-        display: 'flex',
-        height: '400px',
-        marginBottom: 40,
-    },
-    cardContents: {
-        display: 'flex',
-        justifyContent: 'center',
-        flexDirection: 'column',
-        flex: 'auto',
-    },
-    heroImage: {
-        width: '500px',
-    },
     cardActions: {
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'center',
     },
     formControl: {
-        margin: theme.spacing(1),
+        marginTop: theme.spacing(1),
+        marginBottom: theme.spacing(1),
         width: '100%',
     },
     formInput: {
-        width: '90%',
         textAlign: 'center',
+    },
+    calendarSelect: {
+        display: "flex",
+    },
+    form: {
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "space-between",
+        width: "100%"
+    },
+    changeDateBtnStyle: {
+        marginTop: theme.spacing(1.5),
+        marginBottom: theme.spacing(1.5),
+        // textDecoration: 'underline',
+        padding: theme.spacing(1),
+    },
+    rightPanel: {
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+    },
+    leftPanel: {
+        '& section': {
+            marginTop: theme.spacing(8)
+        },
+        '& section:first-of-type': {
+            marginTop: 0
+        },
     }
 }))

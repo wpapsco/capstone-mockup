@@ -1,7 +1,5 @@
-import { selectAllEvents } from './eventsSlice'
 import EventCard from './EventCard'
 import { appSelector } from '../../app/hooks'
-
 import { CircularProgress } from '@material-ui/core'
 import { makeStyles } from '@material-ui/styles'
 
@@ -9,6 +7,7 @@ const useStyles = makeStyles(theme => ({
     root: {
         display: 'flex',
         flexDirection: 'column',
+        padding: '1em',
     },
     loading: {
         padding: '20px',
@@ -17,8 +16,8 @@ const useStyles = makeStyles(theme => ({
 }))
 
 const EventsList = () => {
-    const allEvents = appSelector(selectAllEvents)
-    const loadStatus = appSelector(state => state.events.status)
+    const allEvents = appSelector(state => state.ticketing.plays)
+    const loadStatus = appSelector(state => state.ticketing.status)
 
     const classes = useStyles()    
 
@@ -26,7 +25,7 @@ const EventsList = () => {
         <section className={classes.root}>
             {(loadStatus === 'loading') && <CircularProgress className={classes.loading}/>}
             {(loadStatus === 'success') &&
-                allEvents.map(evnt => <EventCard key={evnt.playname} {...evnt} />)
+                allEvents.map(event => <EventCard key={event.id} {...event} />)
             }
         </section>
     )

@@ -3,20 +3,22 @@ import { titleCase } from '../../utils'
 import { Card, CardContent, CardMedia, Button, Typography } from '@material-ui/core'
 import { Theme, makeStyles, useTheme } from '@material-ui/core/styles'
 import { Link } from 'react-router-dom'
+import { Play } from '../ticketing/ticketingTypes'
 
 const useStyles = makeStyles((theme: Theme) => ({
     root: {
-        margin: '1em',
+        marginBottom: '1em',
+        marginTop: '1em',
         display: 'flex',
         justifyContent: 'space-between',
-        height: '300px',
         width: '100%',
         flexDirection: 'row',
-        [theme.breakpoints.down('sm')]: {
+        [theme.breakpoints.down('md')]: {
             flexDirection: 'column',
         },
         [theme.breakpoints.up('md')]: {
             flexDirection: 'row',
+            minHeight: '300px',
         }
     },
     cardMedia: {
@@ -27,34 +29,38 @@ const useStyles = makeStyles((theme: Theme) => ({
         padding: '1.8em',
         display: 'flex',
         flexDirection: 'column',
+        justifyContent: 'space-between',
         // maxWidth: '60%',
     },
     callToAction: {
         alignSelf: 'center',
-        marginTop: 'auto',
+        textDecoration: 'none',
+        [theme.breakpoints.down('md')]: {
+            marginTop: '1em'
+        },
+        [theme.breakpoints.up('md')]: {
+            marginTop: 'auto'
+        },
+        width: "100%"
     },
 }))
 
-const EventCard = (props: {
-    playname: string,
-    playdescription: string,
-    image_url: string,
-    playid: number,
-}) => {
-    const classes = useStyles(useTheme())
+const EventCard = (props: Play) => {
+    const theme = useTheme()
+    const classes = useStyles(theme)
 
     return (
         <Card className={classes.root}>
             <CardContent className={classes.cardContent}>
-                <Typography component='h2' variant='h5'>{titleCase(props.playname)}</Typography>
+                <Typography component='h2' variant='h5'>{titleCase(props.title)}</Typography>
                 <Typography variant='body1'>
-                    {(props.playdescription) ?
-                        props.playdescription :
-                        'No description available.'
+                    {(props.description)
+                        ? props.description
+                        : 'No description available.'
                     }
                 </Typography>
-                <Link to={`/events/${props.playid}`} className={classes.callToAction}>
-                    <Button variant="contained" color="primary">
+                <Link to={`/events/${props.id}`} className={classes.callToAction}>
+                    <Button variant="contained" color="primary" fullWidth>
                         See Showings
                     </Button>
                 </Link>
@@ -62,7 +68,7 @@ const EventCard = (props: {
             <CardMedia
                 className={classes.cardMedia}
                 image={props.image_url}
-                title={`Photo of ${props.playname} performance`}
+                title={`Photo of ${props.title} performance`}
             />
         </Card>
     )

@@ -70,7 +70,7 @@ export default function DeleteEvents() {
     return (
         <div>
             <Typography variant="h2">Delete Events</Typography>
-            <DataGrid autoHeight rows={eventList} columns={columns} onSelectionChange={onSelection} pageSize={10} />
+            <DataGrid autoHeight rows={eventList} columns={columns} onSelectionModelChange={onSelection} pageSize={10} />
         </div>
     );
 }

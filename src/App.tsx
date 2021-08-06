@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import "./App.css";
 import { ThemeProvider } from '@material-ui/core/styles';
 import theme from './theme'
 import CheckoutPage from "./components/CheckoutPage";
@@ -9,7 +8,7 @@ import {
      Switch,
      Route,
 } from 'react-router-dom';
-import Cart from './features/cart/Cart';
+import Cart from './features/ticketing/cart/Cart';
 import NewsletterSignup from "./features/newsletter/NewsletterSignup";
 import CheckoutSuccess from "./components/CheckoutSuccess";
 import { Button, Container } from "@material-ui/core";
@@ -20,6 +19,7 @@ import { closeSnackbar, selectSnackbar } from "./features/snackbarSlice"
 import AllEventsPage from './features/events/AllEventsPage'
 import EventPage from "./features/events/EventPage"
 import { fetchEventData } from "./features/events/eventsSlice";
+import { fetchTicketingData } from './features/ticketing/ticketingSlice'
 
 import LoginPage from "./components/LoginPage";
 import AdminSwitch from "./features/admin/AdminSwitch";
@@ -35,6 +35,7 @@ function App() {
     useEffect(() => {
         if(eventsStatus === 'idle') {
             dispatch(fetchEventData())
+            dispatch(fetchTicketingData())
         }
     }, [dispatch])
 
@@ -43,7 +44,7 @@ function App() {
         dispatch(closeSnackbar())
     }
 
-    const [dates, setDates] = useState<Date[]>([])
+    const [dates, setDates] = useState<Date[]>([new Date()])
 
     return (
         <Container maxWidth="md">
@@ -52,9 +53,9 @@ function App() {
                     <Navbar />
                     <Switch>
                         <Route path="/testcalendar">
-                            <MultiSelectCalendar value={dates} onChange={setDates}/>
+                            <MultiSelectCalendar value={dates} onChange={setDates} onDateClicked={d => console.log(d)}/>
                             <Button onClick={() => setDates([])}>Clear</Button>
-                            {dates.map(d => <p>{d.toLocaleString()}</p>)}
+                            {dates.map(d => <p key={d.getTime()}>{d.toLocaleString()}</p>)}
                         </Route>
                         <Route path="/events/:playid">
                             <EventPage />
@@ -87,7 +88,6 @@ function App() {
                         <Route path="/login/:redirect?" >
                             <LoginPage />
                         </Route>
-                        
                         <Route path="/admin">
                             <RequireLogin redirectTo="/admin">
                                 <AdminSwitch />

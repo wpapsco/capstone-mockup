@@ -13,9 +13,13 @@ const theme = createMuiTheme({
         fontFamily: 'Montserrat',
         body1: {
             fontSize: '0.9rem',
+            lineHeight: 1.8,
         },
         subtitle1: {
             fontFamily: 'Roboto'
+        },
+        h5: {
+            marginBottom: 16
         }
     },
     shape: {

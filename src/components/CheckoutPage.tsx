@@ -1,18 +1,37 @@
 import Paper from '@material-ui/core/Paper';
-import YourOrder from '../features/cart/YourOrder'
-import { selectCartContents, selectDonation } from '../features/cart/cartSlice'
+import YourOrder from '../features/ticketing/cart/YourOrder'
+// import { selectCartContents, selectDonation } from '../features/cart/cartSlice'
+import { selectCartContents } from '../features/ticketing/ticketingSlice'
 import { appSelector } from '../app/hooks'
 import { loadStripe } from '@stripe/stripe-js';
 import { useState } from "react";
 import DonationPage from "./DonationPage"
 import CompleteOrderForm, { CheckoutFormInfo } from "./CompleteOrderForm"
+import {makeStyles} from '@material-ui/core';
 
 const stripePromise = loadStripe("pk_test_51J5bpwGEweatMRnmGFUKgE6Q3wn7GmOJDAJ3Zag8DIhZjh324DdDUCFiEOLa0HQZFonkf2pc6lAOpPuheQs9N8AC00zNa4xALV")
 
+const useStyles = makeStyles({
+    paper: {
+        height: "100%",
+        margin: "10px",
+        paddingLeft: "30px",
+        paddingTop: "30px",
+        paddingRight: "30px",
+    },
+    root: {
+        display: "flex",
+        height: "100vh",
+        width: "100%"
+    }
+})
+
 export default function CheckoutPage() {
     const cartItems = appSelector(selectCartContents)
-    const donation = appSelector(selectDonation)
+    // const donation = appSelector(selectDonation)
+    const donation = 0
     const [checkoutStep, setCheckoutStep] = useState("donation");
+    const classes = useStyles()
 
     const doCheckout = async (formData: CheckoutFormInfo) => {
         const stripe = await stripePromise;
@@ -34,9 +53,9 @@ export default function CheckoutPage() {
     }
 
     return (
-        <div style={{display: "flex", height: "100vh", width: "100%"}}>
+        <div className={classes.root}>
             <YourOrder />
-            <Paper style={{flexGrow: 8, height: "100%", margin: "10px", paddingLeft: "5%", paddingTop: "50px", paddingRight: "10%"}} variant="outlined">
+            <Paper className={classes.paper} variant="outlined">
                 {checkoutStep === "donation" && <DonationPage onNext={() => setCheckoutStep("form")}/>}
                 {checkoutStep === "form" && <CompleteOrderForm disabled={cartItems.length === 0} onSubmit={doCheckout} onBack={() => setCheckoutStep("donation")}/>}
             </Paper>
