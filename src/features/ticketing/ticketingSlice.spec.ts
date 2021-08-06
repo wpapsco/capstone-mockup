@@ -5,7 +5,9 @@ import ticketReducer, {
     addTicketToCart,
     createCartItem,
     selectPlayData,
+    selectCartTicketCount,
 } from './ticketingSlice'
+import { User } from '../../../server/server'
 
 const play: Play = {
     id: '1',
@@ -21,7 +23,7 @@ const ticket: Ticket = {
     date: new Date('2021-07-31T19:00:00'),
     ticket_price: 15.99,
     concession_price: 4.99,
-    available: 34
+    availableseats: 34
 }
 const ticket2: Ticket = {
     eventid: 2,
@@ -30,7 +32,7 @@ const ticket2: Ticket = {
     date: new Date('2021-08-07T16:00:00'),
     ticket_price: 19.99,
     concession_price: 9.99,
-    available: 20
+    availableseats: 20
 }
 
 const ticketingInitState: ticketingState = {
@@ -41,6 +43,7 @@ const ticketingInitState: ticketingState = {
 }
 
 const ROOT_INIT_STATE: RootState = {
+    user: {username: 'user1', id: 1, is_superadmin: false},
     events: eventsInitState,
     snackbar: {message: '', shown: false},
     ticketing: ticketingInitState
@@ -56,6 +59,32 @@ describe('ticketing slice', () => {
         product_img_url: 'https://image',
         price: 15.99,
     }
+
+    it('selectCartTicketCount', () => {
+        const init: RootState = {
+            ...ROOT_INIT_STATE,
+            ticketing: {
+                ...ROOT_INIT_STATE.ticketing,
+                cart: [{
+                    product_id: 1,     // references state.tickets.eventid
+                    qty: 2,
+                    name: 'thing',
+                    desc: 'desc1',
+                    product_img_url: 'www.com',
+                    price: 2.99,
+                },{
+                    product_id: 2,     // references state.tickets.eventid
+                    qty: 4,
+                    name: 'thing2',
+                    desc: 'desc2',
+                    product_img_url: 'www.com',
+                    price: 3.99,
+                }]
+            }
+        }
+        expect(selectCartTicketCount(init))
+            .toEqual({1: 2, 2: 4})
+    })
 
     it('createCartItem', () => {
         expect(createCartItem({ticket, play, qty: 1}))
@@ -85,7 +114,7 @@ describe('ticketing slice', () => {
                     admission_type: 'General Admission',
                     ticket_price: 15.99,
                     concession_price: 4.99,
-                    available: 34,
+                    availableseats: 34,
                     date: new Date('2021-07-31T19:00:00')
                 },{
                     eventid: 2,
@@ -93,7 +122,7 @@ describe('ticketing slice', () => {
                     admission_type: 'General Admission',
                     ticket_price: 19.99,
                     concession_price: 9.99,
-                    available: 20,
+                    availableseats: 20,
                     date: new Date('2021-08-07T16:00:00')
                 }]
             })

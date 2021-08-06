@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useAppDispatch, appSelector } from '../../app/hooks'
-import { addTicketToCart, selectPlayData, selectTicketsInCart } from '../ticketing/ticketingSlice'
+import { addTicketToCart, selectCartTicketCount } from '../ticketing/ticketingSlice'
 import { Ticket } from './ticketingTypes'
 import { openSnackbar } from '../snackbarSlice'
 import {
@@ -21,6 +21,7 @@ interface TicketPickerProps {
 const TicketPicker = ({tickets}: TicketPickerProps) => {
     const classes = useStyles()
     const dispatch = useAppDispatch()
+    const cartTicketCount = appSelector(selectCartTicketCount)
 
     const [selectedDate, setSelectedDate] = useState<Date|undefined>(undefined)
     const [displayedShowings, setDisplayedShowings] = useState<Ticket[]>([])
@@ -28,33 +29,37 @@ const TicketPicker = ({tickets}: TicketPickerProps) => {
     const [qty, setQty] = useState<number|undefined>(undefined)
     const [concessions, setConcessions] = useState(false)
 
+    const [step, setStep] = useState<1|2|3>(1)
+
 
     // Transitions to show times state
     const onDateSelect = (date: Date) => {
+        setSelectedTicket(undefined)
         setSelectedDate(date)
         const sameDayShows = tickets.filter(t => isSameDay(date, t.date))
         setDisplayedShowings(sameDayShows)
+        setStep(2)
         // show ShowtimeSelect
         // hide calendar
         // show change date btn
-        // update UI w/ selected date
-        // show prompt to select time
     }
 
     // Transitions to "choose qty & concessions" state
     const onTimeSelect = (ticket: Ticket) => {
         setSelectedTicket(ticket)
-        // hide showtime selector
-        // calc no. available (ticket.availableseats)
+        setStep(3)
     }
 
     const resetWidget = () => {
         // show calendar
         // hide showtime picker
         // hide change date button
+        setStep(1)
         setDisplayedShowings([])
         setQty(undefined)
         setConcessions(false)
+        setSelectedTicket(undefined)
+        setSelectedDate(undefined)
     }
 
     const handleSubmit = (e: React.FormEvent) => {
@@ -66,19 +71,35 @@ const TicketPicker = ({tickets}: TicketPickerProps) => {
         }
     }
 
-    const prompt = selectedDate
-        ? selectedTicket
-            ? format(selectedTicket.date, 'eee, MMM dd - HH:mm a')
-            : format(selectedDate, 'eee, MMM dd')
-        : 'Select show below'
+    const getNumAvail = (t?: Ticket) => {
+        if  (t===undefined) {
+            return 0
+        } else {
+            const inCart = cartTicketCount[t.eventid]
+            return t.availableseats - (inCart ? inCart : 0)
+        }
+    }
+
+    const prompt = {
+        1:  <Typography variant='subtitle1'>Select show below</Typography>,
+        2:  <Typography variant='subtitle1'>
+                {selectedDate ? format(selectedDate, 'eee, MMM dd') : ''}
+                <b> - Choose time:</b>
+            </Typography>,
+        3:  <Typography variant='subtitle1'>
+                {selectedTicket ? format(selectedTicket.date, 'eee, MMM dd - h:mm a') : ''}
+            </Typography>
+    }
 
     return (
         <>
-            <Button onClick={() => resetWidget()} className={classes.changeDateBtn} variant='outlined'>
-                Choose different date
-            </Button>
-            <Typography variant='subtitle1'>{prompt}</Typography>
-            <Collapse in={true}>
+            <Collapse in={step!==1}>
+                <Button onClick={() => resetWidget()} className={classes.changeDateBtn} variant='outlined'>
+                    Choose different date
+                </Button>
+            </Collapse>
+            {prompt[step]}
+            <Collapse in={step===1}>
                 <MultiSelectCalendar
                     value={tickets.map(t => t.date)}
                     onDateClicked={onDateSelect}
@@ -86,10 +107,12 @@ const TicketPicker = ({tickets}: TicketPickerProps) => {
                 />
             </Collapse>
             {/* TODO: consider changing to regular Select list */}
-            <ShowtimeSelect
-                showings={displayedShowings}
-                showingSelected={onTimeSelect}
-            />
+            <Collapse in={step===2}>
+                <ShowtimeSelect
+                    showings={displayedShowings}
+                    showingSelected={onTimeSelect}
+                />
+            </Collapse>
             <FormControl className={classes.formControl}>
                 <InputLabel id="qty-select-label">Quantity</InputLabel>
                 <Select
@@ -99,7 +122,7 @@ const TicketPicker = ({tickets}: TicketPickerProps) => {
                     onChange={e => setQty(e.target.value as number)}
                 >
                     {
-                        range(selectedTicket ? selectedTicket.availableseats : 0, false)
+                        range(getNumAvail(selectedTicket), false)
                             .map(n => <MenuItem key={n} value={n}>{n}</MenuItem>)
                     }
                 </Select>
@@ -160,7 +183,7 @@ export default TicketPicker
     const [qty, setQty] = useState<number|null>(null)
     const [concessions, setConcessions] = useState(false)
     const [selectedShowing, setSelectedShowing] = useState<Ticket | undefined>(undefined)
-    const ticketsInCart = appSelector(selectTicketsInCart) //list of event/ticket IDs
+    const ticketsInCart = appSelector(selectCartTicketCount) //list of event/ticket IDs
     
 
     // filter by tickets not already in cart

@@ -134,7 +134,18 @@ const ticketingSlice = createSlice({
     }
 })
 
-export const selectTicketsInCart = (state: RootState) => state.ticketing.cart.map(i => i.product_id)
+export const selectCartTicketCount = (state: RootState): {[key: number]: number} =>
+    state.ticketing.cart.reduce(
+        (acc, item) => {
+            const key = item.product_id
+            if (key in acc) {
+                return acc
+            } else {
+                return {...acc, [key]: item.qty}
+            }
+        }
+        ,{}
+    )
 
 export const selectNumInCart = (state: RootState) => state.ticketing.cart.length
 
@@ -155,7 +166,6 @@ export const selectPlayData = (state: RootState, playId: PlayId) => {
     const play = state.ticketing.plays.find(byId(playId))
     if (play) {
         const {id, ...playData} = play
-        console.log(state.ticketing.tickets)
         const tickets = state.ticketing.tickets
             .filter(t => t.playid===playId)
             .map(t => ({...t, date: new Date(t.date)}))
