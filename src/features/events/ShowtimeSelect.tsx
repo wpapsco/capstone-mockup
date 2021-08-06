@@ -8,6 +8,7 @@ const useStyles = makeStyles({
         width: "100%",
         overflow: "auto",
         display: 'flex',
+        flexDirection: 'column',
         justifyContent: 'start',
         '& .MuiListItem-root': {
             textAlign: 'center'

@@ -23,6 +23,7 @@ import { addTicketToCart, selectPlayData, selectTicketsInCart } from '../ticketi
 import { Ticket } from '../ticketing/ticketingTypes'
 import MultiSelectCalendar from '../../components/MultiSelectCalendar'
 import ShowtimeSelect from './ShowtimeSelect'
+import ScrollToTop from '../../components/ScrollToTop';
 
 const add1 = (n: number) => n+1
 const range = (n: number, zeroIndexed = true) => zeroIndexed
@@ -102,7 +103,7 @@ const EventPage = () => {
             <HeroBanner imgUrl={image_url}>
                 <Typography variant='h2' component='h1'>{titleCase(title)}</Typography>
             </HeroBanner>
-            <section>
+            <section style={{paddingTop: "50vh"}}>
                 <SplitPane spacing={10}
                     left={
                         <div className={classes.leftPanel}>
@@ -154,8 +155,7 @@ const EventPage = () => {
                                     labelId="qty-select-label"
                                     value={qty}
                                     disabled={selectedShowing===undefined}
-                                    onChange={e => setQty(e.target.value as number)}
-                                >
+                                    onChange={e => setQty(e.target.value as number)}>
                                     {
                                         range(selectedShowing
                                             ? selectedShowing.availableseats

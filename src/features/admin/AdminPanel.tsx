@@ -19,7 +19,6 @@ import {appSelector, useAppDispatch} from "../../app/hooks";
 import {openSnackbar} from "../snackbarSlice";
 import {ReactNode, useEffect, useState} from 'react';
 import {clearUser, selectUser} from "./userSlice";
-import {User} from "../../../server/server";
 
 const useStyles = makeStyles({
     root: {
@@ -136,46 +135,6 @@ export default function AdminPanel() {
                 ]} />
             </Grid>
             <Grid item xs={6}>
-                {/* from greg */}
-                <Card variant="outlined">
-                    <Typography className={ classes.title } >
-                        <EventIcon fontSize="large" className={ classes.icon }/>
-                        Events 
-                    </Typography>
-                    <List>
-                        <ListItem button component={LinkTo("/admin/CreateEvents")}>
-                            <ListItemIcon>
-                                <AddBox />
-                            </ListItemIcon>
-                            <ListItemText primary="Create an event" />
-                        </ListItem>
-                        <ListItem button component={LinkTo("/admin/DeleteEvents")}>
-                            <ListItemIcon>
-                                <DeleteForever />
-                            </ListItemIcon>
-                            <ListItemText primary="Delete an event" />
-                        </ListItem>
-                        <ListItem button component={LinkTo("/events")}>
-                            <ListItemIcon>
-                                <ViewListIcon />
-                            </ListItemIcon>
-                            <ListItemText primary="View events" />
-                        </ListItem>
-                        <ListItem button component={LinkTo("/admin/doorlist")}>
-                            <ListItemIcon>
-                                <MeetingRoomIcon />
-                            </ListItemIcon>
-                            <ListItemText primary="Door list" />
-                        </ListItem>
-                        <ListItem button>
-                            <ListItemIcon>
-                                <MoreHorizIcon />
-                            </ListItemIcon>
-                            <ListItemText primary="More" />
-                        </ListItem>
-                    </List>
-                </Card>
-                {/* from wpapsco */}
                 <Panel title="Newsletter" icon={<CreateIcon fontSize="large" className={ classes.icon } />} buttons={[{
                     link: "/admin/newsletter_create",
                     text: "Create newsletter",

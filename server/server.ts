@@ -299,7 +299,7 @@ app.post('/api/checkout', async (req, res) => {
     const cartSize = req.body.cartItems.length;
     var orders = [];
 
-    for(let i = 0; i<cartSize;++i){
+    for (let i = 0; i < cartSize;++i){
         let newOrder = {
             id: req.body.cartItems[i].id,
             quantity: req.body.cartItems[i].qty,

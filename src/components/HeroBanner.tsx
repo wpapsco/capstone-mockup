@@ -17,10 +17,10 @@ export default HeroBanner
 
 const useStyles = (imgUrl: string) => makeStyles((theme) => ({
     hero: {
-        position: 'relative',
+        position: 'absolute',
         textAlign: 'center',
-        left: '-25.5vw',
-        width: '110vw',
+        left: '0',
+        width: '100%',
         height: '50vh',
         display: 'flex',
         justifyContent: 'center',

@@ -155,6 +155,7 @@ export const selectPlayData = (state: RootState, playId: PlayId) => {
     const play = state.ticketing.plays.find(byId(playId))
     if (play) {
         const {id, ...playData} = play
+        console.log(state.ticketing.tickets)
         const tickets = state.ticketing.tickets
             .filter(t => t.playid===playId)
             .map(t => ({...t, date: new Date(t.date)}))

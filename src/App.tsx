@@ -25,6 +25,7 @@ import LoginPage from "./components/LoginPage";
 import AdminSwitch from "./features/admin/AdminSwitch";
 import RequireLogin from "./components/RequireLogin";
 import MultiSelectCalendar from "./components/MultiSelectCalendar";
+import ScrollToTop from "./components/ScrollToTop";
 
 function App() {
 
@@ -48,6 +49,7 @@ function App() {
 
     return (
         <Container maxWidth="md">
+            <ScrollToTop />
             <ThemeProvider theme={theme}>
                 <div id="maincontainer">
                     <Navbar />
