@@ -65,14 +65,11 @@ const TicketPicker = ({tickets}: TicketPickerProps) => {
         }
     }
 
-    const getNumAvail = (t?: Ticket) => {
-        if  (t===undefined) {
-            return 0
-        } else {
-            const inCart = cartTicketCount[t.eventid]
-            return t.availableseats - (inCart ? inCart : 0)
-        }
-    }
+    const numAvail = selectedTicket
+        ? cartTicketCount[selectedTicket.eventid]
+            ? selectedTicket.availableseats - cartTicketCount[selectedTicket.eventid]
+            : selectedTicket.availableseats
+        : 0
 
     const prompt = {
         1:  <Typography variant='subtitle1'>Select show below</Typography>,
@@ -107,22 +104,24 @@ const TicketPicker = ({tickets}: TicketPickerProps) => {
                 />
             </Collapse>
             <FormControl className={classes.formControl}>
-                <InputLabel id="qty-select-label">Quantity</InputLabel>
+                <InputLabel id="qty-select-label">
+                    {selectedTicket
+                        ? (numAvail > 0) ? 'Quantity' : 'Already in Cart'
+                        : 'Quantity (select ticket)'
+                    }
+                </InputLabel>
                 <Select
                     labelId="qty-select-label"
                     value={qty}
-                    disabled={selectedTicket===undefined}
+                    disabled={selectedTicket===undefined || numAvail < 1}
                     onChange={e => setQty(e.target.value as number)}
                 >
-                    {
-                        range(getNumAvail(selectedTicket), false)
-                            .map(n => <MenuItem key={n} value={n}>{n}</MenuItem>)
-                    }
+                    {range(numAvail, false).map(n => <MenuItem key={n} value={n}>{n}</MenuItem>)}
                 </Select>
             </FormControl>
             <FormControl className={classes.formControl}>
                 <FormControlLabel
-                    label='Add concessions'
+                    label='Add concessions ticket'
                     control={
                         <Checkbox
                             disabled={!selectedTicket}
