@@ -39,9 +39,6 @@ const TicketPicker = ({tickets}: TicketPickerProps) => {
         const sameDayShows = tickets.filter(t => isSameDay(date, t.date))
         setDisplayedShowings(sameDayShows)
         setStep(2)
-        // show ShowtimeSelect
-        // hide calendar
-        // show change date btn
     }
 
     // Transitions to "choose qty & concessions" state
@@ -51,9 +48,6 @@ const TicketPicker = ({tickets}: TicketPickerProps) => {
     }
 
     const resetWidget = () => {
-        // show calendar
-        // hide showtime picker
-        // hide change date button
         setStep(1)
         setDisplayedShowings([])
         setQty(undefined)
@@ -106,7 +100,6 @@ const TicketPicker = ({tickets}: TicketPickerProps) => {
                     bindDates
                 />
             </Collapse>
-            {/* TODO: consider changing to regular Select list */}
             <Collapse in={step===2}>
                 <ShowtimeSelect
                     showings={displayedShowings}
@@ -127,7 +120,6 @@ const TicketPicker = ({tickets}: TicketPickerProps) => {
                     }
                 </Select>
             </FormControl>
-            {/* className formControl */}
             <FormControl className={classes.formControl}>
                 <FormControlLabel
                     label='Add concessions'
@@ -171,110 +163,3 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 export default TicketPicker
 
-
-/*
-    const dispatch = useAppDispatch()
-    // Ticket picker state
-    const [calOpen, setCalOpen] = useState(true)
-    const [timePickerShown, setTimePickerShown] = useState(true)
-    const [selectedDate, setSelectedDate] = useState<Date|null>(null)
-    const [displayedShowings, setDisplayedShowings] = useState<Ticket[]>([])
-    // State for rest of form
-    const [qty, setQty] = useState<number|null>(null)
-    const [concessions, setConcessions] = useState(false)
-    const [selectedShowing, setSelectedShowing] = useState<Ticket | undefined>(undefined)
-    const ticketsInCart = appSelector(selectCartTicketCount) //list of event/ticket IDs
-    
-
-    // filter by tickets not already in cart
-    const availableTickets = tickets.filter(t => !ticketsInCart.some(id => id===t.eventid))
-
-    const resetShowSelection = () => {
-        setCalOpen(true)
-        setTimePickerShown(true)
-        setDisplayedShowings([])
-        setSelectedDate(null)
-        setSelectedShowing(undefined)
-        setQty(null)
-        setConcessions(false)
-    }
-
-    // const dateClicked = (date: Date) => {
-    //     const sameDayShowings = availableTickets.filter(d => isSameDay(date, d.date))
-    //     setDisplayedShowings(sameDayShowings)
-    //     setSelectedDate(date)
-    //     setCalOpen(false)
-    //     setTimePickerShown(true)
-    // }
-
-    const onShowingSelected = (ticket: Ticket) => {
-        setSelectedShowing(ticket)
-        setTimePickerShown(!timePickerShown)
-    }
-
-    const selectShowingPrompt =
-        <div>
-            <Typography variant='h6' component='h2' gutterBottom align='center'>
-                Select a Showing
-            </Typography>
-            <Typography variant='body2' align='center'>({availableTickets.length} available)</Typography>
-        </div>
-    
-    const qtyFieldLabel = (selectedShowing)
-        ? `Quantity (${selectedShowing.availableseats} available)`
-        : 'Quantity'
-
-<section className={classes.rightPanel}>
-                                <Collapse in={!calOpen}>
-                                    <Button
-                                        onClick={() =>resetShowSelection()}
-                                        className={classes.changeDateBtnStyle}
-                                        variant='outlined'
-                                    >
-                                        Choose different date
-                                    </Button>
-                                </Collapse>
-                                {
-                                    selectedDate
-                                        ? (selectedShowing)
-                                            ? <Typography variant='subtitle1' component='h2'>{format(selectedShowing.date, "MMM, dd yyyy - h:mm a")}</Typography>
-                                            : <Typography variant='subtitle1' component='h2'>{format(selectedDate, 'MMM dd') + ' - Select Time Below:'}</Typography>
-                                        : selectShowingPrompt
-                                }
-                                <Collapse in={calOpen}>
-                                    <MultiSelectCalendar value={availableTickets.map(t => t.date)} onDateClicked={dateClicked} bindDates/>
-                                </Collapse>
-
-                                <Collapse in={timePickerShown}>
-                                    <ShowtimeSelect showings={displayedShowings} showingSelected={onShowingSelected}/>
-                                </Collapse>
-
-                                <FormControl className={classes.formControl}>
-                                    <InputLabel id="qty-select-label">{qtyFieldLabel}</InputLabel>
-                                    <Select
-                                        labelId="qty-select-label"
-                                        value={qty}
-                                        disabled={selectedShowing===undefined}
-                                        onChange={e => setQty(e.target.value as number)}>
-                                        {
-                                            range(selectedShowing
-                                                ? selectedShowing.availableseats
-                                                : 0
-                                            , false).map(n => <MenuItem key={n} value={n}>{n}</MenuItem>)
-                                        }
-                                    </Select>
-                                </FormControl>
-
-                                <FormControl className={classes.formControl}>
-                                    <FormControlLabel
-                                        label='Add concessions'
-                                        control={
-                                            <Checkbox
-                                                checked={concessions}
-                                                onChange={e => setConcessions(!concessions)} name='concessions' />
-                                        }
-                                    />
-                                </FormControl>
-
-                            </section>
-*/
