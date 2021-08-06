@@ -72,7 +72,7 @@ const TicketPicker = ({tickets}: TicketPickerProps) => {
         : 0
 
     const prompt = {
-        1:  <Typography variant='subtitle1'>Select show below</Typography>,
+        1:  <Typography variant='subtitle1'>Select date below ({tickets.length} showings)</Typography>,
         2:  <Typography variant='subtitle1'>
                 {selectedDate ? format(selectedDate, 'eee, MMM dd') : ''}
                 <b> - Choose time:</b>
