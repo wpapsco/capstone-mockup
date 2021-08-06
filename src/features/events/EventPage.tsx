@@ -23,6 +23,7 @@ const EventPage = () => {
 
     return (
         <main>
+            <ScrollToTop />
             <HeroBanner imgUrl={image_url}>
                 <Typography variant='h2' component='h1'>{titleCase(title)}</Typography>
             </HeroBanner>
