@@ -64,22 +64,41 @@ const byId = (id: number|PlayId) => (obj: Ticket|Play|CartItem) =>
             ? obj.product_id===id
             : obj.id===id
 
+const hasConcessions = (item: CartItem) => item.name.includes('Concessions')
+
 const addTicketReducer: CaseReducer<ticketingState, PayloadAction<{ id: number, qty: number, concessions: boolean }>> = (state, action) => {
     const {id, qty, concessions} = action.payload
+    const item = state.cart.find(byId(id))
     const ticket = state.tickets.find(byId(id))
-    const play = ticket ? state.plays.find(byId(ticket.playid)) : null
-    const cartItem = (ticket && play)
-        ? createCartItem({ticket, play, qty})
-        : null
-        
-    return (ticket && cartItem)
-        ? {
+
+    // already in cart
+    if (item && ticket) {
+        const updatedItem = {...item, qty: item.qty + qty}
+        return {
             ...state,
-            cart: (concessions)
-                    ? [...state.cart, applyConcession(ticket.concession_price, cartItem)]
-                    : [...state.cart, cartItem]
+            cart: state.cart.map(i => (byId(id)(i))
+                // NOTE: this will change the item type to one with concessions!
+                ? (concessions && !hasConcessions(item))
+                    ? applyConcession(ticket.concession_price, updatedItem)
+                    : updatedItem
+                : item
+            )
         }
-        : state
+    } else {
+        const play = ticket ? state.plays.find(byId(ticket.playid)) : null
+        const cartItem = (ticket && play)
+            ? createCartItem({ticket, play, qty})
+            : null
+            
+        return (ticket && cartItem)
+            ? {
+                ...state,
+                cart: (concessions)
+                        ? [...state.cart, applyConcession(ticket.concession_price, cartItem)]
+                        : [...state.cart, cartItem]
+            }
+            : state
+    }
 }
 
 const editQtyReducer: CaseReducer<ticketingState, PayloadAction<{id: number, qty: number}>> =
