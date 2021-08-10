@@ -5,6 +5,9 @@ import { Backdrop, Button, Divider, Fade, Modal, Paper, Typography } from '@mate
 import { createStyles, makeStyles } from '@material-ui/core/styles'
 import { toDollarAmount } from '../../../utils'
 import { removeTicketFromCart, selectCartContents } from '../ticketingSlice'
+import Tabs from '@material-ui/core/Tabs'
+import Tab from '@material-ui/core/Tab'
+import { NavLink } from 'react-router-dom'
 
 const useStyles = makeStyles(() =>
     createStyles({
@@ -66,7 +69,6 @@ const Cart = () => {
         setModalOpen(true)
     }
     
-    
     return (
         <section>
             <div className={classes.cartContents}>
@@ -82,6 +84,15 @@ const Cart = () => {
             <div className={classes.subtotalRow}>
                 <Typography component='h2' variant='h6'>Subtotal:</Typography>
                 <Typography variant='body1' className={classes.subtotal}>{toDollarAmount(subtotal)}</Typography>
+            </div>
+
+            <div>
+                <Paper square>
+                    <Tabs aria-label="cart action">
+                        <Tab label="Complete Order" component={NavLink} to="/completeorder"/>
+                        <Tab label="Empty Cart"/>
+                    </Tabs>
+                </Paper>
             </div>
 
             <Modal
