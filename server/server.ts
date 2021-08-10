@@ -138,6 +138,29 @@ app.post('/api/login', passport.authenticate('local'), (req, res) => {
     res.sendStatus(200);
 })
 
+//Endpont to get list of plays
+app.get("/api/play-list", async (req, res) =>{
+    try {
+        const plays = await pool.query('select playname from plays where active = true')
+        res.json(plays.rows);
+    } catch (error) {
+        console.error(error.message);
+    }
+})
+
+//Endpoint to get play id
+app.get("/api/play-id", async (req, res) => {
+    try {
+        const values = [req.body.playname];
+        // let values =['united']
+        const ids = await pool.query('select id, playname from plays where playname = $1', values);
+        if (ids.rowCount === 0) res.status(404).json('No play was found.');
+        else res.json(ids.rows);
+    }
+    catch(error){
+        console.error(error);
+    }
+})
 
 // Endpoint to get the list of all events that are currently active
 app.get("/api/event-list", async (req, res) => {
@@ -341,8 +364,23 @@ app.post('/api/checkout', async (req, res) => {
     res.json({id: session.id})
 });
 
-// End point for the create event page. 
-app.post("/api/create-event", isAuthenticated, async (req, res) => {
+//End point to create a new play
+app.post("/api/create-play", isAuthenticated, async (req, res) => {
+    try {
+        let body = req.body;
+        //change this based on the data we need to store in the database
+        const values = [body.playname, body.description, true, null];
+        const query = "INSERT INTO plays (seasonid, playname, playdescription, active, image_url)\
+        values (1, $1, $2. $3, $4)";
+        const new_event = await pool.query(query, values);
+        res.json(new_event.rows);
+    } catch (error) {
+        console.error(error);
+    }
+})
+
+// End point to create a new showing
+app.post("/api/create-showing", isAuthenticated, async (req, res) => {
     try {
         let body = req.body;
         const values = [body.eventName, body.eventDate, body.eventTime, body.eventTickets, null];
