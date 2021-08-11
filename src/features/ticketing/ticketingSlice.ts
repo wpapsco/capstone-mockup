@@ -27,16 +27,17 @@ export interface Play {
     title: string,
     description: string,
     image_url: string,
+    tickets: number[],
 }
 
+type TicketsState = {byId: {[key: number]: Ticket}, allIds: number[]}
 export type LoadStatus = 'idle' | 'loading' | 'success' | 'failed'
 export interface ticketingState {
     cart: CartItem[],
-    tickets: Ticket[],
+    tickets: TicketsState,
     plays: Play[],
     status: LoadStatus,
 }
-
 
 
 const fetchData = async (url: string) => {
@@ -53,7 +54,7 @@ export const fetchTicketingData = createAsyncThunk(
     'ticketing/fetch',
     async () => {
         const plays: Play[] = await fetchData('/api/plays')
-        const tickets: Ticket[] = await fetchData('/api/tickets')
+        const tickets: TicketsState = await fetchData('/api/tickets')
         return {plays, tickets}
     }
 )
@@ -101,36 +102,45 @@ const byId = (id: number|PlayId) => (obj: Ticket|Play|CartItem) =>
 
 const hasConcessions = (item: CartItem) => item.name.includes('Concessions')
 
+/*
+- check it ticket is already in cart
+Y: Update matching cart item qty:
+    -- check (action.qty + item.qty) < tickets.byId[ticketid]
+    -- > 
+N: Create new cart item
+
+*/
+
 const addTicketReducer: CaseReducer<ticketingState, PayloadAction<{ id: number, qty: number, concessions: boolean }>> = (state, action) => {
     const {id, qty, concessions} = action.payload
-    const item = state.cart.find(byId(id))
-    const ticket = state.tickets.find(byId(id))
+    const fromCart = state.cart.find(byId(id))
+    const ticket = state.tickets.byId[id]
 
     // already in cart
-    if (item && ticket) {
-        const updatedItem = {...item, qty: item.qty + qty}
+    if (fromCart && ticket) {
+        const updatedItem = {...fromCart, qty: fromCart.qty + qty}
         return {
             ...state,
             cart: state.cart.map(i => (byId(id)(i))
                 // NOTE: this will change the item type to one with concessions!
-                ? (concessions && !hasConcessions(item))
+                ? (concessions && !hasConcessions(fromCart))
                     ? applyConcession(ticket.concession_price, updatedItem)
                     : updatedItem
-                : item
+                : fromCart
             )
         }
     } else {
         const play = ticket ? state.plays.find(byId(ticket.playid)) : null
-        const cartItem = (ticket && play)
+        const newCartItem = (ticket && play)
             ? createCartItem({ticket, play, qty})
             : null
             
-        return (ticket && cartItem)
+        return (ticket && newCartItem)
             ? {
                 ...state,
                 cart: (concessions)
-                        ? [...state.cart, applyConcession(ticket.concession_price, cartItem)]
-                        : [...state.cart, cartItem]
+                        ? [...state.cart, applyConcession(ticket.concession_price, newCartItem)]
+                        : [...state.cart, newCartItem]
             }
             : state
     }
@@ -152,7 +162,7 @@ const editQtyReducer: CaseReducer<ticketingState, PayloadAction<{id: number, qty
 
 export const INITIAL_STATE: ticketingState = {
     cart: [],
-    tickets: [],
+    tickets: {byId: {}, allIds: []},
     plays: [],
     status: 'idle',
 }
@@ -177,7 +187,7 @@ const ticketingSlice = createSlice({
                 state.status = 'success'
                 state.tickets = (action.payload.tickets)
                     ? action.payload.tickets
-                    : []
+                    : {byId: {}, allIds: []}
                 state.plays = (action.payload.plays)
                     ? action.payload.plays
                     : []
@@ -217,11 +227,16 @@ export const selectCartContents = (state: RootState): CartItem[] => state.ticket
     }]
 } */
 export const selectPlayData = (state: RootState, playId: PlayId) => {
+    const ticketData = state.ticketing.tickets
     const play = state.ticketing.plays.find(byId(playId))
     if (play) {
         const {id, ...playData} = play
-        const tickets = state.ticketing.tickets
-            .filter(t => t.playid===playId)
+        const tickets = state.ticketing.tickets.allIds
+            .reduce((filtered, id) => {
+                return (ticketData.byId[id].playid===playId)
+                    ? [...filtered, ticketData.byId[id]]
+                    : filtered
+            }, [] as Ticket[])
             .map(t => ({...t, date: new Date(t.date)}))
         return {...playData, tickets}
     }
@@ -231,10 +246,10 @@ export const selectPlayData = (state: RootState, playId: PlayId) => {
 }
 
 export const selectNumAvailable = (state: RootState, ticketid: number) => {
-    const play = state.ticketing.tickets.find(byId(ticketid))
-    return (play)
-        ? play.availableseats
-        : play
+    const ticket = state.ticketing.tickets.byId[ticketid]
+    return (ticket)
+        ? ticket.availableseats
+        : ticket
 }
 
 export const { addTicketToCart, editItemQty, removeTicketFromCart } = ticketingSlice.actions

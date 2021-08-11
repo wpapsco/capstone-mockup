@@ -555,7 +555,19 @@ app.get('/api/tickets', async (req, res) => {
             WHERE isseason=false AND availableseats > 0
             ORDER BY playid, eventid;`
         const query_res = await pool.query(qs)
-        res.json(query_res.rows.map(toTicket));
+        res.json(
+            query_res.rows
+                .map(toTicket)
+                .reduce((res, t) => {
+                    const id = t.eventid
+                    const {byId, allIds} = res
+                    return (allIds.includes(id))
+                        ? res
+                        : {byId: {...byId, [id]: t}, allIds: [...allIds, id]}
+                },
+                    {byId: {} as {[key: number]: Ticket}, allIds: [] as number[]}
+                )
+        );
         console.log('# tickets:', query_res.rowCount)
     }
     catch (err) {

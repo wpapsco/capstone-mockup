@@ -5,8 +5,7 @@ import Typography from '@material-ui/core/Typography'
 import Divider from '@material-ui/core/Divider';
 import Button from '@material-ui/core/Button'
 import {makeStyles} from '@material-ui/core';
-import { selectCartContents } from '../ticketingSlice'
-import { CartItem } from '../ticketingTypes'
+import { CartItem, selectCartContents } from '../ticketingSlice'
 
 // TODO: Proper rowitem component
 const Item = (props: CartItem) => <div>{props.name}, {props.price} x {props.qty}: {props.price*props.qty}</div>

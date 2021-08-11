@@ -1,11 +1,13 @@
 import { RootState } from '../../app/store'
 import { INITIAL_STATE as eventsInitState} from '../events/eventsSlice'
-import {Ticket, Play, ticketingState} from './ticketingTypes'
 import ticketReducer, {
     addTicketToCart,
     createCartItem,
     selectPlayData,
     selectCartTicketCount,
+    Ticket,
+    Play,
+    ticketingState
 } from './ticketingSlice'
 import { User } from '../../../server/server'
 
@@ -37,7 +39,13 @@ const ticket2: Ticket = {
 
 const ticketingInitState: ticketingState = {
     cart: [],
-    tickets: [ticket, ticket2],
+    tickets: {
+        byId: {
+            1: ticket,
+            2: ticket2
+        },
+        allIds: [1,2]
+    },
     plays: [play],
     status: 'idle',
 }
