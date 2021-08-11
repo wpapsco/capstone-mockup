@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { useAppDispatch, appSelector } from '../../app/hooks'
-import { addTicketToCart, selectCartTicketCount } from '../ticketing/ticketingSlice'
-import { Ticket } from './ticketingTypes'
+import { addTicketToCart, selectCartTicketCount, Ticket } from '../ticketing/ticketingSlice'
 import { openSnackbar } from '../snackbarSlice'
 import {
     Collapse,

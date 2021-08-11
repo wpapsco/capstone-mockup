@@ -4,7 +4,7 @@ import {pool} from './db';
 import cors from 'cors';
 import Stripe from "stripe"
 import {CheckoutFormInfo} from "../src/components/CompleteOrderForm"
-import {CartItem, Ticket} from '../src/features/ticketing/ticketingTypes'
+import {CartItem, Ticket} from '../src/features/ticketing/ticketingSlice'
 
 import passport from "passport"
 import {Strategy as LocalStrategy} from "passport-local"
