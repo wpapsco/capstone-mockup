@@ -6,6 +6,7 @@ import Divider from '@material-ui/core/Divider';
 import Button from '@material-ui/core/Button'
 import {makeStyles} from '@material-ui/core';
 import { CartItem, selectCartContents } from '../ticketingSlice'
+import {useHistory} from 'react-router';
 
 // TODO: Proper rowitem component
 const Item = (props: CartItem) => <div>{props.name}, {props.price} x {props.qty}: {props.price*props.qty}</div>
@@ -25,6 +26,7 @@ const YourOrder = () => {
     const donation = 0
     const [subtotal, setSubtotal] = useState(0)
     const classes = useStyles()
+    const history = useHistory()
 
     useEffect(() => {
         setSubtotal(
@@ -40,7 +42,7 @@ const YourOrder = () => {
             <Typography variant="h4">Your order</Typography>
             {contents}
 
-            <Button color="primary" variant="contained" fullWidth>Add more items</Button>
+            <Button onClick={() => history.push('/events')} color="primary" variant="contained" fullWidth>Add more items</Button>
             <Divider className={classes.divider}/>
             <div className={classes.subtotal}>
                 <Typography variant="body1">Subtotal</Typography>

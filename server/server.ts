@@ -138,6 +138,29 @@ app.post('/api/login', passport.authenticate('local'), (req, res) => {
     res.sendStatus(200);
 })
 
+//Endpont to get list of plays
+app.get("/api/play-list", async (req, res) =>{
+    try {
+        const plays = await pool.query('select id, playname from plays where active = true')
+        res.json(plays.rows);
+    } catch (error) {
+        console.error(error.message);
+    }
+})
+
+//Endpoint to get play id
+app.get("/api/play-id", async (req, res) => {
+    try {
+        const values = [req.body.playname];
+        // let values =['united']
+        const ids = await pool.query('select id, playname from plays where playname = $1', values);
+        if (ids.rowCount === 0) res.status(404).json('No play was found.');
+        else res.json(ids.rows);
+    }
+    catch(error){
+        console.error(error);
+    }
+})
 
 // Endpoint to get the list of all events that are currently active
 app.get("/api/event-list", async (req, res) => {
@@ -298,10 +321,10 @@ app.post('/api/checkout', async (req, res) => {
     };
     const cartSize = req.body.cartItems.length;
     var orders = [];
+    for(let i = 0; i<cartSize;++i){
 
-    for (let i = 0; i < cartSize;++i){
         let newOrder = {
-            id: req.body.cartItems[i].id,
+            id: req.body.cartItems[i].product_id,
             quantity: req.body.cartItems[i].qty,
 
         };
@@ -329,7 +352,8 @@ app.post('/api/checkout', async (req, res) => {
         payment_intent_data:{
             metadata: {
                 orders: JSON.stringify(orders),
-                custid: customerID
+                custid: customerID,
+                donation: donation
             }
         },
          metadata: {
@@ -341,8 +365,23 @@ app.post('/api/checkout', async (req, res) => {
     res.json({id: session.id})
 });
 
-// End point for the create event page. 
-app.post("/api/create-event", isAuthenticated, async (req, res) => {
+//End point to create a new play
+app.post("/api/create-play", isAuthenticated, async (req, res) => {
+    try {
+        let body = req.body;
+        //change this based on the data we need to store in the database
+        const values = [body.playname, body.description, true, null];
+        const query = "INSERT INTO plays (seasonid, playname, playdescription, active, image_url)\
+        values (1, $1, $2. $3, $4)";
+        const new_event = await pool.query(query, values);
+        res.json(new_event.rows);
+    } catch (error) {
+        console.error(error);
+    }
+})
+
+// End point to create a new showing
+app.post("/api/create-showing", isAuthenticated, async (req, res) => {
     try {
         let body = req.body;
         const values = [body.eventName, body.eventDate, body.eventTime, body.eventTickets, null];
@@ -397,7 +436,7 @@ app.post("/api/set-tickets", async (req, res) => {
 app.get("/api/show-tickets", async (req, res) => {
     try {
         const query = 
-            `SELECT pl.id as play_id, sh.id as show_id, playname, playdescription, eventdate, starttime, availableseats, price, concessions
+            `SELECT pl.id as play_id, sh.id as show_id, playname, playdescription, eventdate, starttime, totalseats, availableseats, price, concessions
             FROM plays pl
                 LEFT JOIN showtimes sh ON pl.id=sh.playid
                 JOIN linkedtickets lt ON lt.showid=sh.id
@@ -444,6 +483,16 @@ const fulfillOrder = async (session) => {
     // gather the data from the session object and send it off to db
     // make this async function
     // added_stuff by Ad
+    if(session.data.object.metadata.donation > 0){
+        try {
+            const addedDonation = await pool.query(
+            `INSERT INTO donations (donorid, isanonymous, amount)
+            values ($1,$2,$3)`
+            ,[session.data.object.metadata.custid, false, session.data.object.metadata.donation])
+        } catch (error) {
+            console.log(error);
+        }
+    }
     const stripe_meta_data = JSON.parse(session.data.object.metadata.orders);
     const temp = [];
     var counter = 0;
