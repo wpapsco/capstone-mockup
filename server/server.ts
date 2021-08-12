@@ -141,7 +141,7 @@ app.post('/api/login', passport.authenticate('local'), (req, res) => {
 //Endpont to get list of plays
 app.get("/api/play-list", async (req, res) =>{
     try {
-        const plays = await pool.query('select playname from plays where active = true')
+        const plays = await pool.query('select id, playname from plays where active = true')
         res.json(plays.rows);
     } catch (error) {
         console.error(error.message);
@@ -435,7 +435,7 @@ app.post("/api/set-tickets", async (req, res) => {
 app.get("/api/show-tickets", async (req, res) => {
     try {
         const query = 
-            `SELECT pl.id as play_id, sh.id as show_id, playname, playdescription, eventdate, starttime, availableseats, price, concessions
+            `SELECT pl.id as play_id, sh.id as show_id, playname, playdescription, eventdate, starttime, totalseats, availableseats, price, concessions
             FROM plays pl
                 LEFT JOIN showtimes sh ON pl.id=sh.playid
                 JOIN linkedtickets lt ON lt.showid=sh.id

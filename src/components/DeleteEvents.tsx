@@ -10,7 +10,7 @@ export default function DeleteEvents() {
             id: selectedRow.id,
         }
 
-        const response = await fetch("http://localhost:5000/api/delete-event",
+        const response = await fetch("/api/delete-event",
         {
            credentials: 'include',
            method: 'POST',
