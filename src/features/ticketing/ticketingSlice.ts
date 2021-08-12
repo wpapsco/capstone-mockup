@@ -62,13 +62,6 @@ export const fetchTicketingData = createAsyncThunk(
 )
 
 
-const applyConcession = (c_price: number, item: CartItem) => {
-    const name = item.name + ' + Concessions'
-    const price = c_price + item.price
-    const desc = `${item.desc} with concessions ticket`
-    return ({...item, name, price, desc})
-}
-
 const DAYS = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat']
 const toCivilian = (n: number) => (n > 12) ? n - 12 : n
 const formatDate = (d: Date) => {
@@ -102,33 +95,35 @@ const byId = (id: number|PlayId) => (obj: Ticket|Play|CartItem) =>
             ? obj.product_id===id
             : obj.id===id
 
+
 const hasConcessions = (item: CartItem) => item.name.includes('Concessions')
-
-/*
-- check it ticket is already in cart
-Y: Update matching cart item qty:
-    -- check (action.qty + item.qty) < tickets.byId[ticketid]
-    -- > 
-N: Create new cart item
-
-*/
+const applyConcession = (c_price: number, item: CartItem) => (hasConcessions(item)) ? item
+    : {
+        ...item,
+        name: item.name + ' + Concessions',
+        price: c_price + item.price,
+        desc: `${item.desc} with concessions ticket`
+    }
 
 const addTicketReducer: CaseReducer<ticketingState, PayloadAction<{ id: number, qty: number, concessions: boolean }>> = (state, action) => {
     const {id, qty, concessions} = action.payload
-    const fromCart = state.cart.find(byId(id))
-    const ticket = state.tickets.byId[id]
+    const tickets = state.tickets
 
-    // already in cart
-    if (fromCart && ticket) {
-        const updatedItem = {...fromCart, qty: fromCart.qty + qty}
+    if (!tickets.allIds.includes(id)) return state
+
+    const ticket = tickets.byId[id]
+    const inCart = state.cart.find(byId(id))
+
+    if (inCart) {
+        const newQty = (qty + inCart.qty) <= ticket.availableseats ? (qty + inCart.qty) : ticket.availableseats
+        const updatedQty = {...inCart, qty: newQty}
         return {
             ...state,
-            cart: state.cart.map(i => (byId(id)(i))
-                // NOTE: this will change the item type to one with concessions!
-                ? (concessions && !hasConcessions(fromCart))
-                    ? applyConcession(ticket.concession_price, updatedItem)
-                    : updatedItem
-                : fromCart
+            cart: state.cart.map(item => (item.product_id===id)
+                ? (concessions)
+                    ? applyConcession(ticket.concession_price, updatedQty)
+                    : updatedQty
+                : item
             )
         }
     } else {
