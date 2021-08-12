@@ -63,7 +63,7 @@ describe('ticketing slice', () => {
         product_id: ticket.eventid,
         qty: 1,
         name: 'Play 1 Ticket',
-        desc: 'General Admission - Sat, Jul 31, 7:00 PM',
+        desc: 'General Admission - Sat, Jul 31 - 7:00 PM',
         product_img_url: 'https://image',
         price: 15.99,
     }

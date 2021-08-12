@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk, PayloadAction, CaseReducer } from '@reduxjs/toolkit'
 import { RootState } from '../../app/store'
 import format from "date-fns/format";
-import { titleCase } from '../../utils'
+import { bound, titleCase } from '../../utils'
 
 export interface CartItem {
     product_id: number,     // references state.tickets.eventid
@@ -61,18 +61,10 @@ export const fetchTicketingData = createAsyncThunk(
 )
 
 
-const DAYS = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat']
-const toCivilian = (n: number) => (n > 12) ? n - 12 : n
-const formatDate = (d: Date) => {
-    const date = new Date(d)
-    const hr = date.getHours()
-    date.setHours(toCivilian(hr))
-    return `${DAYS[date.getDay()]}, ${format(date, 'MMM d, H:mm')} ${hr > 12 ? 'PM' : 'AM'}`
-}
 export const toPartialCartItem = <T extends Ticket>(ticketLike: T) => ({
     product_id: ticketLike.eventid,
     price: ticketLike.ticket_price,
-    desc: `${ticketLike.admission_type} - ${formatDate(ticketLike.date)}`,
+    desc: `${ticketLike.admission_type} - ${format(ticketLike.date, 'eee, MMM dd - h:mm a')}`,
 })
 
 const appendCartField = <T extends CartItem>(key: keyof T, val: T[typeof key]) => (obj: any) => ({...obj, [key]: val})
@@ -103,44 +95,41 @@ const applyConcession = (c_price: number, item: CartItem) => (hasConcessions(ite
         price: c_price + item.price,
         desc: `${item.desc} with concessions ticket`
     }
-const positive = (n: number) => n > 0 ? n : 0
+
+
 interface ItemData {id: number, qty: number, concessions?: number}
 const updateCartItem = (cart: CartItem[], {id, qty, concessions}: ItemData) =>
     cart.map(item => (item.product_id===id)
         ? (concessions)
-            ? applyConcession(concessions, {...item, qty: positive(qty)})
-            : {...item, qty: positive(qty)}
+            ? applyConcession(concessions, {...item, qty})
+            : {...item, qty}
         : item
     )
-     
 
 const addTicketReducer: CaseReducer<ticketingState, PayloadAction<{ id: number, qty: number, concessions: boolean }>> = (state, action) => {
     const {id, qty, concessions} = action.payload
     const tickets = state.tickets
-
+    
     if (!tickets.allIds.includes(id)) return state
-
+    
     const ticket = tickets.byId[id]
     const inCart = state.cart.find(byId(id))
+    const validRange = bound(0, ticket.availableseats)
 
     if (inCart) {
-        const newQty = ((qty + inCart.qty) <= ticket.availableseats)
-            ? (qty + inCart.qty) : ticket.availableseats
         return {
             ...state,
             cart: updateCartItem(state.cart, {
                 id,
-                qty: newQty,
+                qty: validRange(qty+inCart.qty),
                 concessions: concessions ? ticket.concession_price : undefined
             })
         }
-    } else {
-        const play = ticket ? state.plays.find(byId(ticket.playid)) : null
-        const newCartItem = (ticket && play)
-            ? createCartItem({ticket, play, qty})
-            : null
-            
-        return (ticket && newCartItem)
+    }
+    else {
+        const play = state.plays.find(byId(ticket.playid))
+        const newCartItem = play ? createCartItem({ticket, play, qty}) : null
+        return newCartItem
             ? {
                 ...state,
                 cart: (concessions)
@@ -152,14 +141,14 @@ const addTicketReducer: CaseReducer<ticketingState, PayloadAction<{ id: number, 
 }
 
 // Do not update state if 1) ticket doesn't exist, 2) try to set more than available
-const editQtyReducer: CaseReducer<ticketingState, PayloadAction<{id: number, qty: number}>> =
-    (state, action) => {
+const editQtyReducer: CaseReducer<ticketingState, PayloadAction<{id: number, qty: number}>> = (state, action) => {
     const {id, qty} = action.payload
     if (!state.tickets.allIds.includes(id)) return state
     const avail = state.tickets.byId[id].availableseats
+    const validRange = bound(0, state.tickets.byId[id].availableseats)
 
     return (qty <= avail)
-        ? {...state, cart: updateCartItem(state.cart, {id, qty})}
+        ? {...state, cart: updateCartItem(state.cart, {id, qty: validRange(qty)})}
         : state
 }
 

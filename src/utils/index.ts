@@ -67,3 +67,5 @@ const add1 = (n: number) => n+1
 export const range = (n: number, zeroIndexed = true) => zeroIndexed
     ? Array.from(Array(n).keys())
     : Array.from(Array(n).keys()).map(add1)
+
+export const bound = (min: number, max: number) => (n: number) => Math.min(Math.max(n, min), max)
