@@ -5,9 +5,9 @@ import React, { useState, useEffect } from "react";
 import {dayMonthDate, militaryToCivilian} from '../utils';
 
 export default function DeleteEvents() {
-    async function deleteEvent() {
+    async function deleteEvent(showId: string) {
         const data = {
-            id: selectedRow.id,
+            id: showId,
         }
 
         const response = await fetch("/api/delete-event",
@@ -24,21 +24,6 @@ export default function DeleteEvents() {
         return response.json();
     }
 
-    //Add row data to hook
-    function onSelection(row:any) {
-        const convert =  row.rows[0]
-        setSelectedRow(convert);
-    }
-
-    //Generate hook structure
-    const[selectedRow, setSelectedRow] = useState({
-        id: "",
-        playname: "",
-        playdescription: "",
-        eventdate: "",
-        starttime: ""
-    });
-
     // Create columns that appears in data
     const columns = [
         { field: "id", headerName: "Showtime ID", width: 100},
@@ -47,14 +32,14 @@ export default function DeleteEvents() {
         { field: "eventdate", headerName: "Date", width: 150},
         { field: "starttime", headerName: "Time", width: 100},
         { field: "Delete", headerName: "Delete", width: 150, renderCell: (params: any) => (
-            <Button variant="contained" color="secondary" onClick={() => deleteEvent()}>Delete</Button>
+            <Button variant="contained" color="secondary" onClick={() => deleteEvent(JSON.stringify(params.row.id))}>Delete</Button>
         )}
     ]
 
     const [eventList, setEventList] = useState([]);
     const getEvents = async () => {
         try {
-            const response = await fetch("http://localhost:5000/api/event-list");
+            const response = await fetch("/api/event-list");
             const jsonData = await response.json();
             Object.keys(jsonData).forEach(function(key) {
                 jsonData[key].eventdate = dayMonthDate(jsonData[key].eventdate);
@@ -70,7 +55,7 @@ export default function DeleteEvents() {
     return (
         <div>
             <Typography variant="h2">Delete Events</Typography>
-            <DataGrid autoHeight rows={eventList} columns={columns} onSelectionModelChange={onSelection} pageSize={10} />
+            <DataGrid autoHeight rows={eventList} columns={columns} pageSize={10} />
         </div>
     );
 }
