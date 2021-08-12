@@ -54,8 +54,10 @@ export const fetchTicketingData = createAsyncThunk(
     'ticketing/fetch',
     async () => {
         const plays: Play[] = await fetchData('/api/plays')
-        const tickets: TicketsState = await fetchData('/api/tickets')
-        return {plays, tickets}
+        const ticketRes: TicketsState = await fetchData('/api/tickets')
+        const tickets = Object.entries(ticketRes.byId)
+            .reduce((res, [key, val]) => ({...res, [key]: {...val, date: new Date(val.date)}}), {})
+        return {plays, tickets: {byId: tickets, allIds: ticketRes.allIds}}
     }
 )
 
@@ -75,10 +77,10 @@ const formatDate = (d: Date) => {
     date.setHours(toCivilian(hr))
     return `${DAYS[date.getDay()]}, ${format(date, 'MMM d, H:mm')} ${hr > 12 ? 'PM' : 'AM'}`
 }
-export const toPartialCartItem = (t: Ticket) => ({
-    product_id: t.eventid,
-    price: t.ticket_price,
-    desc: `${t.admission_type} - ${formatDate(t.date)}`,
+export const toPartialCartItem = <T extends Ticket>(ticketLike: T) => ({
+    product_id: ticketLike.eventid,
+    price: ticketLike.ticket_price,
+    desc: `${ticketLike.admission_type} - ${formatDate(ticketLike.date)}`,
 })
 
 const appendCartField = <T extends CartItem>(key: keyof T, val: T[typeof key]) => (obj: any) => ({...obj, [key]: val})
@@ -214,19 +216,13 @@ export const selectCartTicketCount = (state: RootState): {[key: number]: number}
 export const selectNumInCart = (state: RootState) => state.ticketing.cart.length
 
 export const selectCartContents = (state: RootState): CartItem[] => state.ticketing.cart
-/* Returns play data with shape: {
-    title, description, image_url,
-    tickets: [{
-        eventid,
-        playid,
-        admission_type,
-        date: Date
-        ticket_price: number,
-        concession_price: number,
-        available: number,
-    }]
-} */
-export const selectPlayData = (state: RootState, playId: PlayId) => {
+interface EventPageData {
+    title: string,
+    description: string,
+    image_url: string,
+    tickets: Ticket[],
+}
+export const selectPlayData = (state: RootState, playId: PlayId): EventPageData|undefined => {
     const ticketData = state.ticketing.tickets
     const play = state.ticketing.plays.find(byId(playId))
     if (play) {
@@ -237,7 +233,6 @@ export const selectPlayData = (state: RootState, playId: PlayId) => {
                     ? [...filtered, ticketData.byId[id]]
                     : filtered
             }, [] as Ticket[])
-            .map(t => ({...t, date: new Date(t.date)}))
         return {...playData, tickets}
     }
     else {
