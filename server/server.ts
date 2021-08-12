@@ -321,10 +321,12 @@ app.post('/api/checkout', async (req, res) => {
     };
     const cartSize = req.body.cartItems.length;
     var orders = [];
-
     for (let i = 0; i < cartSize;++i){
+    console.log(req.body.cartItems);
+    for(let i = 0; i<cartSize;++i){
+
         let newOrder = {
-            id: req.body.cartItems[i].id,
+            id: req.body.cartItems[i].product_id,
             quantity: req.body.cartItems[i].qty,
 
         };
