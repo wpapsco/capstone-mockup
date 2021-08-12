@@ -352,7 +352,8 @@ app.post('/api/checkout', async (req, res) => {
         payment_intent_data:{
             metadata: {
                 orders: JSON.stringify(orders),
-                custid: customerID
+                custid: customerID,
+                donation: donation
             }
         },
          metadata: {
@@ -482,6 +483,16 @@ const fulfillOrder = async (session) => {
     // gather the data from the session object and send it off to db
     // make this async function
     // added_stuff by Ad
+    if(session.data.object.metadata.donation > 0){
+        try {
+            const addedDonation = await pool.query(
+            `INSERT INTO donations (donorid, isanonymous, amount)
+            values ($1,$2,$3)`
+            ,[session.data.object.metadata.custid, false, session.data.object.metadata.donation])
+        } catch (error) {
+            console.log(error);
+        }
+    }
     const stripe_meta_data = JSON.parse(session.data.object.metadata.orders);
     const temp = [];
     var counter = 0;
