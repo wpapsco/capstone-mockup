@@ -1,35 +1,42 @@
 import { useState, useEffect } from "react";
-import { Grid, Fab, RadioGroup, FormControl, Select, MenuItem, InputLabel, makeStyles } from "@material-ui/core";
+import { Grid, Fab, RadioGroup, FormControl } from "@material-ui/core";
 import AddIcon from "@material-ui/icons/Add";
 import CalendarTable from "./CalendarTable";
 import EventTimePicker from "./EventTimePicker";
 import ShowTimeListing from "./ShowTimeListing";
 
-type EventDates = {
+interface EventDetails {
     id: number,
-    date: Date,
+    playid: number,
+    showid: number,
+    eventName: string,
+    eventDate: Date,
+    eventTime: string,
     seats: number,
+    price: number,
 }
 
-const useStyles = makeStyles({
-    formListSelector: {
-        minWidth: 120,
-    }
-})
+type ShowTimesProps = {
+    eventTitle: string,
+    eventDetails: EventDetails[],
+}
 
-export default function EventTimes({eventTitle}: {eventTitle: string}) {
+interface ShowTimeSelector {
+    id: number,
+    time: string,
+    seats: number,
+    current: boolean,
+}
+
+export default function EventTimes({ eventTitle, eventDetails } : ShowTimesProps) {
     const [calendarMonth, setCalendarMonth] = useState(new Date().getMonth());
     const [calendarYear, setCalendarYear] = useState(new Date().getFullYear());
-    const [showTimes, setShowTimes] = useState([{time: "", seats: 0, current: true}]);
-    const [showList, setShowList] = useState([eventTitle, "one", "two"]); // TODO this should be fetched from API
-    const [showListOpen, setShowListOpen] = useState(false);
+    // We need at least one
+    const [showTimes, setShowTimes] = useState<ShowTimeSelector[]>([{ id: 0, time: "", seats: 0, current: true }]);
+    // TODO: Change this v
     const colors = ["aqua", "crimson", "forestgreen", "blue", "deeppink", "greenyellow", "indigo", "maroon", "steelblue"];
-    const classes = useStyles();
 
-    useEffect(() => {
-        
-    });
-    
+
     // Increment the calendar month
     const onMonthIncr = () => {
         const newMonth = calendarMonth + 1;
@@ -52,45 +59,39 @@ export default function EventTimes({eventTitle}: {eventTitle: string}) {
         }
     };
 
-    /* onSelectDayOfWeek:
-     * If the user selects the top calendar bar where the days of the week are listed
-     * we get a callback here.
-     * 
-     * TODO (Greg)
-     */
+    // onSelectDayOfWeek:
+    // If the user selects the top calendar bar where the days of the week are listed
+    // we get a callback here.
+    // 
+    // TODO (Greg)
     const onSelectDayOfWeek = (dayOfWeek: number) => {
         console.log(`The day ${dayOfWeek} was clicked`);
     }
 
-    /* onSelectDay:
-     * When the user selects a specific day of the month to add a show time to
-     * we register it here.
-     * 
-     * key: The index from the month table
-     * fullDate: The full date as if gotten from getDate(year, month, day). No time 
-     *      information.
-     */
+    // onSelectDay:
+    // When the user selects a specific day of the month to add a show time to
+    // we register it here.
+    // 
+    // key: The index from the month table
+    // fullDate: The full date as if gotten from getDate(year, month, day). No time 
+    //      information.
     const onSelectDay = (key: number, fullDate: Date | null) => {
         if (fullDate !== null) {
             // Get the currently selected time information
             let i = 0;
             for (; i < showTimes.length; i++) {
-                console.log(`${i} -- Time: ${showTimes[i].time} -- Seats: ${showTimes[i].seats} -- Current: ${showTimes[i].current}`);
                 if (showTimes[i].current)
-                        break;
+                    break;
             }
-
-            // Set the date and time to specified.
-            const t = showTimes[i].time.split(':');
-            fullDate.setHours(+t[0], +t[1]);
-            console.log(`Key: ${key} I: ${i} FullDate: ${fullDate} Seats: ${showTimes[i].seats} Time: ${showTimes[i].time} Length: ${showTimes.length}`);
+            console.log('Date is: ' + fullDate + ' time is :' + showTimes[i].time);
         }
     }
 
     // Add a show time to the list
     const onNewShowTimes = () => {
         let st = showTimes.slice();
-        st.push({time: "", seats: 0, current: false});
+        let id = showTimes.length;
+        st.push({id: id, time: "", seats: 0, current: false});
         setShowTimes(st);
         console.log('Setting showtimes: ' + showTimes.length);
     }
@@ -99,7 +100,7 @@ export default function EventTimes({eventTitle}: {eventTitle: string}) {
     const onAddShowTime = (time: string, seats: number, index: number) => {
         console.log("Time: " + time + " seats: " + seats + " id: " + index + ' Length: ' + showTimes.length);
         let times = showTimes.slice();
-        times[index] = {time: time, seats: seats, current: times[index].current};
+        times[index] = {id: times[index].id, time: time, seats: seats, current: times[index].current};
         setShowTimes(times);
 
     }
@@ -112,6 +113,7 @@ export default function EventTimes({eventTitle}: {eventTitle: string}) {
         setShowTimes(showTime);
     }
 
+    // Called when the user selects a different time
     const onChangeSelectedTime = (index: number) => {
         let st = showTimes.slice()
         st.forEach(ele => ele.current = false);
@@ -119,53 +121,14 @@ export default function EventTimes({eventTitle}: {eventTitle: string}) {
         setShowTimes(st);
     }
 
-    const onShowListOpen = () => {
-        setShowListOpen(true);
-    }
-
-    const onShowListClose = () => {
-        setShowListOpen(false);
-    }
-
-    const onShowListChange = () => {
-        // TODO
-    }
-
-    const getInfo = () => {
-        console.log(`ShowTime Length: ${showTimes.length}`);
-        for (let i = 0; i < showTimes.length; i++) {
-            console.log(`${i} -- Time: ${showTimes[i].time} -- Seats: ${showTimes[i].seats} -- Current: ${showTimes[i].current}`);
-        }
-    }
-
     return (
         <div>
-            <button onClick={getInfo}>Get Info</button>
             <Grid container style={{ marginTop: "20px" }}>
                 <Grid item xs={6}>
-                    <h3>Create show times</h3>
+                    <h3><em>{ eventTitle }</em> details</h3>
                 </Grid>
-                <Grid item xs={4}>
-                    <FormControl className={classes.formListSelector}>
-                        <InputLabel>Show</InputLabel>
-                        <Select 
-                            open={showListOpen}
-                            onClose={onShowListClose}
-                            onOpen={onShowListOpen}
-                            onChange={onShowListChange}
-                        >
-                            <MenuItem defaultValue  =""></MenuItem>
-                            {
-                                showList.map((value, index) => {
-                                    return (
-                                        <MenuItem value={index}>{ value }</MenuItem>
-                                    )
-                                })
-                            }
-                        </Select>
-                    </FormControl>
-                </Grid>
-                <Grid item xs={2}>
+                <Grid item xs={5}></Grid>
+                <Grid item xs={1}>
                     <Fab size="small" onClick={onNewShowTimes}>
                         <AddIcon />
                     </Fab>
@@ -176,7 +139,7 @@ export default function EventTimes({eventTitle}: {eventTitle: string}) {
                     {
                         showTimes.map((value, index) => {
                             return <EventTimePicker 
-                                key={index} 
+                                key={value.id} 
                                 id={index} 
                                 checked={value.current}
                                 color={colors[index]} 
@@ -198,7 +161,17 @@ export default function EventTimes({eventTitle}: {eventTitle: string}) {
                 key={calendarMonth}
             />
             <div>
-                <ShowTimeListing />
+                {
+                    eventDetails.length > 0 ? eventDetails.map((val, index) => {
+                        return <ShowTimeListing 
+                            key={ index } 
+                            id={ val.id } 
+                            eventDate={ val.eventDate } 
+                            startTime={ val.eventTime } 
+                            totalSeats={ val.seats }
+                        />
+                    }) : ""
+                }
             </div>
         </div>
     )

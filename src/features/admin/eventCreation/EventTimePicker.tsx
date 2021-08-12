@@ -22,14 +22,14 @@ export default function EventTimePicker({ id, color, checked, onAddTime, onRemov
     const [time, setTime] = useState("");
     const [seats, setSeats] = useState<number>(0);
 
-    const onSetTime = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        setTime(e.currentTarget.value);
-        onAddTime(e.currentTarget.value, seats, id);
+    const onSetTime = (e: React.ChangeEvent<{ value: unknown }>) => {
+        setTime(e.target.value as string);
+        onAddTime(e.target.value as string, seats, id);
     }
 
-    const onSetSeats = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        setSeats(+e.currentTarget.value);
-        onAddTime(time, +e.currentTarget.value, id);
+    const onSetSeats = (e: React.ChangeEvent<{ value: unknown }>) => {
+        setSeats(e.target.value as number);
+        onAddTime(time, e.target.value as number, id);
     }
 
     return (

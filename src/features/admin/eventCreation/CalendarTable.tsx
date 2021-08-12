@@ -33,6 +33,13 @@ const useStyles = makeStyles({
     }
 })
 
+// Class to display a calendar table
+// targetMonth: The month we want to display
+// targetYear: The year we are targeting
+// onSelectDaysOfWeek: When the user selects "Sunday" or any other day, this is fired. Called with the index of the day, Sunday = 0, Saturday = 6
+// onSelectDay: Called when a user clicks on a day, returns the full date 
+// onMonthDecr: Called when user selects to move the calendar month to a previous month
+// onMonthIncr: Called when user selects to move the calendar month to the next month
 export default function CalendarTable({targetMonth, targetYear, onSelectDaysOfWeek, onSelectDay, onMonthDecr, onMonthIncr} : CalendarTableProps) {
     const classes = useStyles();
     const [monthTable, setMonthTable] = useState<any>([]);
@@ -40,8 +47,9 @@ export default function CalendarTable({targetMonth, targetYear, onSelectDaysOfWe
 
     useEffect(() => {
         makeCalendarTable();
-    }, []);
+    }, [onSelectDay]);
 
+    // Create the calendar
     const makeCalendarTable = () => {
         let month = targetMonth;
         let year = targetYear;
@@ -50,6 +58,7 @@ export default function CalendarTable({targetMonth, targetYear, onSelectDaysOfWe
 
         setMonthName(Intl.DateTimeFormat("en-us", { month: "long"}).format(new Date(targetYear, targetMonth)));
 
+        // Any days before the first of the month are blank
         for (let i = 0; i < dt.getDay(); i++) {
             table.push(
                 <CalendarEntry
@@ -61,6 +70,7 @@ export default function CalendarTable({targetMonth, targetYear, onSelectDaysOfWe
             )
         }
 
+        // Actual days of the month
         while (dt.getMonth() === month) {
             table.push(
                 <CalendarEntry
@@ -73,6 +83,7 @@ export default function CalendarTable({targetMonth, targetYear, onSelectDaysOfWe
             dt.setDate(dt.getDate() + 1);
         }
 
+        // Any days that fall between the last day of the month and 35, end of the calendar table
         if (dt.getDate() !== 0) {
             for (let i = 0; i < 7; i++) {
                 table.push(
