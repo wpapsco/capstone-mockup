@@ -5,8 +5,7 @@ import Typography from '@material-ui/core/Typography'
 import Divider from '@material-ui/core/Divider';
 import Button from '@material-ui/core/Button'
 import {makeStyles} from '@material-ui/core';
-import { selectCartContents } from '../ticketingSlice'
-import { CartItem } from '../ticketingTypes'
+import { CartItem, selectCartContents } from '../ticketingSlice'
 import {useHistory} from 'react-router';
 
 // TODO: Proper rowitem component

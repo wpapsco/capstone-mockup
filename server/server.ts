@@ -4,7 +4,7 @@ import {pool} from './db';
 import cors from 'cors';
 import Stripe from "stripe"
 import {CheckoutFormInfo} from "../src/components/CompleteOrderForm"
-import {CartItem, Ticket} from '../src/features/ticketing/ticketingTypes'
+import {CartItem, Ticket} from '../src/features/ticketing/ticketingSlice'
 
 import passport from "passport"
 import {Strategy as LocalStrategy} from "passport-local"
@@ -577,13 +577,24 @@ const parseMoneyString = (s: string) => Number.parseFloat(s.slice(1))
 const toTicket = (row): Ticket => {
     const {eventdate, starttime, ...rest} = row
     const [hour, min] = starttime.split(':')
+    let date = new Date(eventdate)
+    date.setHours(hour,min)
     return {
         ...rest,
-        date: (new Date(eventdate)).setHours(hour, min),
+        date: date.toJSON(),
         playid: row.playid.toString(),
         ticket_price: parseMoneyString(row.ticket_price),
         concession_price: parseMoneyString(row.concession_price),
     }
+}
+
+interface TicketState {byId: {[key: number]: Ticket}, allIds: number[]}
+const reduceToTicketState = (res, t: Ticket) => {
+    const id = t.eventid
+    const {byId, allIds} = res
+    return (allIds.includes(id))
+        ? res
+        : {byId: {...byId, [id]: t}, allIds: [...allIds, id]}
 }
 
 app.get('/api/tickets', async (req, res) => {
@@ -604,7 +615,11 @@ app.get('/api/tickets', async (req, res) => {
             WHERE isseason=false AND availableseats > 0
             ORDER BY playid, eventid;`
         const query_res = await pool.query(qs)
-        res.json(query_res.rows.map(toTicket));
+        res.json(
+            query_res.rows
+                .map(toTicket)
+                .reduce(reduceToTicketState, {byId: {}, allIds: []} as TicketState)
+        );
         console.log('# tickets:', query_res.rowCount)
     }
     catch (err) {
