@@ -8,6 +8,7 @@ import {makeStyles} from '@material-ui/core';
 import { selectCartContents } from '../ticketingSlice'
 import { CartItem } from '../ticketingTypes'
 import {useHistory} from 'react-router';
+import {selectDonation} from '../../donationSlice';
 
 // TODO: Proper rowitem component
 const Item = (props: CartItem) => <div>{props.name}, {props.price} x {props.qty}: {props.price*props.qty}</div>
@@ -23,8 +24,7 @@ const useStyles = makeStyles({
 
 const YourOrder = () => {
     const cartItems = appSelector(selectCartContents)
-    // TODO: Donation reducer & selector
-    const donation = 0
+    const donation = appSelector(selectDonation)
     const [subtotal, setSubtotal] = useState(0)
     const classes = useStyles()
     const history = useHistory()
