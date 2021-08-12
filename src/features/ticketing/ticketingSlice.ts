@@ -27,7 +27,6 @@ export interface Play {
     title: string,
     description: string,
     image_url: string,
-    tickets: number[],
 }
 
 type TicketsState = {byId: {[key: number]: Ticket}, allIds: number[]}
@@ -104,6 +103,16 @@ const applyConcession = (c_price: number, item: CartItem) => (hasConcessions(ite
         price: c_price + item.price,
         desc: `${item.desc} with concessions ticket`
     }
+const positive = (n: number) => n > 0 ? n : 0
+interface ItemData {id: number, qty: number, concessions?: number}
+const updateCartItem = (cart: CartItem[], {id, qty, concessions}: ItemData) =>
+    cart.map(item => (item.product_id===id)
+        ? (concessions)
+            ? applyConcession(concessions, {...item, qty: positive(qty)})
+            : {...item, qty: positive(qty)}
+        : item
+    )
+     
 
 const addTicketReducer: CaseReducer<ticketingState, PayloadAction<{ id: number, qty: number, concessions: boolean }>> = (state, action) => {
     const {id, qty, concessions} = action.payload
@@ -115,16 +124,15 @@ const addTicketReducer: CaseReducer<ticketingState, PayloadAction<{ id: number, 
     const inCart = state.cart.find(byId(id))
 
     if (inCart) {
-        const newQty = (qty + inCart.qty) <= ticket.availableseats ? (qty + inCart.qty) : ticket.availableseats
-        const updatedQty = {...inCart, qty: newQty}
+        const newQty = ((qty + inCart.qty) <= ticket.availableseats)
+            ? (qty + inCart.qty) : ticket.availableseats
         return {
             ...state,
-            cart: state.cart.map(item => (item.product_id===id)
-                ? (concessions)
-                    ? applyConcession(ticket.concession_price, updatedQty)
-                    : updatedQty
-                : item
-            )
+            cart: updateCartItem(state.cart, {
+                id,
+                qty: newQty,
+                concessions: concessions ? ticket.concession_price : undefined
+            })
         }
     } else {
         const play = ticket ? state.plays.find(byId(ticket.playid)) : null
@@ -143,19 +151,17 @@ const addTicketReducer: CaseReducer<ticketingState, PayloadAction<{ id: number, 
     }
 }
 
+// Do not update state if 1) ticket doesn't exist, 2) try to set more than available
 const editQtyReducer: CaseReducer<ticketingState, PayloadAction<{id: number, qty: number}>> =
-    (state, action) => ({
-        ...state,
-        cart: state.cart.map(item => (item.product_id===action.payload.id)
-            ? {
-                ...item,
-                qty: (action.payload.qty > 0)
-                    ? action.payload.qty
-                    : 0
-            }
-            : item
-        )
-    })
+    (state, action) => {
+    const {id, qty} = action.payload
+    if (!state.tickets.allIds.includes(id)) return state
+    const avail = state.tickets.byId[id].availableseats
+
+    return (qty <= avail)
+        ? {...state, cart: updateCartItem(state.cart, {id, qty})}
+        : state
+}
 
 export const INITIAL_STATE: ticketingState = {
     cart: [],
