@@ -36,6 +36,7 @@ export interface ticketingState {
     tickets: TicketsState,
     plays: Play[],
     status: LoadStatus,
+    donation: number,
 }
 
 
@@ -157,6 +158,7 @@ export const INITIAL_STATE: ticketingState = {
     tickets: {byId: {}, allIds: []},
     plays: [],
     status: 'idle',
+    donation: 0,
 }
 
 const ticketingSlice = createSlice({
@@ -165,6 +167,10 @@ const ticketingSlice = createSlice({
     reducers: {
         addTicketToCart: addTicketReducer,
         editItemQty: editQtyReducer,
+        setDonation: (state, action: PayloadAction<number>) => ({
+            ...state,
+            donation: action.payload > 0 ? action.payload : 0
+        }),
         removeTicketFromCart: (state, action: PayloadAction<number>) => ({
             ...state,
             cart: state.cart.filter(item => item.product_id!==action.payload)
@@ -207,6 +213,8 @@ export const selectCartTicketCount = (state: RootState): {[key: number]: number}
     )
 export const selectNumInCart = (state: RootState) => state.ticketing.cart.length
 export const selectCartContents = (state: RootState): CartItem[] => state.ticketing.cart
+export const selectDonation = (state: RootState): number => state.ticketing.donation
+
 interface EventPageData {
     title: string,
     description: string,
@@ -238,5 +246,5 @@ export const selectNumAvailable = (state: RootState, ticketid: number) => {
         : ticket
 }
 
-export const { addTicketToCart, editItemQty, removeTicketFromCart } = ticketingSlice.actions
+export const { addTicketToCart, editItemQty, removeTicketFromCart, setDonation } = ticketingSlice.actions
 export default ticketingSlice.reducer
