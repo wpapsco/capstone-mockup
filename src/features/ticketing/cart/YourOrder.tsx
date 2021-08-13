@@ -10,6 +10,7 @@ import {
     selectCartItem,
     selectCartIds,
     selectCartSubtotal,
+    selectDonation,
 } from '../ticketingSlice'
 import { useHistory } from 'react-router';
 
@@ -20,15 +21,15 @@ const YourOrder = () => {
     const history = useHistory()
 
     const cartIds = appSelector(selectCartIds)
+    const donation = appSelector(selectDonation)
     const subtotal = appSelector(selectCartSubtotal)
     const lineItems = cartIds.map(id => <LineItem className={classes.lineItem} key={id} id={id}/>)
-    const donation = 0 // TODO: Donation reducer & selector
         
     return (
         <Paper className={classes.root} variant="outlined">
             <Typography variant="h4">Your order</Typography>
             <div className={classes.items}>
-                {lineItems.length > 0 ? lineItems : <p>Your cart is empty</p>}
+                {lineItems.length > 0 ? lineItems : <p className={classes.empty}>Your cart is empty</p>}
             </div>
 
             <Button onClick={() => history.push('/events')} color="primary" variant="contained" fullWidth>
@@ -51,11 +52,9 @@ const YourOrder = () => {
                 <Typography variant="body2">Donation</Typography>
                 <Typography variant="body2" color="textSecondary">{toDollar(donation)}</Typography>
             </div>
+
             <Divider className={classes.divider}/>
-            <div className={classes.subtotal}>
-                <Typography variant="body1">Subtotal</Typography>
-                <Typography variant="body1" color="textSecondary">{toDollar(subtotal)}</Typography>
-            </div>
+            
             <div className={classes.subtotal}>
                 <Typography variant="body1">Total</Typography>
                 <Typography variant="body1" color="textSecondary">{toDollar(donation+subtotal)}</Typography>
@@ -83,7 +82,7 @@ const useStyles = makeStyles({
         paddingTop: "30px"
     },
     items: {
-        margin: '15px 0',
+        margin: '30px 0',
     },
     lineItem: {
         marginTop: '10px',
@@ -97,6 +96,7 @@ const useStyles = makeStyles({
             marginLeft: 'auto',
         },
     },
+    empty: {color: '#adb5bd', textAlign: 'center'},
     subtotal: {display: "flex", justifyContent: "space-between"},
     divider: {marginBottom: "30px", marginTop: "30px"},
 })
