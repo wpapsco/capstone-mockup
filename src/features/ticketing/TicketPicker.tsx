@@ -114,6 +114,7 @@ const TicketPicker = ({tickets}: TicketPickerProps) => {
                     value={qty}
                     disabled={selectedTicket===undefined || numAvail < 1}
                     onChange={e => setQty(e.target.value as number)}
+                    MenuProps={{classes: {paper: classes.menuPaper}}}
                 >
                     {range(numAvail, false).map(n => <MenuItem key={n} value={n}>{n}</MenuItem>)}
                 </Select>
@@ -155,6 +156,9 @@ const useStyles = makeStyles((theme: Theme) => ({
         // textDecoration: 'underline',
         padding: theme.spacing(2),
         fontSize: '0.8em',
+    },
+    menuPaper: {
+        maxHeight: '200px',
     },
 }))
 
