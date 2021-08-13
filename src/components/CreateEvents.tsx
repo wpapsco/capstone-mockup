@@ -18,7 +18,7 @@ export default function CreateEvents(props: {}) {
       eventTime: eventTime,
     };
 
-    const req = await fetch("http://localhost:5000/api/create-event", {
+    const req = await fetch("/api/create-event", {
       credentials: 'include',
       method: "POST",
       headers: {

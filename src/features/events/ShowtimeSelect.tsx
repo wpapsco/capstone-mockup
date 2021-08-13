@@ -1,6 +1,6 @@
 import {List, ListItem, ListItemText, makeStyles} from "@material-ui/core";
 import {useState} from "react";
-import {Ticket} from '../ticketing/ticketingTypes'
+import {Ticket} from '../ticketing/ticketingSlice'
 import format from "date-fns/format";
 
 const useStyles = makeStyles({

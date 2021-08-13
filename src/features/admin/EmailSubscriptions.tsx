@@ -18,7 +18,7 @@ export default function EmailSubscriptions()
 {
    const perform_fetch = async (url_append:string) =>
    {
-      const response = await fetch("http://localhost:5000/api/" + url_append,
+      const response = await fetch("/api/" + url_append,
       {
          credentials: "include",
          method: 'GET',

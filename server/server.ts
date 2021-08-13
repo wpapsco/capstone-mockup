@@ -4,7 +4,7 @@ import {pool} from './db';
 import cors from 'cors';
 import Stripe from "stripe"
 import {CheckoutFormInfo} from "../src/components/CompleteOrderForm"
-import {CartItem, Ticket} from '../src/features/ticketing/ticketingTypes'
+import {CartItem, Ticket} from '../src/features/ticketing/ticketingSlice'
 
 import passport from "passport"
 import {Strategy as LocalStrategy} from "passport-local"
@@ -141,7 +141,7 @@ app.post('/api/login', passport.authenticate('local'), (req, res) => {
 //Endpont to get list of plays
 app.get("/api/play-list", async (req, res) =>{
     try {
-        const plays = await pool.query('select playname from plays where active = true')
+        const plays = await pool.query('select id, playname from plays where active = true')
         res.json(plays.rows);
     } catch (error) {
         console.error(error.message);
@@ -321,10 +321,10 @@ app.post('/api/checkout', async (req, res) => {
     };
     const cartSize = req.body.cartItems.length;
     var orders = [];
+    for(let i = 0; i<cartSize;++i){
 
-    for (let i = 0; i < cartSize;++i){
         let newOrder = {
-            id: req.body.cartItems[i].id,
+            id: req.body.cartItems[i].product_id,
             quantity: req.body.cartItems[i].qty,
 
         };
@@ -352,7 +352,8 @@ app.post('/api/checkout', async (req, res) => {
         payment_intent_data:{
             metadata: {
                 orders: JSON.stringify(orders),
-                custid: customerID
+                custid: customerID,
+                donation: donation
             }
         },
          metadata: {
@@ -435,7 +436,7 @@ app.post("/api/set-tickets", async (req, res) => {
 app.get("/api/show-tickets", async (req, res) => {
     try {
         const query = 
-            `SELECT pl.id as play_id, sh.id as show_id, playname, playdescription, eventdate, starttime, availableseats, price, concessions
+            `SELECT pl.id as play_id, sh.id as show_id, playname, playdescription, eventdate, starttime, totalseats, availableseats, price, concessions
             FROM plays pl
                 LEFT JOIN showtimes sh ON pl.id=sh.playid
                 JOIN linkedtickets lt ON lt.showid=sh.id
@@ -482,6 +483,16 @@ const fulfillOrder = async (session) => {
     // gather the data from the session object and send it off to db
     // make this async function
     // added_stuff by Ad
+    if(session.data.object.metadata.donation > 0){
+        try {
+            const addedDonation = await pool.query(
+            `INSERT INTO donations (donorid, isanonymous, amount)
+            values ($1,$2,$3)`
+            ,[session.data.object.metadata.custid, false, session.data.object.metadata.donation])
+        } catch (error) {
+            console.log(error);
+        }
+    }
     const stripe_meta_data = JSON.parse(session.data.object.metadata.orders);
     const temp = [];
     var counter = 0;
@@ -566,13 +577,24 @@ const parseMoneyString = (s: string) => Number.parseFloat(s.slice(1))
 const toTicket = (row): Ticket => {
     const {eventdate, starttime, ...rest} = row
     const [hour, min] = starttime.split(':')
+    let date = new Date(eventdate)
+    date.setHours(hour,min)
     return {
         ...rest,
-        date: (new Date(eventdate)).setHours(hour, min),
+        date: date.toJSON(),
         playid: row.playid.toString(),
         ticket_price: parseMoneyString(row.ticket_price),
         concession_price: parseMoneyString(row.concession_price),
     }
+}
+
+interface TicketState {byId: {[key: number]: Ticket}, allIds: number[]}
+const reduceToTicketState = (res, t: Ticket) => {
+    const id = t.eventid
+    const {byId, allIds} = res
+    return (allIds.includes(id))
+        ? res
+        : {byId: {...byId, [id]: t}, allIds: [...allIds, id]}
 }
 
 app.get('/api/tickets', async (req, res) => {
@@ -593,7 +615,11 @@ app.get('/api/tickets', async (req, res) => {
             WHERE isseason=false AND availableseats > 0
             ORDER BY playid, eventid;`
         const query_res = await pool.query(qs)
-        res.json(query_res.rows.map(toTicket));
+        res.json(
+            query_res.rows
+                .map(toTicket)
+                .reduce(reduceToTicketState, {byId: {}, allIds: []} as TicketState)
+        );
         console.log('# tickets:', query_res.rowCount)
     }
     catch (err) {

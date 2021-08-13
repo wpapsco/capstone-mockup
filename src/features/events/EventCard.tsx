@@ -3,7 +3,7 @@ import { titleCase } from '../../utils'
 import { Card, CardContent, CardMedia, Button, Typography } from '@material-ui/core'
 import { Theme, makeStyles, useTheme } from '@material-ui/core/styles'
 import { Link } from 'react-router-dom'
-import { Play } from '../ticketing/ticketingTypes'
+import { Play } from '../ticketing/ticketingSlice'
 
 const useStyles = makeStyles((theme: Theme) => ({
     root: {

@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react'
-import { CartItem } from '../ticketingTypes'
-import { editItemQty, selectNumAvailable } from '../ticketingSlice'
+import { editItemQty, selectNumAvailable, CartItem } from '../ticketingSlice'
 import { appSelector, useAppDispatch } from '../../../app/hooks'
 import { IconButton, Paper, Typography } from '@material-ui/core'
 import { createStyles, makeStyles } from '@material-ui/core/styles'
