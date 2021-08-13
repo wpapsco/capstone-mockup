@@ -26,9 +26,8 @@ export default function Navbar()  {
     if (tabname) {
         currtab = {
             "events": 0,
-            "completeorder": 1,
-            "admin": 2,
-            "login": 2
+            "admin": 1,
+            "login": 1
         }[tabname] || 0
     }
 
@@ -36,7 +35,6 @@ export default function Navbar()  {
         <Paper square className={classes.navbar}>
             <Tabs value={currtab}>
                 <Tab label="Events" component={NavLink} to="/events" />
-                <Tab label="Complete Order" component={NavLink} to="/completeorder"/>
                 <Tab label="Admin" component={NavLink} to="/admin" />
             </Tabs>
             <CartIconLink />

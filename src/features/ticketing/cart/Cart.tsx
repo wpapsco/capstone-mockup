@@ -92,7 +92,7 @@ const Cart = () => {
             </div>
 
             <div>
-                <Button variant="contained" color="primary" onClick={navigateToCompleteOrder}>Complete Order</Button>
+                <Button variant="contained" color="primary" disabled={items.length === 0} onClick={navigateToCompleteOrder}>Complete Order</Button>
             </div>
 
             <Modal
