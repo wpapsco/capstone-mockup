@@ -7,9 +7,11 @@ type EventTimePickerProps = {
     id: number,
     color: string,
     checked: boolean,
+    eventTime: string,
+    eventSeats: number
     onAddTime: (time: string, seats: number, id: number) => any,
     onRemoveTime: (id: number) => any,
-    onChangeTime: (id: number) => any
+    onChangeTime: (id: number) => any,
 }
 
 const useStyles = makeStyles({
@@ -18,7 +20,7 @@ const useStyles = makeStyles({
     }
 })
 
-export default function EventTimePicker({ id, color, checked, onAddTime, onRemoveTime, onChangeTime } : EventTimePickerProps) {
+export default function EventTimePicker({ id, color, checked, eventTime, eventSeats, onAddTime, onRemoveTime, onChangeTime } : EventTimePickerProps) {
     const [time, setTime] = useState("");
     const [seats, setSeats] = useState<number>(0);
 
@@ -55,6 +57,7 @@ export default function EventTimePicker({ id, color, checked, onAddTime, onRemov
                     variant="outlined" 
                     onBlur={(event) => onSetTime(event)} 
                     required 
+                    defaultValue={ eventTime }
                 />
             </Grid>
             <Grid item xs={2}>
@@ -68,6 +71,7 @@ export default function EventTimePicker({ id, color, checked, onAddTime, onRemov
                     variant="outlined" 
                     onBlur={(event) => onSetSeats(event)} 
                     required 
+                    defaultValue={ eventSeats }
                 />
             </Grid>
             {/*

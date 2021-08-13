@@ -61,16 +61,13 @@ export default function NewEventMain() {
     /* Prop passed down to createEvent. When an event is saved, we store the
        values and pass them along to eventTimes */
     const onEventSaved = (title: string, marquee: string[], description: string) => {
-        /*
-        let idx = eventTitles.indexOf(title);
-        if (idx === -1) {
-            let t = eventTitles.slice();
-            t.push(title);
-            setEventTitles(t);
-            idx = eventTitles.length - 1;
-        }
-        setEventIndex(idx);
-        */
+       // I think this should call the server to get a UUID and store the information
+       // about the play.
+       console.log('Play Name: ' + title);
+       let titles = eventTitles.slice();
+       titles.push({ name: title, id: 100 }); // TODO we should get a UUID for this
+       setEventTitles(titles);
+       setEventIndex(eventTitles.length); 
     }
 
     /* Handler for the select event */
@@ -87,14 +84,15 @@ export default function NewEventMain() {
                         playid: val.play_id,
                         showid: val.show_id,
                         eventName: val.playname,
-                        eventDate: val.eventdate,
-                        eventTime: val.starttime,
+                        eventDate: new Date(val.eventdate),
+                        eventTime: val.starttime.slice(0, 5),
                         seats: val.availableseats,
                         price: val.price,
                     })
                 })
             })
             setEventDetails(rows);
+            console.log(rows);
     }
 
     return (

@@ -32,10 +32,31 @@ export default function EventTimes({ eventTitle, eventDetails } : ShowTimesProps
     const [calendarMonth, setCalendarMonth] = useState(new Date().getMonth());
     const [calendarYear, setCalendarYear] = useState(new Date().getFullYear());
     // We need at least one
-    const [showTimes, setShowTimes] = useState<ShowTimeSelector[]>([{ id: 0, time: "", seats: 0, current: true }]);
+    const [showTimes, setShowTimes] = useState<ShowTimeSelector[]>([]);
     // TODO: Change this v
     const colors = ["aqua", "crimson", "forestgreen", "blue", "deeppink", "greenyellow", "indigo", "maroon", "steelblue"];
 
+    const setUpTimes = () => {
+        let times: ShowTimeSelector[] = [];
+        eventDetails.forEach((val) => {
+            console.log('Found!')
+            const found = times.find(ele => ele.time === val.eventTime);
+            if (!found) {
+                times.push({ id: times.length, time: val.eventTime.slice(0,6), seats: val.seats, current: times.length === 0 ? true : false })
+            }
+        })
+
+        if (times.length === 0) {
+            times.push({ id: 0, time: "", seats: 0, current: true });
+        }
+        setShowTimes(times);
+
+        console.log("Times: " + times.length + " Event: " + eventDetails.length)
+    }
+ 
+    useEffect(() => {
+       setUpTimes();
+    }, [eventDetails])
 
     // Increment the calendar month
     const onMonthIncr = () => {
@@ -139,13 +160,15 @@ export default function EventTimes({ eventTitle, eventDetails } : ShowTimesProps
                     {
                         showTimes.map((value, index) => {
                             return <EventTimePicker 
-                                key={value.id} 
-                                id={index} 
-                                checked={value.current}
-                                color={colors[index]} 
-                                onAddTime={onAddShowTime} 
-                                onRemoveTime={onRemoveShowTime} 
-                                onChangeTime={onChangeSelectedTime}
+                                key={ value.id } 
+                                id={ index } 
+                                eventTime={ value.time }
+                                eventSeats={ value.seats }
+                                checked={ value.current }
+                                color={ colors[index] } 
+                                onAddTime={ onAddShowTime } 
+                                onRemoveTime={ onRemoveShowTime } 
+                                onChangeTime={ onChangeSelectedTime }
                             />;
                         })
                     }
