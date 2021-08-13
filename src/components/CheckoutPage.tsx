@@ -1,6 +1,6 @@
 import { Paper, makeStyles } from '@material-ui/core';
 import YourOrder from '../features/ticketing/cart/YourOrder'
-import { selectCartContents } from '../features/ticketing/ticketingSlice'
+import { selectCartContents, selectDonation } from '../features/ticketing/ticketingSlice'
 import { appSelector } from '../app/hooks'
 import { loadStripe } from '@stripe/stripe-js';
 import { useState } from 'react';
@@ -27,8 +27,7 @@ const useStyles = makeStyles({
 
 export default function CheckoutPage() {
     const cartItems = appSelector(selectCartContents)
-    // const donation = appSelector(selectDonation)
-    const donation = 0
+    const donation = appSelector(selectDonation)
     const [checkoutStep, setCheckoutStep] = useState('donation');
     const classes = useStyles()
 
