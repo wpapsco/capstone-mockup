@@ -40,8 +40,9 @@ export default function CalendarTable({targetMonth, targetYear, onSelectDaysOfWe
 
     useEffect(() => {
         makeCalendarTable();
-    }, []);
+    }, [targetMonth, targetYear, onSelectDay]);
 
+    // Create the calendar
     const makeCalendarTable = () => {
         let month = targetMonth;
         let year = targetYear;
@@ -50,6 +51,7 @@ export default function CalendarTable({targetMonth, targetYear, onSelectDaysOfWe
 
         setMonthName(Intl.DateTimeFormat("en-us", { month: "long"}).format(new Date(targetYear, targetMonth)));
 
+        // Any days before the first of the month are blank
         for (let i = 0; i < dt.getDay(); i++) {
             table.push(
                 <CalendarEntry
@@ -61,6 +63,7 @@ export default function CalendarTable({targetMonth, targetYear, onSelectDaysOfWe
             )
         }
 
+        // Actual days of the month
         while (dt.getMonth() === month) {
             table.push(
                 <CalendarEntry

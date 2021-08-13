@@ -1,15 +1,17 @@
 import { useState } from "react";
 import { Grid, TextField, Fab, Paper, makeStyles, FormControlLabel, Radio } from "@material-ui/core";
-import CheckCircleRoundedIcon from "@material-ui/icons/CheckCircleRounded";
+//import CheckCircleRoundedIcon from "@material-ui/icons/CheckCircleRounded";
 import RemoveIcon from "@material-ui/icons/Remove";
 
 type EventTimePickerProps = {
     id: number,
     color: string,
     checked: boolean,
+    eventTime: string,
+    eventSeats: number
     onAddTime: (time: string, seats: number, id: number) => any,
     onRemoveTime: (id: number) => any,
-    onChangeTime: (id: number) => any
+    onChangeTime: (id: number) => any,
 }
 
 const useStyles = makeStyles({
@@ -18,27 +20,28 @@ const useStyles = makeStyles({
     }
 })
 
-export default function EventTimePicker({ id, color, checked, onAddTime, onRemoveTime, onChangeTime } : EventTimePickerProps) {
+export default function EventTimePicker({ id, color, checked, eventTime, eventSeats, onAddTime, onRemoveTime, onChangeTime } : EventTimePickerProps) {
     const [time, setTime] = useState("");
     const [seats, setSeats] = useState<number>(0);
-    const [isValidTime, setIsValidTime] = useState(false);
-    const [isValidSeats, setIsValidSeats] = useState(false);
 
-    const onSetTime = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        setTime(e.currentTarget.value);
-        setIsValidTime(true);
+    const onSetTime = (e: React.ChangeEvent<{ value: unknown }>) => {
+        setTime(e.target.value as string);
+        onAddTime(e.target.value as string, seats, id);
     }
 
-    const onSetSeats = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        console.log("Seats called")
-        setSeats(+e.currentTarget.value);
-        setIsValidSeats(true);
+    const onSetSeats = (e: React.ChangeEvent<{ value: unknown }>) => {
+        setSeats(e.target.value as number);
+        onAddTime(time, e.target.value as number, id);
     }
 
     return (
         <Grid container key={id} component={ Paper } style={{ margin: "3px"}}>
             <Grid item xs={1}>
-                <span style={{ color: color, margin: "0" }}>&#9642;</span>
+                <span>
+                    <svg width="10" height="10">
+                        <rect width="100%" height="100%" fill={color}></rect>
+                    </svg>
+                </span>
             </Grid>
             <Grid item xs={1}>
                 <FormControlLabel value={id} checked={checked} control={<Radio onChange={() => onChangeTime(id)} />} label=""/>
@@ -52,8 +55,9 @@ export default function EventTimePicker({ id, color, checked, onAddTime, onRemov
                     size="small" 
                     margin="dense" 
                     variant="outlined" 
-                    onChange={(event) => onSetTime(event)} 
+                    onBlur={(event) => onSetTime(event)} 
                     required 
+                    defaultValue={ eventTime }
                 />
             </Grid>
             <Grid item xs={2}>
@@ -65,8 +69,9 @@ export default function EventTimePicker({ id, color, checked, onAddTime, onRemov
                     size="small" 
                     margin="dense" 
                     variant="outlined" 
-                    onChange={(event) => onSetSeats(event)} 
+                    onBlur={(event) => onSetSeats(event)} 
                     required 
+                    defaultValue={ eventSeats }
                 />
             </Grid>
             {/*
