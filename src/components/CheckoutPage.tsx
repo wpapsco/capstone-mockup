@@ -13,7 +13,7 @@ const useStyles = makeStyles({
     root: {
         position: 'absolute',
         left: 0,
-        height: '90%',
+        minHeight: '90%',
         width: '100vw',
         display: 'flex',
         justifyContent: 'center',
