@@ -5,6 +5,8 @@ import { Backdrop, Button, Divider, Fade, Modal, Paper, Typography } from '@mate
 import { createStyles, makeStyles } from '@material-ui/core/styles'
 import { toDollarAmount } from '../../../utils'
 import { removeTicketFromCart, selectCartContents } from '../ticketingSlice'
+import { useHistory } from "react-router-dom";
+import { NavLink } from 'react-router-dom'
 
 const useStyles = makeStyles(() =>
     createStyles({
@@ -42,6 +44,8 @@ const itemCost = (item: Item) => item.price * item.qty
 const subtotalReducer = (acc: number, item: Item) => acc + itemCost(item)
 
 const Cart = () => {
+    const history = useHistory();
+
     const dispatch = useAppDispatch()
     const classes = useStyles()
     const items = appSelector(selectCartContents)
@@ -65,7 +69,10 @@ const Cart = () => {
         setTargetItem(id)
         setModalOpen(true)
     }
-    
+
+    const navigateToCompleteOrder = () => {
+        history.push("/completeorder");
+    }
     
     return (
         <section>
@@ -82,6 +89,10 @@ const Cart = () => {
             <div className={classes.subtotalRow}>
                 <Typography component='h2' variant='h6'>Subtotal:</Typography>
                 <Typography variant='body1' className={classes.subtotal}>{toDollarAmount(subtotal)}</Typography>
+            </div>
+
+            <div>
+                <Button variant="contained" color="primary" onClick={navigateToCompleteOrder}>Complete Order</Button>
             </div>
 
             <Modal
