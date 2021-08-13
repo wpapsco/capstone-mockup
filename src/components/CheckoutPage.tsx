@@ -1,13 +1,15 @@
-import { Paper, makeStyles } from '@material-ui/core';
+import { Paper, makeStyles, Typography } from '@material-ui/core';
 import YourOrder from '../features/ticketing/cart/YourOrder'
 import { selectCartContents } from '../features/ticketing/ticketingSlice'
 import { appSelector } from '../app/hooks'
 import { loadStripe } from '@stripe/stripe-js';
-import { useState } from 'react';
-import DonationPage from './DonationPage'
-import CompleteOrderForm, { CheckoutFormInfo } from './CompleteOrderForm'
+import { useState } from "react";
+import DonationPage from "./DonationPage"
+import CompleteOrderForm, { CheckoutFormInfo } from "./CompleteOrderForm"
+import {selectDonation} from '../features/donationSlice';
 
-const stripePromise = loadStripe('pk_test_51J5bpwGEweatMRnmGFUKgE6Q3wn7GmOJDAJ3Zag8DIhZjh324DdDUCFiEOLa0HQZFonkf2pc6lAOpPuheQs9N8AC00zNa4xALV')
+//FYI this is ok to stay here; it's the public key so other people can't do anything with it anyway.
+const stripePromise = loadStripe("pk_test_51J5bpwGEweatMRnmGFUKgE6Q3wn7GmOJDAJ3Zag8DIhZjh324DdDUCFiEOLa0HQZFonkf2pc6lAOpPuheQs9N8AC00zNa4xALV")
 
 const useStyles = makeStyles({
     root: {
@@ -23,13 +25,15 @@ const useStyles = makeStyles({
         width: '50%',
         padding: '30px',
     },
+    pageTitle: {
+        marginBottom: "0.5em"
+    },
 })
 
 export default function CheckoutPage() {
     const cartItems = appSelector(selectCartContents)
-    // const donation = appSelector(selectDonation)
-    const donation = 0
-    const [checkoutStep, setCheckoutStep] = useState('donation');
+    const donation = appSelector(selectDonation)
+    const [checkoutStep, setCheckoutStep] = useState<"donation" | "form">("donation");
     const classes = useStyles()
 
     const doCheckout = async (formData: CheckoutFormInfo) => {
@@ -54,9 +58,10 @@ export default function CheckoutPage() {
     return (
         <div className={classes.root}>
             <YourOrder />
-            <Paper className={classes.paper} variant='outlined'>
-                {checkoutStep === 'donation' && <DonationPage onNext={() => setCheckoutStep('form')}/>}
-                {checkoutStep === 'form' && <CompleteOrderForm disabled={cartItems.length === 0} onSubmit={doCheckout} onBack={() => setCheckoutStep('donation')}/>}
+            <Paper className={classes.paper} variant="outlined">
+                <Typography variant="h3" className={classes.pageTitle}>Complete Order</Typography>
+                {checkoutStep === "donation" && <DonationPage onNext={() => setCheckoutStep("form")}/>}
+                {checkoutStep === "form" && <CompleteOrderForm disabled={cartItems.length === 0} onSubmit={doCheckout} onBack={() => setCheckoutStep("donation")}/>}
             </Paper>
         </div>
     )

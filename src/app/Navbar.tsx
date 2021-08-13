@@ -27,7 +27,8 @@ export default function Navbar()  {
         currtab = {
             "events": 0,
             "admin": 1,
-            "login": 1
+            "login": 1,
+            "donate": 2,
         }[tabname] || 0
     }
 
@@ -36,6 +37,7 @@ export default function Navbar()  {
             <Tabs value={currtab}>
                 <Tab label="Events" component={NavLink} to="/events" />
                 <Tab label="Admin" component={NavLink} to="/admin" />
+                <Tab label="Donate" component={NavLink} to="/donate" />
             </Tabs>
             <CartIconLink />
         </Paper>

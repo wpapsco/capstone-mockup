@@ -26,6 +26,7 @@ import AdminSwitch from "./features/admin/AdminSwitch";
 import RequireLogin from "./components/RequireLogin";
 import MultiSelectCalendar from "./components/MultiSelectCalendar";
 import ScrollToTop from "./components/ScrollToTop";
+import OnlyDonationPage from "./components/OnlyDonatePage";
 
 function App() {
 
@@ -94,6 +95,9 @@ function App() {
                             <RequireLogin redirectTo="/admin">
                                 <AdminSwitch />
                             </RequireLogin>
+                        </Route>
+                        <Route path="/donate">
+                            <OnlyDonationPage />
                         </Route>
 
                     </Switch>

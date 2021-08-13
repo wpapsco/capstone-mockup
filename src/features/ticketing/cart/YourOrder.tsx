@@ -12,6 +12,7 @@ import {
     selectCartSubtotal,
 } from '../ticketingSlice'
 import { useHistory } from 'react-router';
+import { selectDonation } from '../../donationSlice';
 
 const toDollar = (x: number) => `$${(Math.round(x * 100) / 100).toFixed(2)}`
 
@@ -22,7 +23,7 @@ const YourOrder = () => {
     const cartIds = appSelector(selectCartIds)
     const subtotal = appSelector(selectCartSubtotal)
     const lineItems = cartIds.map(id => <LineItem className={classes.lineItem} key={id} id={id}/>)
-    const donation = 0 // TODO: Donation reducer & selector
+    const donation = appSelector(selectDonation) // TODO: Donation reducer & selector
         
     return (
         <Paper className={classes.root} variant="outlined">
