@@ -10,8 +10,7 @@ import ImageUploader from "./ImageUploader";
 //import EventLocation from "./location";
 
 type NewEventProps = {
-    eventSaved: () => void,
-    eventTitle: (title: string) => void,
+    eventSaved: (title: string, marquee: string[], description: string) => void,
 }
 
 const useStyles = makeStyles({
@@ -21,7 +20,7 @@ const useStyles = makeStyles({
     }
 })
 
-export default function NewEvent({eventSaved, eventTitle} : NewEventProps) {
+export default function NewEvent({eventSaved} : NewEventProps) {
     const classes = useStyles();
     const [title, setTitle] = useState("");
     const [marquee, setMarquee] = useState([{ id: 0, value: "" }]);
@@ -29,10 +28,12 @@ export default function NewEvent({eventSaved, eventTitle} : NewEventProps) {
     const [id, setId] = useState(1); // Needs to be set 1 more than marquee.id
     const [eventImage, setEventImage] = useState({});
     // TODO (Greg) are we using a location??
-    // This should be fetched from the server
+    // This should be fetched from the server?
+    /*
     const [location, setLocation] = useState(
     "Portland Playhouse, 602 NW Prescott St., Portland, OR, 97211"
     );
+    */
 
     const onTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setTitle(e.target.value);
@@ -68,8 +69,16 @@ export default function NewEvent({eventSaved, eventTitle} : NewEventProps) {
         console.log('Event submitted: ' + title + ' ' + description + ' -- Marquee: ' + marquee);
         // TODO(Greg) send new event to server, get response. We should really get the UUID from the
         // server and set the title using that. Change below
-        eventTitle(title);
-        eventSaved();
+        let m = marquee.sort((a, b) => {
+            if (a.id < b.id) return -1;
+            else if (a.id > b.id) return 1;
+            return 0;
+        })
+        let mq: string[] = [];
+        for (let i = 0; i < m.length; i++) {
+            mq.push(m[i].value);
+        }
+        eventSaved(title, mq, description);
     }
 
     return (
