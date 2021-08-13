@@ -76,10 +76,8 @@ const LineItem = (props: {className: string, id: number}) => {
 
 const useStyles = makeStyles({
     root: {
-        position: 'relative',
         minWidth: "20%",
-        height: "100%",
-        margin: "10px",
+        marginRight: "30px",
         paddingLeft: "2%",
         paddingRight: "2%",
         paddingTop: "30px"
