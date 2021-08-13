@@ -5,8 +5,7 @@ import { Backdrop, Button, Divider, Fade, Modal, Paper, Typography } from '@mate
 import { createStyles, makeStyles } from '@material-ui/core/styles'
 import { toDollarAmount } from '../../../utils'
 import { removeTicketFromCart, selectCartContents } from '../ticketingSlice'
-import Tabs from '@material-ui/core/Tabs'
-import Tab from '@material-ui/core/Tab'
+import { useHistory } from "react-router-dom";
 import { NavLink } from 'react-router-dom'
 
 const useStyles = makeStyles(() =>
@@ -45,6 +44,8 @@ const itemCost = (item: Item) => item.price * item.qty
 const subtotalReducer = (acc: number, item: Item) => acc + itemCost(item)
 
 const Cart = () => {
+    const history = useHistory();
+
     const dispatch = useAppDispatch()
     const classes = useStyles()
     const items = appSelector(selectCartContents)
@@ -68,6 +69,10 @@ const Cart = () => {
         setTargetItem(id)
         setModalOpen(true)
     }
+
+    const navigateToCompleteOrder = () => {
+        history.push("/completeorder");
+    }
     
     return (
         <section>
@@ -87,12 +92,7 @@ const Cart = () => {
             </div>
 
             <div>
-                <Paper square>
-                    <Tabs aria-label="cart action">
-                        <Tab label="Complete Order" component={NavLink} to="/completeorder"/>
-                        <Tab label="Empty Cart"/>
-                    </Tabs>
-                </Paper>
+                <Button variant="contained" color="primary" onClick={navigateToCompleteOrder}>Complete Order</Button>
             </div>
 
             <Modal
