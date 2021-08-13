@@ -3,11 +3,13 @@ import { INITIAL_STATE as eventsInitState} from '../events/eventsSlice'
 import ticketReducer, {
     addTicketToCart,
     editItemQty,
-    selectPlayData,
-    selectCartTicketCount,
     Ticket,
     Play,
-    ticketingState
+    ticketingState,
+    selectPlayData,
+    selectCartTicketCount,
+    selectCartItem,
+    selectCartSubtotal,
 } from './ticketingSlice'
 import { User } from '../../../server/server'
 
@@ -76,28 +78,42 @@ describe('ticketing slice', () => {
     }
 
     describe('selectors', () => {
-        it('selectCartTicketCount', () => {
-            const init: RootState = {
-                ...ROOT_INIT_STATE,
-                ticketing: {
-                    ...ROOT_INIT_STATE.ticketing,
-                    cart: [{
-                        product_id: 1,     // references state.tickets.eventid
-                        qty: 2,
-                        name: 'thing',
-                        desc: 'desc1',
-                        product_img_url: 'www.com',
-                        price: 2.99,
-                    },{
-                        product_id: 2,     // references state.tickets.eventid
-                        qty: 4,
-                        name: 'thing2',
-                        desc: 'desc2',
-                        product_img_url: 'www.com',
-                        price: 3.99,
-                    }]
-                }
+
+        const item1 = {
+            product_id: 1,     // references state.tickets.eventid
+            qty: 2,
+            name: 'thing',
+            desc: 'desc1',
+            product_img_url: 'www.com',
+            price: 2.99,
+        }
+        const init: RootState = {
+            ...ROOT_INIT_STATE,
+            ticketing: {
+                ...ROOT_INIT_STATE.ticketing,
+                cart: [
+                    item1,
+                {
+                    product_id: 2,     // references state.tickets.eventid
+                    qty: 4,
+                    name: 'thing2',
+                    desc: 'desc2',
+                    product_img_url: 'www.com',
+                    price: 3.99,
+                }]
             }
+        }
+
+        it('selectCartSubtotal', () => {
+            expect(selectCartSubtotal(init)).toEqual(item1.price*item1.qty + 4*3.99)
+        })
+
+        it('selectCartItem', () => {
+            expect(selectCartItem(init, 1))
+                .toEqual(item1)
+        })
+
+        it('selectCartTicketCount', () => {
             expect(selectCartTicketCount(init))
                 .toEqual({1: 2, 2: 4})
         })

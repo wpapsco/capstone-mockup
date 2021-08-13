@@ -190,6 +190,9 @@ const ticketingSlice = createSlice({
     }
 })
 
+export const selectCartSubtotal = (state: RootState): number => state.ticketing.cart.reduce((tot, item) => tot + (item.price * item.qty), 0)
+export const selectCartIds = (state: RootState): number[] => state.ticketing.cart.map(i => i.product_id)
+export const selectCartItem = (state: RootState, id: number): CartItem|undefined => state.ticketing.cart.find(i => i.product_id===id)
 export const selectCartTicketCount = (state: RootState): {[key: number]: number} =>
     state.ticketing.cart.reduce(
         (acc, item) => {
@@ -202,9 +205,7 @@ export const selectCartTicketCount = (state: RootState): {[key: number]: number}
         }
         ,{}
     )
-
 export const selectNumInCart = (state: RootState) => state.ticketing.cart.length
-
 export const selectCartContents = (state: RootState): CartItem[] => state.ticketing.cart
 interface EventPageData {
     title: string,
