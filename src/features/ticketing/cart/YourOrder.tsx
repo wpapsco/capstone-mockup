@@ -67,7 +67,7 @@ const LineItem = (props: {className: string, id: number}) => {
     const data = appSelector(state => selectCartItem(state, props.id))
     return  data
         ?   <div className={props.className}>
-                <Typography>{data.qty} <b>X</b> {data.name}</Typography>
+                <Typography>{data.qty} <b>x</b> {data.name}</Typography>
                 <Typography>{toDollar(data.qty * data.price)}</Typography>
             </div>
         : <div></div>
@@ -85,8 +85,8 @@ const useStyles = makeStyles({
         margin: '30px 0',
     },
     lineItem: {
-        marginTop: '10px',
-        marginBottom: '10px',
+        marginTop: '15px',
+        marginBottom: '15px',
         display: 'flex',
         justifyContent: 'space-between',
         '& :first-child': {
