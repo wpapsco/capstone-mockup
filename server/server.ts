@@ -483,12 +483,22 @@ const fulfillOrder = async (session) => {
     // gather the data from the session object and send it off to db
     // make this async function
     // added_stuff by Ad
+    var custName;
+    try {
+            custName = await pool.query(
+            `SELECT custname
+            FROM customers
+            WHERE id = $1`
+            ,[session.data.object.metadata.custid])
+    } catch (error) {
+        console.log(error);
+    }
     if(session.data.object.metadata.donation > 0){
         try {
             const addedDonation = await pool.query(
-            `INSERT INTO donations (donorid, isanonymous, amount)
-            values ($1,$2,$3)`
-            ,[session.data.object.metadata.custid, false, session.data.object.metadata.donation])
+            `INSERT INTO donations (donorid, isanonymous, amount, dononame)
+            values ($1,$2,$3,$4)`
+            ,[session.data.object.metadata.custid, false, session.data.object.metadata.donation, custName.rows[0].custname])
         } catch (error) {
             console.log(error);
         }
@@ -502,6 +512,7 @@ const fulfillOrder = async (session) => {
         counter = counter + 1;
     }
     counter = 0;
+
     while(counter < temp.length)
     {
         var other_counter = 0;
