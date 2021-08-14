@@ -4,7 +4,7 @@ import CartRow from './CartItem'
 import { Backdrop, Button, Divider, Fade, Modal, Paper, Typography } from '@material-ui/core'
 import { createStyles, makeStyles } from '@material-ui/core/styles'
 import { toDollarAmount } from '../../../utils'
-import { removeTicketFromCart, selectCartContents } from '../ticketingSlice'
+import { removeTicketFromCart, removeAllTicketsFromCart, selectCartContents } from '../ticketingSlice'
 import { useHistory } from "react-router-dom";
 import { NavLink } from 'react-router-dom'
 
@@ -30,6 +30,11 @@ const useStyles = makeStyles(() =>
         },
         modalContent: {
             padding: '15px',
+        },
+        actionButtons: {
+            display: 'flex',
+            margin: '10px 10px',
+            // justifyContent: 'space-around',
         },
         btnGroup: {
             display: 'flex',
@@ -65,6 +70,10 @@ const Cart = () => {
         }
     }
 
+    const removeAllCartItems = () => {
+        dispatch(removeAllTicketsFromCart());
+    }
+
     const displayModal = (id: number) => {
         setTargetItem(id)
         setModalOpen(true)
@@ -92,7 +101,8 @@ const Cart = () => {
             </div>
 
             <div>
-                <Button variant="contained" color="primary" disabled={items.length === 0} onClick={navigateToCompleteOrder}>Complete Order</Button>
+                <Button className={classes.actionButtons} variant="contained" color="primary" disabled={items.length === 0} onClick={navigateToCompleteOrder}>Complete Order</Button>
+                <Button className={classes.actionButtons} variant="contained" color="primary" disabled={items.length === 0} onClick={removeAllCartItems}>Empty Cart</Button>
             </div>
 
             <Modal
