@@ -169,6 +169,10 @@ const ticketingSlice = createSlice({
             ...state,
             cart: state.cart.filter(item => item.product_id!==action.payload)
         }),
+        removeAllTicketsFromCart: (state) => ({
+            ...state,
+            cart: []
+        })
     },
     extraReducers: builder => {
         builder
@@ -238,5 +242,5 @@ export const selectNumAvailable = (state: RootState, ticketid: number) => {
         : ticket
 }
 
-export const { addTicketToCart, editItemQty, removeTicketFromCart } = ticketingSlice.actions
+export const { addTicketToCart, editItemQty, removeTicketFromCart, removeAllTicketsFromCart } = ticketingSlice.actions
 export default ticketingSlice.reducer
