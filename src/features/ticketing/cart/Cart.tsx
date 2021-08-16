@@ -51,12 +51,20 @@ const subtotalReducer = (acc: number, item: Item) => acc + itemCost(item)
 const Cart = () => {
     const history = useHistory();
 
+    enum RemoveContext
+    {
+        single,
+        all
+    }
+
     const dispatch = useAppDispatch()
     const classes = useStyles()
     const items = appSelector(selectCartContents)
     const subtotal = items.reduce(subtotalReducer, 0)
     const [modalOpen, setModalOpen] = useState(false)
     const [targetItem, setTargetItem] = useState<number|null>(null)
+    const [removeContext, setRemoveContext] = useState(RemoveContext.single);
+    const [removeContextMessage, setRemoveContextMessage] = useState("");
     
     const resetModal = () => {
         setTargetItem(null)
@@ -64,17 +72,27 @@ const Cart = () => {
     }
 
     const handleRemove = () => {
-        if (targetItem) {
-            dispatch(removeTicketFromCart(targetItem))
-            resetModal()
+        if(removeContext === RemoveContext.single) {
+            if (targetItem) {
+                dispatch(removeTicketFromCart(targetItem))
+                resetModal()
+            }
+        }
+        else if(removeContext === RemoveContext.all) {
+            dispatch(removeAllTicketsFromCart());
+            resetModal();
         }
     }
 
     const removeAllCartItems = () => {
-        dispatch(removeAllTicketsFromCart());
+        setRemoveContext(RemoveContext.all);
+        setRemoveContextMessage("all items");
+        setModalOpen(true);
     }
 
     const displayModal = (id: number) => {
+        setRemoveContext(RemoveContext.single);
+        setRemoveContextMessage("this");
         setTargetItem(id)
         setModalOpen(true)
     }
@@ -118,7 +136,7 @@ const Cart = () => {
                 <Fade in={modalOpen}>
                     <Paper className={classes.modalContent}>
                         <Typography variant='h6' align='center' component='h2' id='modal-title'>Confirm removal</Typography>
-                        <p id='modal-description'>Do you want to remove this from your cart?</p>
+                        <p id='modal-description'>Do you want to remove {removeContextMessage} from your cart?</p>
                         <div className={classes.btnGroup}>
                             <Button variant="outlined" onClick={resetModal}>
                                 Cancel
