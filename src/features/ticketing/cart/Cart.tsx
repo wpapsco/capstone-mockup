@@ -32,9 +32,7 @@ const useStyles = makeStyles(() =>
             padding: '15px',
         },
         actionButtons: {
-            display: 'flex',
             margin: '10px 10px',
-            // justifyContent: 'space-around',
         },
         btnGroup: {
             display: 'flex',
