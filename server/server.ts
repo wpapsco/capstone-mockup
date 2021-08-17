@@ -520,9 +520,9 @@ const fulfillOrder = async (session) => {
         {
             try {
                 const addedTicket = await pool.query(
-                `INSERT INTO tickets (eventid, custid, paid) 
-                values ($1, $2, $3)`
-                ,[temp[counter].id, session.data.object.metadata.custid, true])
+                `INSERT INTO tickets (eventid, custid, paid, payment_intent) 
+                values ($1, $2, $3, $4)`
+                ,[temp[counter].id, session.data.object.metadata.custid, true, session.data.object.id])
             } catch (error) {
                 console.log(error);
                 other_counter = other_counter - 1;
@@ -532,7 +532,20 @@ const fulfillOrder = async (session) => {
         counter = counter + 1;
   }
 }
-  
+
+const refundOrder = async (session) => {
+    try {
+        const refund = await pool.query(
+            `DELETE from tickets
+            WHERE payment_intent = $1`,
+            [session.data.object.payment_intent]
+        )
+        console.log(refund);
+    } catch (error) {
+        console.log(error)
+    }
+}
+
 app.post("/webhook", async(req, res) =>{
     // TESTING WIHT SOME SIGNATURE VERIFICATION
     // const payload = req.body;
@@ -554,9 +567,13 @@ app.post("/webhook", async(req, res) =>{
         case 'payment_intent.succeeded':
           const paymentIntent = event.data.object;
           console.log('PaymentIntent was successful');
+
           fulfillOrder(event);
           break;
-        // ... handle other event types
+        case 'charge.refunded':
+            refundOrder(event);
+            console.log("refund created");
+            break;
         default:
           console.log(`Unhandled event type ${event.type}`);
       }
