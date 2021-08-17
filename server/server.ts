@@ -277,18 +277,49 @@ app.post('/api/checkout', async (req, res) => {
     // the id of the show/event/whatever. PRICES CANNOT COME FROM CLIENTS!!
     const data: CartItem[] = req.body.cartItems;
     
-    // TODO: submit form data to DB
-    // Adding a customer to the customer table based on form data:
-    // I'm defaulting donor badge and seating accom columns to false, but I'm not sure
-    // where else we would be asking for seating accommodations other than checkout...
-    try {
-        const addedCust = await pool.query(
-        `INSERT INTO customers (custname, email, phone, custaddress, newsletter, donorbadge, seatingaccom) 
-        values ($1, $2, $3, $4, $5, $6, $7)`,
-        [req.body.formData["first-name"] + " " + req.body.formData["last-name"], req.body.formData.email,
-         req.body.formData.phone, req.body.formData["street-address"], req.body.formData["opt-in"], false, false])
-    } catch (error) {
-        console.log(error);
+    var email_exists = false;
+    try
+    {
+        const emails = await pool.query("SELECT COUNT(*) FROM customers WHERE email = $1", [req.body.formData.email]);
+        email_exists = +emails.rows[0].count > 0;
+    }
+    catch(error)
+    {
+        console.error(error.message);
+        // Todo(jesse): Handle error cases
+    }
+    if(email_exists === false)
+    {
+        try {
+            const addedCust = await pool.query(
+            `INSERT INTO customers (custname, email, phone, custaddress, newsletter, donorbadge, seatingaccom) 
+            values ($1, $2, $3, $4, $5, $6, $7)`,
+            [req.body.formData["first-name"] + " " + req.body.formData["last-name"], req.body.formData.email,
+             req.body.formData.phone, req.body.formData["street-address"], req.body.formData["opt-in"], false, req.body.formData["seating-accommodation"]])
+        } catch (error) {
+            console.log(error);
+        }
+    }
+    else
+    {
+        try
+        {
+            var body = req.body;
+            var values =
+            [
+                body.formData.email,
+                body.formData["first-name"] + " " + body.formData["last-name"],
+                body.formData.phone,
+                body.formData["street-address"],
+                body.formData["opt-in"],
+                body.formData["seating-accommodation"]
+            ];
+            const rows = await pool.query(`UPDATE public.customers
+            SET custname=$2, phone=$3, custaddress=$4, newsletter=$5, seatingaccom=$6
+            WHERE email=$1;`, values);
+        } catch (error) {
+            console.log(error);
+        }
     }
     // storing the customer id for later processing on succesful payments.
     // if we cant find the custid something went wrong
@@ -356,9 +387,9 @@ app.post('/api/checkout', async (req, res) => {
                 donation: donation
             }
         },
-         metadata: {
-             orders: JSON.stringify(orders),
-             custid: customerID
+        metadata: {
+            orders: JSON.stringify(orders),
+            custid: customerID
         }
     })
     console.log(session);

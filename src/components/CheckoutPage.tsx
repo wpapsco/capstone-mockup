@@ -6,7 +6,7 @@ import { loadStripe } from '@stripe/stripe-js';
 import { useState } from "react";
 import DonationPage from "./DonationPage"
 import CompleteOrderForm, { CheckoutFormInfo } from "./CompleteOrderForm"
-import {selectDonation} from '../features/donationSlice';
+import { selectDonation } from '../features/donationSlice';
 
 //FYI this is ok to stay here; it's the public key so other people can't do anything with it anyway.
 const stripePromise = loadStripe("pk_test_51J5bpwGEweatMRnmGFUKgE6Q3wn7GmOJDAJ3Zag8DIhZjh324DdDUCFiEOLa0HQZFonkf2pc6lAOpPuheQs9N8AC00zNa4xALV")
@@ -15,7 +15,7 @@ const useStyles = makeStyles({
     root: {
         position: 'absolute',
         left: 0,
-        height: '90%',
+        minHeight: '90%',
         width: '100vw',
         display: 'flex',
         justifyContent: 'center',

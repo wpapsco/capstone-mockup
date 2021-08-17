@@ -96,7 +96,7 @@ const TicketPicker = ({tickets}: TicketPickerProps) => {
                     bindDates
                 />
             </Collapse>
-            <Collapse in={step===2}>
+            <Collapse in={step===2} className={classes.boundWidth}>
                 <ShowtimeSelect
                     showings={displayedShowings}
                     showingSelected={onTimeSelect}
@@ -160,6 +160,9 @@ const useStyles = makeStyles((theme: Theme) => ({
     menuPaper: {
         maxHeight: '200px',
     },
+    boundWidth: {
+        maxWidth: '100%',
+    }
 }))
 
 
