@@ -4,7 +4,7 @@ import {pool} from './db';
 import cors from 'cors';
 import Stripe from "stripe"
 import {CheckoutFormInfo} from "../src/components/CompleteOrderForm"
-import {CartItem, Ticket} from '../src/features/ticketing/ticketingTypes'
+import {CartItem, Ticket} from '../src/features/ticketing/ticketingSlice'
 
 import passport from "passport"
 import {Strategy as LocalStrategy} from "passport-local"
@@ -141,7 +141,7 @@ app.post('/api/login', passport.authenticate('local'), (req, res) => {
 //Endpont to get list of plays
 app.get("/api/play-list", async (req, res) =>{
     try {
-        const plays = await pool.query('select playname from plays where active = true')
+        const plays = await pool.query('select id, playname from plays where active = true')
         res.json(plays.rows);
     } catch (error) {
         console.error(error.message);
@@ -277,18 +277,49 @@ app.post('/api/checkout', async (req, res) => {
     // the id of the show/event/whatever. PRICES CANNOT COME FROM CLIENTS!!
     const data: CartItem[] = req.body.cartItems;
     
-    // TODO: submit form data to DB
-    // Adding a customer to the customer table based on form data:
-    // I'm defaulting donor badge and seating accom columns to false, but I'm not sure
-    // where else we would be asking for seating accommodations other than checkout...
-    try {
-        const addedCust = await pool.query(
-        `INSERT INTO customers (custname, email, phone, custaddress, newsletter, donorbadge, seatingaccom) 
-        values ($1, $2, $3, $4, $5, $6, $7)`,
-        [req.body.formData["first-name"] + " " + req.body.formData["last-name"], req.body.formData.email,
-         req.body.formData.phone, req.body.formData["street-address"], req.body.formData["opt-in"], false, false])
-    } catch (error) {
-        console.log(error);
+    var email_exists = false;
+    try
+    {
+        const emails = await pool.query("SELECT COUNT(*) FROM customers WHERE email = $1", [req.body.formData.email]);
+        email_exists = +emails.rows[0].count > 0;
+    }
+    catch(error)
+    {
+        console.error(error.message);
+        // Todo(jesse): Handle error cases
+    }
+    if(email_exists === false)
+    {
+        try {
+            const addedCust = await pool.query(
+            `INSERT INTO customers (custname, email, phone, custaddress, newsletter, donorbadge, seatingaccom) 
+            values ($1, $2, $3, $4, $5, $6, $7)`,
+            [req.body.formData["first-name"] + " " + req.body.formData["last-name"], req.body.formData.email,
+             req.body.formData.phone, req.body.formData["street-address"], req.body.formData["opt-in"], false, req.body.formData["seating-accommodation"]])
+        } catch (error) {
+            console.log(error);
+        }
+    }
+    else
+    {
+        try
+        {
+            var body = req.body;
+            var values =
+            [
+                body.formData.email,
+                body.formData["first-name"] + " " + body.formData["last-name"],
+                body.formData.phone,
+                body.formData["street-address"],
+                body.formData["opt-in"],
+                body.formData["seating-accommodation"]
+            ];
+            const rows = await pool.query(`UPDATE public.customers
+            SET custname=$2, phone=$3, custaddress=$4, newsletter=$5, seatingaccom=$6
+            WHERE email=$1;`, values);
+        } catch (error) {
+            console.log(error);
+        }
     }
     // storing the customer id for later processing on succesful payments.
     // if we cant find the custid something went wrong
@@ -346,12 +377,13 @@ app.post('/api/checkout', async (req, res) => {
         payment_intent_data:{
             metadata: {
                 orders: JSON.stringify(orders),
-                custid: customerID
+                custid: customerID,
+                donation: donation
             }
         },
-         metadata: {
-             orders: JSON.stringify(orders),
-             custid: customerID
+        metadata: {
+            orders: JSON.stringify(orders),
+            custid: customerID
         }
     })
     console.log(session);
@@ -429,7 +461,7 @@ app.post("/api/set-tickets", async (req, res) => {
 app.get("/api/show-tickets", async (req, res) => {
     try {
         const query = 
-            `SELECT pl.id as play_id, sh.id as show_id, playname, playdescription, eventdate, starttime, availableseats, price, concessions
+            `SELECT pl.id as play_id, sh.id as show_id, playname, playdescription, eventdate, starttime, totalseats, availableseats, price, concessions
             FROM plays pl
                 LEFT JOIN showtimes sh ON pl.id=sh.playid
                 JOIN linkedtickets lt ON lt.showid=sh.id
@@ -476,6 +508,26 @@ const fulfillOrder = async (session) => {
     // gather the data from the session object and send it off to db
     // make this async function
     // added_stuff by Ad
+    var custName;
+    try {
+            custName = await pool.query(
+            `SELECT custname
+            FROM customers
+            WHERE id = $1`
+            ,[session.data.object.metadata.custid])
+    } catch (error) {
+        console.log(error);
+    }
+    if(session.data.object.metadata.donation > 0){
+        try {
+            const addedDonation = await pool.query(
+            `INSERT INTO donations (donorid, isanonymous, amount, dononame)
+            values ($1,$2,$3,$4)`
+            ,[session.data.object.metadata.custid, false, session.data.object.metadata.donation, custName.rows[0].custname])
+        } catch (error) {
+            console.log(error);
+        }
+    }
     const stripe_meta_data = JSON.parse(session.data.object.metadata.orders);
     const temp = [];
     var counter = 0;
@@ -485,6 +537,7 @@ const fulfillOrder = async (session) => {
         counter = counter + 1;
     }
     counter = 0;
+
     while(counter < temp.length)
     {
         var other_counter = 0;
@@ -492,9 +545,9 @@ const fulfillOrder = async (session) => {
         {
             try {
                 const addedTicket = await pool.query(
-                `INSERT INTO tickets (eventid, custid, paid) 
-                values ($1, $2, $3)`
-                ,[temp[counter].id, session.data.object.metadata.custid, true])
+                `INSERT INTO tickets (eventid, custid, paid, payment_intent) 
+                values ($1, $2, $3, $4)`
+                ,[temp[counter].id, session.data.object.metadata.custid, true, session.data.object.id])
             } catch (error) {
                 console.log(error);
                 other_counter = other_counter - 1;
@@ -504,7 +557,20 @@ const fulfillOrder = async (session) => {
         counter = counter + 1;
   }
 }
-  
+
+const refundOrder = async (session) => {
+    try {
+        const refund = await pool.query(
+            `DELETE from tickets
+            WHERE payment_intent = $1`,
+            [session.data.object.payment_intent]
+        )
+        console.log(refund);
+    } catch (error) {
+        console.log(error)
+    }
+}
+
 app.post("/webhook", async(req, res) =>{
     // TESTING WIHT SOME SIGNATURE VERIFICATION
     // const payload = req.body;
@@ -526,9 +592,13 @@ app.post("/webhook", async(req, res) =>{
         case 'payment_intent.succeeded':
           const paymentIntent = event.data.object;
           console.log('PaymentIntent was successful');
+
           fulfillOrder(event);
           break;
-        // ... handle other event types
+        case 'charge.refunded':
+            refundOrder(event);
+            console.log("refund created");
+            break;
         default:
           console.log(`Unhandled event type ${event.type}`);
       }
@@ -560,13 +630,24 @@ const parseMoneyString = (s: string) => Number.parseFloat(s.slice(1))
 const toTicket = (row): Ticket => {
     const {eventdate, starttime, ...rest} = row
     const [hour, min] = starttime.split(':')
+    let date = new Date(eventdate)
+    date.setHours(hour,min)
     return {
         ...rest,
-        date: (new Date(eventdate)).setHours(hour, min),
+        date: date.toJSON(),
         playid: row.playid.toString(),
         ticket_price: parseMoneyString(row.ticket_price),
         concession_price: parseMoneyString(row.concession_price),
     }
+}
+
+interface TicketState {byId: {[key: number]: Ticket}, allIds: number[]}
+const reduceToTicketState = (res, t: Ticket) => {
+    const id = t.eventid
+    const {byId, allIds} = res
+    return (allIds.includes(id))
+        ? res
+        : {byId: {...byId, [id]: t}, allIds: [...allIds, id]}
 }
 
 app.get('/api/tickets', async (req, res) => {
@@ -587,7 +668,11 @@ app.get('/api/tickets', async (req, res) => {
             WHERE isseason=false AND availableseats > 0
             ORDER BY playid, eventid;`
         const query_res = await pool.query(qs)
-        res.json(query_res.rows.map(toTicket));
+        res.json(
+            query_res.rows
+                .map(toTicket)
+                .reduce(reduceToTicketState, {byId: {}, allIds: []} as TicketState)
+        );
         console.log('# tickets:', query_res.rowCount)
     }
     catch (err) {

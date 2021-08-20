@@ -98,8 +98,8 @@ function MultiSelectCalendar({value, onChange, disabled, onDateClicked, bindDate
                     if (!date) return;
                     updateDate = false;
                 }}
-                minDate={!bindDates || !value ? undefined : value.reduce((a, b) => a < b ? a : b)}
-                maxDate={!bindDates || !value ? undefined : value.reduce((a, b) => a > b ? a : b)}
+                minDate={!bindDates || !value ? undefined : value.reduce((a, b) => a < b ? a : b, value[0])}
+                maxDate={!bindDates || !value ? undefined : value.reduce((a, b) => a > b ? a : b, value[0])}
                 disableToolbar={bindDates}
                 renderDay={(day, selectedDate, dayInCurrentMonth, dayComponent) => {
                     if (!day) return <div />

@@ -1,7 +1,5 @@
-import { useState } from 'react'
 import { useAppDispatch, appSelector } from '../../app/hooks'
-import { addTicketToCart, selectCartTicketCount } from './ticketingSlice'
-import { Ticket } from './ticketingTypes'
+import { addTicketToCart, selectCartTicketCount, Ticket } from '../ticketing/ticketingSlice'
 import { openSnackbar } from '../snackbarSlice'
 import {
     Collapse,
@@ -14,7 +12,6 @@ import { range } from '../../utils'
 import format from "date-fns/format";
 import isSameDay from "date-fns/isSameDay";
 import { useReducer } from 'react'
-import { ListItemSecondaryActionClassKey } from '@material-ui/core'
 
 interface TicketPickerState {
     selectedDate?: Date,
@@ -155,6 +152,7 @@ const TicketPicker = ({tickets}: TicketPickerProps) => {
                     value={qty}
                     disabled={selectedTicket===undefined || numAvail < 1}
                     onChange={e => dispatch(changeQty(e.target.value as number))}
+                    MenuProps={{classes: {paper: classes.menuPaper}}}
                 >
                     {range(numAvail, false).map(n => <MenuItem key={n} value={n}>{n}</MenuItem>)}
                 </Select>
@@ -197,6 +195,12 @@ const useStyles = makeStyles((theme: Theme) => ({
         padding: theme.spacing(2),
         fontSize: '0.8em',
     },
+    menuPaper: {
+        maxHeight: '200px',
+    },
+    boundWidth: {
+        maxWidth: '100%',
+    }
 }))
 
 

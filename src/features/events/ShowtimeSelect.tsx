@@ -1,6 +1,6 @@
 import {List, ListItem, ListItemText, makeStyles} from "@material-ui/core";
 import {useState} from "react";
-import {Ticket} from '../ticketing/ticketingTypes'
+import {Ticket} from '../ticketing/ticketingSlice'
 import format from "date-fns/format";
 
 const useStyles = makeStyles({
@@ -8,7 +8,7 @@ const useStyles = makeStyles({
         width: "100%",
         overflow: "auto",
         display: 'flex',
-        flexDirection: 'column',
+        flexDirection: 'row',
         justifyContent: 'start',
         '& .MuiListItem-root': {
             textAlign: 'center'
