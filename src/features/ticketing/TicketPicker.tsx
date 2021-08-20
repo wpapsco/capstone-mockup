@@ -96,7 +96,7 @@ const TicketPicker = ({tickets}: TicketPickerProps) => {
                     bindDates
                 />
             </Collapse>
-            <Collapse in={step===2}>
+            <Collapse in={step===2} className={classes.boundWidth}>
                 <ShowtimeSelect
                     showings={displayedShowings}
                     showingSelected={onTimeSelect}
@@ -114,6 +114,7 @@ const TicketPicker = ({tickets}: TicketPickerProps) => {
                     value={qty}
                     disabled={selectedTicket===undefined || numAvail < 1}
                     onChange={e => setQty(e.target.value as number)}
+                    MenuProps={{classes: {paper: classes.menuPaper}}}
                 >
                     {range(numAvail, false).map(n => <MenuItem key={n} value={n}>{n}</MenuItem>)}
                 </Select>
@@ -156,6 +157,12 @@ const useStyles = makeStyles((theme: Theme) => ({
         padding: theme.spacing(2),
         fontSize: '0.8em',
     },
+    menuPaper: {
+        maxHeight: '200px',
+    },
+    boundWidth: {
+        maxWidth: '100%',
+    }
 }))
 
 

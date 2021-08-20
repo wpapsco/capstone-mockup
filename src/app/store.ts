@@ -1,5 +1,6 @@
 import { configureStore } from '@reduxjs/toolkit';
 import userSlice from '../features/admin/userSlice';
+import donationSlice from '../features/donationSlice';
 import eventsReducer from '../features/events/eventsSlice';
 import snackbarReducer from '../features/snackbarSlice';
 import ticketingReducer from '../features/ticketing/ticketingSlice';
@@ -10,7 +11,8 @@ const store = configureStore(
             events: eventsReducer,
             snackbar: snackbarReducer,
             ticketing: ticketingReducer,
-            user: userSlice
+            user: userSlice,
+            donation: donationSlice
         }
     },
 );

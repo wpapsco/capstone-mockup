@@ -21,8 +21,9 @@ export interface CheckoutFormInfo {
 
 type CompleteOrderFormProps = {
     onSubmit: (formData: CheckoutFormInfo) => any,
-    onBack: () => any
-    disabled: boolean
+    onBack: () => any,
+    disabled: boolean,
+    donationForm?: boolean
 }
 
 const required = (value: any) => (value ? undefined : 'Required')
@@ -42,10 +43,9 @@ const useStyles = makeStyles({
     contactTitle: {}
 })
 
-export default function CompleteOrderForm({onSubmit, onBack, disabled}: CompleteOrderFormProps) {
+export default function CompleteOrderForm({onSubmit, onBack, disabled, donationForm}: CompleteOrderFormProps) {
     const classes = useStyles()
     return (<>
-        <Typography variant="h3" className={classes.pageTitle}>Complete Order</Typography>
         <Typography variant="h4" gutterBottom className={classes.contactTitle}>Contact</Typography>
         <Form 
             onSubmit={onSubmit}
@@ -80,9 +80,10 @@ export default function CompleteOrderForm({onSubmit, onBack, disabled}: Complete
                         <Grid item xs={12}>
                             <Checkboxes name="opt-in" data={{ label: 'I would like to recieve email info from portland playhouse', value: true }} />
                         </Grid>
-                        <Grid item xs={12}>
+                        {!donationForm && <Grid item xs={12}>
                             <Checkboxes name="seating-accommodation" data={{ label: 'I need seating accommodations', value: true }} />
                         </Grid>
+                        }
                         <Grid item xs={12}>
                             <TextField name="comments" label="Comments" variant="outlined" fullWidth multiline/>
                         </Grid>

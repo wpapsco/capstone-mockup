@@ -1,14 +1,14 @@
 import { useState } from 'react'
 import { appSelector, useAppDispatch } from '../../../app/hooks'
 import CartRow from './CartItem'
-import { Backdrop, Button, Divider, Fade, Modal, Paper, Typography } from '@material-ui/core'
+import { Backdrop, Button, Divider, Fade, Modal, Paper, Theme, Typography } from '@material-ui/core'
 import { createStyles, makeStyles } from '@material-ui/core/styles'
 import { toDollarAmount } from '../../../utils'
 import { removeTicketFromCart, removeAllTicketsFromCart, selectCartContents } from '../ticketingSlice'
 import { useHistory } from "react-router-dom";
 import { NavLink } from 'react-router-dom'
 
-const useStyles = makeStyles(() =>
+const useStyles = makeStyles((theme: Theme) =>
     createStyles({
         subtotalRow: {
             display: 'flex',
@@ -32,13 +32,26 @@ const useStyles = makeStyles(() =>
             padding: '15px',
         },
         actionButtons: {
-            margin: '10px 10px',
+            width: '100%',
+            display: 'flex',
+            marginTop: theme.spacing(4),
+            '& :last-child': {
+                marginLeft: 'auto',
+                marginRight: 0,
+            },
         },
         btnGroup: {
             display: 'flex',
             margin: '10px auto',
             justifyContent: 'space-around',
         },
+        emptyMessage: {
+            textAlign: 'center',
+            color: '#adb5bd',
+            marginTop: theme.spacing(10),
+            marginBottom: theme.spacing(10),
+            fontSize: theme.typography.fontSize * 1.3
+        }
     })
 )
 
@@ -105,7 +118,7 @@ const Cart = () => {
                 <Typography component='h1' variant='h3'>My Cart</Typography>
                 {(items.length > 0)
                     ? items.map(data => <CartRow key={data.product_id} item={data} removeHandler={displayModal} />)
-                    : <p>Cart Empty</p>
+                    : <Typography variant='body1' className={classes.emptyMessage}>There's nothing in your cart</Typography>
                 }
             </div>
 
@@ -116,9 +129,9 @@ const Cart = () => {
                 <Typography variant='body1' className={classes.subtotal}>{toDollarAmount(subtotal)}</Typography>
             </div>
 
-            <div>
-                <Button className={classes.actionButtons} variant="contained" color="primary" disabled={items.length === 0} onClick={navigateToCompleteOrder}>Complete Order</Button>
-                <Button className={classes.actionButtons} variant="contained" color="primary" disabled={items.length === 0} onClick={removeAllCartItems}>Empty Cart</Button>
+            <div className={classes.actionButtons}>
+                <Button variant="contained" color="secondary" disabled={items.length === 0} onClick={removeAllCartItems}>Empty Cart</Button>
+                <Button variant="contained" color="primary" disabled={items.length === 0} onClick={navigateToCompleteOrder}>Procede To Checkout</Button>
             </div>
 
             <Modal
