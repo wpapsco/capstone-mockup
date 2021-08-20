@@ -295,7 +295,7 @@ app.post('/api/checkout', async (req, res) => {
     var customerID = null;
     
     try {
-            customerID = await pool.query(
+        customerID = await pool.query(
             `SELECT id
             FROM customers
             WHERE custname = $1`,
@@ -319,17 +319,11 @@ app.post('/api/checkout', async (req, res) => {
       },
       quantity: 1,
     };
-    const cartSize = req.body.cartItems.length;
-    var orders = [];
 
-    for (let i = 0; i < cartSize;++i){
-        let newOrder = {
-            id: req.body.cartItems[i].id,
-            quantity: req.body.cartItems[i].qty,
-
-        };
-        orders.push(newOrder);
-    }
+    let orders = req.body.cartItems.map(item => ({
+        id: item.id,
+        quantity: item.qty,
+    }))
 
     const session = await stripe.checkout.sessions.create({
         payment_method_types: ['card'],
