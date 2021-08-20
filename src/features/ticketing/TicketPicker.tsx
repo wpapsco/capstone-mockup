@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useAppDispatch, appSelector } from '../../app/hooks'
-import { addTicketToCart, selectCartTicketCount } from '../ticketing/ticketingSlice'
+import { addTicketToCart, selectCartTicketCount } from './ticketingSlice'
 import { Ticket } from './ticketingTypes'
 import { openSnackbar } from '../snackbarSlice'
 import {
@@ -13,55 +13,95 @@ import ShowtimeSelect from '../events/ShowtimeSelect'
 import { range } from '../../utils'
 import format from "date-fns/format";
 import isSameDay from "date-fns/isSameDay";
+import { useReducer } from 'react'
+import { ListItemSecondaryActionClassKey } from '@material-ui/core'
 
+interface TicketPickerState {
+    selectedDate?: Date,
+    displayedShowings: Ticket[],
+    selectedTicket?: Ticket,
+    qty: number,
+    concessions: boolean,
+    showCalendar: boolean,
+    showTimes: boolean,
+    showClearBtn: boolean,
+    promptIndex: 1 | 2 | 3,
+}
+const initialState: TicketPickerState = {
+    displayedShowings: [],
+    qty: 0,
+    concessions: false,
+    showCalendar: true,
+    showTimes: false,
+    showClearBtn: false,
+    promptIndex: 1,
+}
+
+const dateSelected = (d: Date) => ({type: 'date_selected', payload: d})
+const timeSelected = (t: Ticket) => ({type: 'time_selected', payload: t})
+const resetWidget = () => ({type: 'reset'})
+const changeQty = (n: number) => ({type: 'change_qty', payload: n})
 
 interface TicketPickerProps {
     tickets: Ticket[]
 }
 const TicketPicker = ({tickets}: TicketPickerProps) => {
+
+    const TicketPickerReducer = (state: TicketPickerState, action: any): TicketPickerState => {
+        switch (action.type) {
+            case 'date_selected': {
+                const sameDayShows = tickets.filter(t => isSameDay(action.payload, t.date))
+                console.log(action.payload, sameDayShows)
+                return {
+                    ...state,
+                    selectedDate: action.payload,
+                    selectedTicket: undefined,
+                    displayedShowings: sameDayShows,
+                    showCalendar: false,
+                    showTimes: true,
+                    showClearBtn: true,
+                    promptIndex: 2,
+                }
+            }
+            case 'time_selected': {
+                return {...state, selectedTicket: action.payload, showTimes: false, promptIndex: 3}
+            }
+            case 'reset': {
+                return initialState
+            }
+            case 'change_qty': {
+                return {...state, qty: action.payload}
+            }
+            case 'toggle_concession': {
+                return {...state, concessions: !state.concessions}
+            }
+            default:
+                throw new Error('Received undefined action type')
+        }
+    }
+
+    const [{
+        qty,
+        concessions,
+        promptIndex,
+        selectedDate,
+        displayedShowings,
+        selectedTicket,
+        showCalendar,
+        showTimes,
+        showClearBtn,
+    }, dispatch] = useReducer(TicketPickerReducer, initialState)
+
     const classes = useStyles()
-    const dispatch = useAppDispatch()
+    const appDispatch = useAppDispatch()
     const cartTicketCount = appSelector(selectCartTicketCount)
-
-    const [selectedDate, setSelectedDate] = useState<Date|undefined>(undefined)
-    const [displayedShowings, setDisplayedShowings] = useState<Ticket[]>([])
-    const [selectedTicket, setSelectedTicket] = useState<Ticket|undefined>(undefined)
-    const [qty, setQty] = useState<number|undefined>(undefined)
-    const [concessions, setConcessions] = useState(false)
-
-    const [step, setStep] = useState<1|2|3>(1)
-
-
-    // Transitions to show times state
-    const onDateSelect = (date: Date) => {
-        setSelectedTicket(undefined)
-        setSelectedDate(date)
-        const sameDayShows = tickets.filter(t => isSameDay(date, t.date))
-        setDisplayedShowings(sameDayShows)
-        setStep(2)
-    }
-
-    // Transitions to "choose qty & concessions" state
-    const onTimeSelect = (ticket: Ticket) => {
-        setSelectedTicket(ticket)
-        setStep(3)
-    }
-
-    const resetWidget = () => {
-        setStep(1)
-        setDisplayedShowings([])
-        setQty(undefined)
-        setConcessions(false)
-        setSelectedTicket(undefined)
-        setSelectedDate(undefined)
-    }
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault()
         if (selectedTicket && qty) {
-            dispatch(addTicketToCart({id: selectedTicket.eventid, qty, concessions}))
-            dispatch(openSnackbar(`Added ${qty} ticket${qty === 1 ? "" : "s"} to cart!`))
-            resetWidget()
+            appDispatch(addTicketToCart({id: selectedTicket.eventid, qty, concessions}))
+            appDispatch(openSnackbar(`Added ${qty} ticket${qty === 1 ? "" : "s"} to cart!`))
+            dispatch(resetWidget())
         }
     }
 
@@ -84,23 +124,23 @@ const TicketPicker = ({tickets}: TicketPickerProps) => {
 
     return (
         <>
-            <Collapse in={step!==1}>
-                <Button onClick={() => resetWidget()} className={classes.changeDateBtn} variant='outlined'>
+            <Collapse in={showClearBtn}>
+                <Button onClick={() => dispatch(resetWidget())} className={classes.changeDateBtn} variant='outlined'>
                     Choose different date
                 </Button>
             </Collapse>
-            {prompt[step]}
-            <Collapse in={step===1}>
+            {prompt[promptIndex]}
+            <Collapse in={showCalendar}>
                 <MultiSelectCalendar
                     value={tickets.map(t => t.date)}
-                    onDateClicked={onDateSelect}
+                    onDateClicked={(d) => dispatch(dateSelected(d))}
                     bindDates
                 />
             </Collapse>
-            <Collapse in={step===2}>
+            <Collapse in={showTimes}>
                 <ShowtimeSelect
                     showings={displayedShowings}
-                    showingSelected={onTimeSelect}
+                    showingSelected={(t) => dispatch(timeSelected(t))}
                 />
             </Collapse>
             <FormControl className={classes.formControl}>
@@ -114,7 +154,7 @@ const TicketPicker = ({tickets}: TicketPickerProps) => {
                     labelId="qty-select-label"
                     value={qty}
                     disabled={selectedTicket===undefined || numAvail < 1}
-                    onChange={e => setQty(e.target.value as number)}
+                    onChange={e => dispatch(changeQty(e.target.value as number))}
                 >
                     {range(numAvail, false).map(n => <MenuItem key={n} value={n}>{n}</MenuItem>)}
                 </Select>
@@ -126,7 +166,7 @@ const TicketPicker = ({tickets}: TicketPickerProps) => {
                         <Checkbox
                             disabled={!selectedTicket}
                             checked={concessions}
-                            onChange={e => setConcessions(!concessions)} name='concessions' />
+                            onChange={e => dispatch({type: 'toggle_concession'})} name='concessions' />
                     }
                 />
             </FormControl>
