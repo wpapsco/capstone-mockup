@@ -521,9 +521,9 @@ const fulfillOrder = async (session) => {
     if(session.data.object.metadata.donation > 0){
         try {
             const addedDonation = await pool.query(
-            `INSERT INTO donations (donorid, isanonymous, amount, dononame)
-            values ($1,$2,$3,$4)`
-            ,[session.data.object.metadata.custid, false, session.data.object.metadata.donation, custName.rows[0].custname])
+            `INSERT INTO donations (donorid, isanonymous, amount, dononame, payment_intent)
+            values ($1,$2,$3,$4,$5)`
+            ,[session.data.object.metadata.custid, false, session.data.object.metadata.donation, custName.rows[0].custname, session.data.object.id])
         } catch (error) {
             console.log(error);
         }
@@ -560,12 +560,20 @@ const fulfillOrder = async (session) => {
 
 const refundOrder = async (session) => {
     try {
-        const refund = await pool.query(
+        const refundedTicket = await pool.query(
             `DELETE from tickets
             WHERE payment_intent = $1`,
             [session.data.object.payment_intent]
         )
-        console.log(refund);
+    } catch (error) {
+        console.log(error)
+    }
+    try {
+        const refundedDonation = await pool.query(
+            `DELETE from donations
+            WHERE payment_intent = $1`,
+            [session.data.object.payment_intent]
+        )
     } catch (error) {
         console.log(error)
     }
