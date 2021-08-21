@@ -1,14 +1,13 @@
-import {Switch, Route, useRouteMatch} from "react-router";
-//import CreateEvents from "../../components/CreateEvents";
-import NewEventMain from "./eventCreation/newEventMain";
-import DeleteEvents from "../../components/DeleteEvents";
-import DoorList from "../../components/DoorList";
-import ShowingsPage from "../../components/ShowingsPage";
-import NewsletterCreate from "../newsletter/NewsletterCreate";
-import AdminPanel from "./AdminPanel";
-import EmailSubscriptions from "./EmailSubscriptions";
-import ChangePassword from "../../components/ChangePassword";
-import ManageAccounts from "./ManageAccounts";
+import {Switch, Route, useRouteMatch} from 'react-router';
+import CreateEventPage from './eventCreation/v2/CreateEventPage';
+import DeleteEvents from '../../components/DeleteEvents';
+import DoorList from '../../components/DoorList';
+import ShowingsPage from '../../components/ShowingsPage';
+import NewsletterCreate from '../newsletter/NewsletterCreate';
+import AdminPanel from './AdminPanel';
+import EmailSubscriptions from './EmailSubscriptions';
+import ChangePassword from '../../components/ChangePassword';
+import ManageAccounts from './ManageAccounts';
 
 export default function AdminSwitch() {
     const { path } = useRouteMatch();
@@ -17,7 +16,7 @@ export default function AdminSwitch() {
             <AdminPanel/>
         </Route>
         <Route path={`${path}/CreateEvents`}>
-            <NewEventMain />
+            <CreateEventPage />
         </Route>
         <Route path={`${path}/DeleteEvents`}>
             <DeleteEvents />
