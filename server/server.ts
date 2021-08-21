@@ -393,11 +393,12 @@ app.post('/api/checkout', async (req, res) => {
 //End point to create a new play
 app.post("/api/create-play", isAuthenticated, async (req, res) => {
     try {
-        let body = req.body;
+        const {playname, description, image_url} = req.body;
         //change this based on the data we need to store in the database
-        const values = [body.playname, body.description, true, null];
-        const query = "INSERT INTO plays (seasonid, playname, playdescription, active, image_url)\
-        values (1, $1, $2. $3, $4)";
+        const values = [playname, description, image_url];
+        const query = 
+            `INSERT INTO plays (seasonid, playname, playdescription, active, image_url)
+            values (1, $1, $2, true, $3)`;
         const new_event = await pool.query(query, values);
         res.json(new_event.rows);
     } catch (error) {
