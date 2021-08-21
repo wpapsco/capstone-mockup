@@ -16,8 +16,22 @@ export default function CreateEventPage() {
         fetchTicketTypes()
     }, [])
     
-    const onSave = (formData: any) => {
-        console.log('CreateEventPage', formData)
+    const onSave = async (formData: any) => {
+        const {image_url, playname, playdescription, showings} = formData
+        
+        const createPlayRes = await fetch('/api/create-play', {
+            credentials: 'include',
+            headers: { 'Content-Type': 'application/json' },
+            method: 'POST',
+            body: JSON.stringify({playname, playdescription, image_url})
+        })
+        if (createPlayRes.ok) {
+            const playData = await createPlayRes.json()
+            console.log(playData)
+        }
+        else {
+            console.error('New play creation failed', createPlayRes.statusText)
+        }
     }
 
     return (

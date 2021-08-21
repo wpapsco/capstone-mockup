@@ -398,9 +398,10 @@ app.post("/api/create-play", isAuthenticated, async (req, res) => {
         const values = [playname, description, image_url];
         const query = 
             `INSERT INTO plays (seasonid, playname, playdescription, active, image_url)
-            values (1, $1, $2, true, $3)`;
-        const new_event = await pool.query(query, values);
-        res.json(new_event.rows);
+            values (0, $1, $2, true, $3) RETURNING *`;
+        const { rows } = await pool.query(query, values);
+        console.log('new play inserted:', rows)
+        res.json({rows});
     } catch (error) {
         console.error(error);
     }
