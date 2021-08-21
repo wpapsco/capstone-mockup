@@ -22,8 +22,9 @@ interface TicketPickerState {
     showCalendar: boolean,
     showTimes: boolean,
     showClearBtn: boolean,
-    promptIndex: 1 | 2 | 3,
+    prompt: 'selectDate' | 'selectTime' | 'showSelection',
 }
+
 const initialState: TicketPickerState = {
     displayedShowings: [],
     qty: 0,
@@ -31,56 +32,56 @@ const initialState: TicketPickerState = {
     showCalendar: true,
     showTimes: false,
     showClearBtn: false,
-    promptIndex: 1,
+    prompt: 'selectDate',
 }
 
-const dateSelected = (d: Date) => ({type: 'date_selected', payload: d})
+// Action creators
+const dateSelected = (d: Date, t: Ticket[]) => ({type: 'date_selected', payload: {date: d, tickets: t}})
 const timeSelected = (t: Ticket) => ({type: 'time_selected', payload: t})
 const resetWidget = () => ({type: 'reset'})
 const changeQty = (n: number) => ({type: 'change_qty', payload: n})
+
+const TicketPickerReducer = (state: TicketPickerState, action: any): TicketPickerState => {
+    switch (action.type) {
+        case 'date_selected': {
+            const {tickets, date} = action.payload
+            const sameDayShows = tickets.filter((t: Ticket) => isSameDay(date, t.date))
+            return {
+                ...state,
+                selectedDate: date,
+                selectedTicket: undefined,
+                displayedShowings: sameDayShows,
+                showCalendar: false,
+                showTimes: true,
+                showClearBtn: true,
+                prompt: 'selectTime',
+            }
+        }
+        case 'time_selected': {
+            return {...state, selectedTicket: action.payload, showTimes: false, prompt: 'showSelection'}
+        }
+        case 'reset': {
+            return initialState
+        }
+        case 'change_qty': {
+            return {...state, qty: action.payload}
+        }
+        case 'toggle_concession': {
+            return {...state, concessions: !state.concessions}
+        }
+        default:
+            throw new Error('Received undefined action type')
+    }
+}
 
 interface TicketPickerProps {
     tickets: Ticket[]
 }
 const TicketPicker = ({tickets}: TicketPickerProps) => {
-
-    const TicketPickerReducer = (state: TicketPickerState, action: any): TicketPickerState => {
-        switch (action.type) {
-            case 'date_selected': {
-                const sameDayShows = tickets.filter(t => isSameDay(action.payload, t.date))
-                console.log(action.payload, sameDayShows)
-                return {
-                    ...state,
-                    selectedDate: action.payload,
-                    selectedTicket: undefined,
-                    displayedShowings: sameDayShows,
-                    showCalendar: false,
-                    showTimes: true,
-                    showClearBtn: true,
-                    promptIndex: 2,
-                }
-            }
-            case 'time_selected': {
-                return {...state, selectedTicket: action.payload, showTimes: false, promptIndex: 3}
-            }
-            case 'reset': {
-                return initialState
-            }
-            case 'change_qty': {
-                return {...state, qty: action.payload}
-            }
-            case 'toggle_concession': {
-                return {...state, concessions: !state.concessions}
-            }
-            default:
-                throw new Error('Received undefined action type')
-        }
-    }
-
     const [{
         qty,
         concessions,
-        promptIndex,
+        prompt,
         selectedDate,
         displayedShowings,
         selectedTicket,
@@ -108,13 +109,13 @@ const TicketPicker = ({tickets}: TicketPickerProps) => {
             : selectedTicket.availableseats
         : 0
 
-    const prompt = {
-        1:  <Typography variant='subtitle1'>Select date below ({tickets.length} showings)</Typography>,
-        2:  <Typography variant='subtitle1'>
+    const promptMarkup = {
+        selectDate:  <Typography variant='subtitle1'>Select date below ({tickets.length} showings)</Typography>,
+        selectTime:  <Typography variant='subtitle1'>
                 {selectedDate ? format(selectedDate, 'eee, MMM dd') : ''}
                 <b> - Choose time:</b>
             </Typography>,
-        3:  <Typography variant='subtitle1'>
+        showSelection:  <Typography variant='subtitle1'>
                 {selectedTicket ? format(selectedTicket.date, 'eee, MMM dd - h:mm a') : ''}
             </Typography>
     }
@@ -126,11 +127,11 @@ const TicketPicker = ({tickets}: TicketPickerProps) => {
                     Choose different date
                 </Button>
             </Collapse>
-            {prompt[promptIndex]}
+            {promptMarkup[prompt]}
             <Collapse in={showCalendar}>
                 <MultiSelectCalendar
                     value={tickets.map(t => t.date)}
-                    onDateClicked={(d) => dispatch(dateSelected(d))}
+                    onDateClicked={(d) => dispatch(dateSelected(d, tickets))}
                     bindDates
                 />
             </Collapse>
@@ -143,7 +144,7 @@ const TicketPicker = ({tickets}: TicketPickerProps) => {
             <FormControl className={classes.formControl}>
                 <InputLabel id="qty-select-label">
                     {selectedTicket
-                        ? (numAvail > 0) ? 'Quantity' : 'Already in Cart'
+                        ? (numAvail > 0) ? 'Quantity' : "Can't add more to cart"
                         : 'Quantity (select ticket)'
                     }
                 </InputLabel>
@@ -184,7 +185,7 @@ const TicketPicker = ({tickets}: TicketPickerProps) => {
 
 const useStyles = makeStyles((theme: Theme) => ({
     formControl: {
-        marginTop: theme.spacing(1),
+        marginTop: theme.spacing(3),
         marginBottom: theme.spacing(1),
         width: '100%',
     },
