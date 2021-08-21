@@ -15,12 +15,16 @@ interface TicketType {
     concessions: number,
 }
 
-interface NewEventData {
-    title: string,
-    description: string,
+export interface NewEventData {
+    playname: string,
+    playdescription: string,
     isPublished: boolean,
-    imageUrl: string,
-    showings: {DateTime: Date, ticketType: TicketType}
+    image_url: string,
+    showings: [{
+        DateTime: Date,
+        ticketType: TicketType,
+        totalseats: number
+    }]
 }
 
 function validate(formData: any): ValidationErrors {
@@ -28,15 +32,15 @@ function validate(formData: any): ValidationErrors {
 }
 
 interface EventFormProps {
-    onSave: (formData: any) => void
+    onSubmit: (formData: NewEventData) => void
     ticketTypes: TicketType[]
 }
-export default function EventForm({onSave, ticketTypes}: EventFormProps) {
+export default function EventForm({onSubmit, ticketTypes}: EventFormProps) {
     const classes = useStyles()
 
     return (
         <Form
-            onSubmit={onSave}
+            onSubmit={onSubmit}
             mutators={{...arrayMutators}}
             validate={validate}
             render={({
@@ -53,9 +57,6 @@ export default function EventForm({onSave, ticketTypes}: EventFormProps) {
                     <Typography variant='h4' component='h2' className={classes.heading}>Showings</Typography>
 
                     <div className={classes.buttonGroup}>
-                        <Button variant='outlined' type='button' onClick={() => pop('showings')}>
-                            Remove Showing
-                        </Button>
                         <Button color='secondary' variant='outlined' type='button' onClick={() => push('showings', undefined)}>
                             Add Showing
                         </Button>

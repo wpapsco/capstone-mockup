@@ -393,9 +393,8 @@ app.post('/api/checkout', async (req, res) => {
 //End point to create a new play
 app.post("/api/create-play", isAuthenticated, async (req, res) => {
     try {
-        const {playname, description, image_url} = req.body;
-        //change this based on the data we need to store in the database
-        const values = [playname, description, image_url];
+        const {playname, playdescription, image_url} = req.body;
+        const values = [playname, playdescription, image_url];
         const query = 
             `INSERT INTO plays (seasonid, playname, playdescription, active, image_url)
             values (0, $1, $2, true, $3) RETURNING *`;
@@ -408,15 +407,28 @@ app.post("/api/create-play", isAuthenticated, async (req, res) => {
 })
 
 // End point to create a new showing
-app.post("/api/create-showing", isAuthenticated, async (req, res) => {
+app.post("/api/create-showings", isAuthenticated, async (req, res) => {
     try {
-        let body = req.body;
-        const values = [body.eventName, body.eventDate, body.eventTime, body.eventTickets, null];
-        console.log(values);
-        // const query = "insert into showtimes (playid, eventdate, starttime, totalseats, availableseats, purchaseuri)\
-        // values ($1, $2, $3, $4, $4, $5);"
-        // const create_event = await pool.query(query, values);
-        // res.json(create_event);
+        const query =
+            `INSERT INTO showtimes (playid, eventdate, starttime, totalseats, availableseats, salestatus)
+            VALUES ($1, $2, $3, $4, $4, true) RETURNING *;`
+        const {showings} = req.body;
+
+        let newShowtimes = []
+        for (const showing of showings) {
+            const {playid, eventdate, starttime, totalseats, tickettype} = showing
+            console.log('showing', showing)
+            const {rows} = await pool.query(query, [playid, eventdate, starttime, totalseats])
+            newShowtimes.push({...rows[0], tickettype})
+        }
+        // Link showtime to ticket type
+        const showdata = newShowtimes.map(s => ({id: s.id, tickettype: s.tickettype}))
+        const query2 = 'INSERT INTO linkedtickets (showid, ticket_type) VALUES ($1, $2)'
+        for (const sh of showdata) {
+            const {id, tickettype} = sh
+            await pool.query(query2, [id, tickettype])
+        }
+        res.json({newShowtimes});
     } catch (error) {
         console.error(error);
     }
