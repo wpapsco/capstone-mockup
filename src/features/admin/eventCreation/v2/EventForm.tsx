@@ -1,9 +1,9 @@
 import { Form } from 'react-final-form'
-import { TextField, KeyboardDateTimePicker, Select, Switches } from 'mui-rff'
+import { TextField, KeyboardDateTimePicker, Select } from 'mui-rff'
 import arrayMutators from 'final-form-arrays'
 import { FieldArray } from 'react-final-form-arrays'
 import DateFnsUtils from "@date-io/date-fns";
-import { Button, makeStyles, MenuItem, Theme, Typography } from '@material-ui/core'
+import { Button, makeStyles, MenuItem, Paper, Theme, Typography } from '@material-ui/core'
 import { ValidationErrors } from 'final-form';
 
 
@@ -53,18 +53,14 @@ export default function EventForm({onSubmit, ticketTypes}: EventFormProps) {
                     <TextField className={classes.field} name='playdescription' label='Description' />
                     <TextField className={classes.field} name='image_url' label='Image URL' />
 
-                    <Typography variant='h4' component='h2' className={classes.heading}>Showings</Typography>
-
-                    <div className={classes.buttonGroup}>
-                        <Button color='secondary' variant='outlined' type='button' onClick={() => push('showings', undefined)}>
-                            Add Showing
-                        </Button>
-                    </div>
+                    <Typography variant='h4' component='h2' className={classes.heading}>
+                        Showings
+                    </Typography>
                     
                     <FieldArray name='showings'>
                         {({ fields }) =>
                             fields.map((name, i) => (
-                                <div key={name} className={classes.showing}>
+                                <Paper key={name} className={classes.showing}>
                                     <label>Show # {i + 1}</label>
                                     <div className={classes.fieldGroup}>
                                         <KeyboardDateTimePicker
@@ -86,19 +82,19 @@ export default function EventForm({onSubmit, ticketTypes}: EventFormProps) {
                                             )}
                                         </Select>
                                     </div>
-                                    <span onClick={() => fields.remove(i)}>
+                                    <Button onClick={() => fields.remove(i)}>
                                         Delete
-                                    </span>
-                                </div>
+                                    </Button>
+                                </Paper>
                             ))
                         }
                     </FieldArray>
-
-                    <Switches
-                        label='Publish immediately?'
-                        name='isPublished'
-                        data={{label: '', value: true}}
-                    />
+                    
+                    <div className={classes.buttonGroup}>
+                        <Button color='secondary' variant='outlined' type='button' onClick={() => push('showings', undefined)}>
+                            Add Showing
+                        </Button>
+                    </div>
 
                     <Button className={classes.submitBtn} variant='contained' color='primary' type='submit' disabled={submitting || pristine}>
                         Save New Event
@@ -130,11 +126,11 @@ const useStyles = makeStyles((theme: Theme) => ({
         justifyContent: 'space-around',
     },
     showing: {
-        margin: `${theme.spacing(2)}px 0`,
-        '& span': {
-            marginLeft: 'auto',
-            cursor: 'pointer'
-        }
+        margin: `${theme.spacing(1)}px 0`,
+        display: 'flex',
+        padding: theme.spacing(2),
+        flexDirection: 'column',
+        '& > button': { alignSelf: 'end' },
     },
     fieldGroup: {
         margin: `${theme.spacing(2)}px 0`,
@@ -143,6 +139,9 @@ const useStyles = makeStyles((theme: Theme) => ({
         alignItems: 'center',
         '& > *': {
             margin: `0 ${theme.spacing(1)}px`
+        },
+        '& :first-child': {
+            marginLeft: 0
         }
     },
     heading: {
