@@ -7,7 +7,6 @@ import { Button, makeStyles, MenuItem, Theme, Typography } from '@material-ui/co
 import { ValidationErrors } from 'final-form';
 
 
-// TODO: Get ticket types from DB
 interface TicketType {
     id: number,
     name: string,
