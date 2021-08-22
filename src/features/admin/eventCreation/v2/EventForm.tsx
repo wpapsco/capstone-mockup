@@ -87,7 +87,7 @@ export default function EventForm({onSubmit, ticketTypes, initialValues, editMod
                                         />
                                         <TextField name={`${name}.totalseats`} label='Seating Capacity' type='number' required />
                                         <Select
-                                            name={`${name}.ticketType`}
+                                            name={`${name}.ticketTypeId`}
                                             label='Select Ticket Type'
                                             required
                                         >
