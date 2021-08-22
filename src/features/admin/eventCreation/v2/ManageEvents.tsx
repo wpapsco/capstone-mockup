@@ -3,13 +3,13 @@ import { DataGrid } from '@material-ui/data-grid';
 import { useHistory } from "react-router"
 import { appSelector, useAppDispatch } from "../../../../app/hooks"
 import { fetchEventData } from "../../../events/eventsSlice";
-import { selectPlaysData, fetchTicketingData } from '../../../ticketing/ticketingSlice'
+import { selectPlaySummarData, fetchTicketingData } from '../../../ticketing/ticketingSlice'
 
 export default function ManageEventsPage() {
     const history = useHistory()
     const classes = useStyles()
     const dispatch = useAppDispatch()
-    const eventsData = appSelector(selectPlaysData)
+    const eventsData = appSelector(selectPlaySummarData)
 
     const onEditClick = (id: number|string) => {
         history.push(`/admin/EditEvent/${id}`)
