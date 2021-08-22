@@ -189,13 +189,14 @@ const formatDoorlistResponse = rowdata => ({
 app.get('/api/doorlist', isAuthenticated, async (req, res) => {
     try {
         const querystring = `select cust.id as "custid", cust.custname as "name", cust.vip, cust.donorbadge, cust.seatingaccom,
-            plays.id as "playid", plays.playname, shwtm.id as "eventid", shwtm.eventdate, shwtm.starttime, tix.checkedin, tix.ticketno, count(cust.id) as "num_tickets"
-            from showtimes as shwtm left join plays on shwtm.playid = plays.id left join
-            tickets as tix on shwtm.id = tix.eventid
-            join customers as cust on tix.custid = cust.id
-            where shwtm.id = $1
-            group by cust.id, name ,plays.id, plays.playname, shwtm.id, shwtm.eventdate, shwtm.starttime, tix.checkedin, tix.ticketno
-            order by name`;
+        plays.id as "playid", plays.playname, shwtm.id as "eventid", shwtm.eventdate, shwtm.starttime, tix.checkedin as "arrived",
+        count(cust.id) as "num_tickets"
+        from showtimes as shwtm left join plays on shwtm.playid = plays.id left join
+        tickets as tix on shwtm.id = tix.eventid left join tickets as tix2 on tix.ticketno = tix2.ticketno
+        join customers as cust on tix.custid = cust.id
+        where shwtm.id = $1
+        group by cust.id, name ,plays.id, plays.playname, shwtm.id, shwtm.eventdate, shwtm.starttime, tix.checkedin
+        order by name`;
         const values = [req.query.showid]
         const doorlist = await pool.query(querystring, values);
         res.json(formatDoorlistResponse(doorlist.rows));
@@ -352,7 +353,7 @@ app.post('/api/checkout', async (req, res) => {
     };
 
     let orders = req.body.cartItems.map(item => ({
-        id: item.id,
+        id: item.product_id,
         quantity: item.qty,
     }))
 
