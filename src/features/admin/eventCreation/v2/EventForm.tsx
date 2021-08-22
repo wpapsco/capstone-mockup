@@ -20,6 +20,7 @@ export interface NewEventData {
     isPublished: boolean,
     image_url: string,
     showings: {
+        id?: number,
         DateTime: Date,
         ticketTypeId: string,
         totalseats: number
@@ -60,59 +61,72 @@ export default function EventForm({onSubmit, ticketTypes, initialValues, editMod
                 submitting,
             }) => (
                 <form className={classes.root} onSubmit={handleSubmit}>
-                    <Typography variant='h4' component='h2' className={classes.heading}>
-                        Event Information
-                    </Typography>
-                    <TextField className={classes.field} name='playname' label='Event Title' required={true} />
-                    <TextField className={classes.field} name='playdescription' label='Description' />
-                    <TextField className={classes.field} name='image_url' label='Image URL' />
+                    <Paper className={classes.section}>
+                        <Typography variant='h4' component='h2'>
+                            Event Information
+                        </Typography>
+                        <TextField className={classes.field} name='playname' label='Event Title' required={true} />
+                        <TextField className={classes.field} name='playdescription' label='Description' />
+                        <TextField className={classes.field} name='image_url' label='Image URL' />
+                    </Paper>
 
-                    <Typography variant='h4' component='h2' className={classes.heading}>
-                        Showings
-                    </Typography>
-                    <Typography variant='body1'>
-                        You can configure occurances of this event below. To add more, click the "Add Showing" button.
-                    </Typography>
-                    <FieldArray name='showings'>
-                        {({ fields }) =>
-                            fields.map((name, i) => (
-                                <Paper key={name} className={classes.showing}>
-                                    <label>Show # {i + 1}</label>
-                                    <div className={classes.fieldGroup}>
-                                        <KeyboardDateTimePicker
-                                            name={`${name}.DateTime`}
-                                            label='Event Date & Time'
-                                            required
-                                            dateFunsUtils={DateFnsUtils}
-                                        />
-                                        <TextField name={`${name}.totalseats`} label='Seating Capacity' type='number' required />
-                                        <Select
-                                            name={`${name}.ticketTypeId`}
-                                            label='Select Ticket Type'
-                                            required
-                                        >
-                                            {ticketTypes.map(t =>
-                                                <MenuItem key={t.id} value={t.id}>
-                                                    {`${t.name}: ${t.price} (+ ${t.concessions} concessions)`}
-                                                </MenuItem>
-                                            )}
-                                        </Select>
-                                    </div>
-                                    <Button onClick={() => fields.remove(i)}>
-                                        Delete
-                                    </Button>
-                                </Paper>
-                            ))
-                        }
-                    </FieldArray>
-                    
-                    <div className={classes.buttonGroup}>
-                        <Button color='secondary' variant='outlined' type='button' onClick={() => push('showings', undefined)}>
-                            Add Showing
-                        </Button>
-                    </div>
+                    <Paper className={classes.section}>
+                        <Typography variant='h4' component='h2'>
+                            Showings
+                        </Typography>
+                        <Typography variant='body1'>
+                            You can configure occurances of this event below. To add more, click the "Add Showing" button.
+                        </Typography>
+                        
+                        <div className={classes.showingList}>
+                            <FieldArray name='showings'>
+                                {({ fields }) =>
+                                    fields.map((name, i) => (
+                                        <Paper variant='outlined' key={name} className={classes.showing}>
+                                            <label>Show # {i + 1}</label>
+                                            <div className={classes.fieldGroup}>
+                                                <KeyboardDateTimePicker
+                                                    name={`${name}.DateTime`}
+                                                    label='Event Date & Time'
+                                                    required
+                                                    dateFunsUtils={DateFnsUtils}
+                                                />
+                                                <TextField name={`${name}.totalseats`} label='Seating Capacity' type='number' required />
+                                                <Select
+                                                    name={`${name}.ticketTypeId`}
+                                                    label='Select Ticket Type'
+                                                    required
+                                                >
+                                                    {ticketTypes.map(t =>
+                                                        <MenuItem key={t.id} value={t.id}>
+                                                            {`${t.name}: ${t.price} (+ ${t.concessions} concessions)`}
+                                                        </MenuItem>
+                                                    )}
+                                                </Select>
+                                            </div>
+                                            <Button variant='contained' onClick={() => fields.remove(i)}>
+                                                Delete
+                                            </Button>
+                                        </Paper>
+                                    ))
+                                }
+                            </FieldArray>
+                        </div>
+                        
+                        <div className={classes.buttonGroup}>
+                            <Button color='secondary' variant='outlined' type='button' onClick={() => push('showings', undefined)}>
+                                Add Showing
+                            </Button>
+                        </div>
+                    </Paper>
 
-                    <Button className={classes.submitBtn} variant='contained' color='primary' type='submit' disabled={submitting || pristine}>
+                    <Button 
+                        className={classes.submitBtn} 
+                        variant='contained' 
+                        color='primary' 
+                        type='submit'
+                        disabled={!editMode && (submitting || pristine)}
+                    >
                         {editMode ? 'Save Changes' : 'Save New Event'}
                     </Button>
                 </form>
@@ -124,17 +138,24 @@ export default function EventForm({onSubmit, ticketTypes, initialValues, editMod
 const useStyles = makeStyles((theme: Theme) => ({
     root: {
         margin: '0 auto',
+        marginBottom: theme.spacing(20),
         display: 'flex',
         flexDirection: 'column',
-        maxWidth: '800px',
     },
+    section: {
+        marginTop: theme.spacing(3),
+        marginBottom: theme.spacing(3),
+        padding: `${theme.spacing(5)}px ${theme.spacing(8)}px`,
+        '& h2': { marginBottom: theme.spacing(2)},
+    },
+    showingList: { marginTop: theme.spacing(5) },
     field: {
         marginTop: theme.spacing(3),
         marginBottom: theme.spacing(1),
     },
     buttonGroup: {
         width: '50%',
-        marginTop: theme.spacing(2),
+        marginTop: theme.spacing(5),
         marginBottom: theme.spacing(2),
         marginLeft: 'auto',
         marginRight: 'auto',
@@ -146,7 +167,7 @@ const useStyles = makeStyles((theme: Theme) => ({
         display: 'flex',
         padding: theme.spacing(2),
         flexDirection: 'column',
-        '& > button': { alignSelf: 'end' },
+        '& > button': { alignSelf: 'end'},
     },
     fieldGroup: {
         margin: `${theme.spacing(2)}px 0`,
@@ -159,9 +180,6 @@ const useStyles = makeStyles((theme: Theme) => ({
         '& :first-child': {
             marginLeft: 0
         }
-    },
-    heading: {
-        marginTop: theme.spacing(5)
     },
     submitBtn: {
         marginLeft: 'auto',
