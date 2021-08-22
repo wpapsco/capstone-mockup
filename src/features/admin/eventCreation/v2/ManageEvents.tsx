@@ -1,18 +1,34 @@
 import { Button, makeStyles, Theme, Typography } from "@material-ui/core"
 import { DataGrid } from '@material-ui/data-grid';
 import { useHistory } from "react-router"
-import { appSelector } from "../../../../app/hooks"
-import { selectPlaysData } from '../../../ticketing/ticketingSlice'
+import { appSelector, useAppDispatch } from "../../../../app/hooks"
+import { fetchEventData } from "../../../events/eventsSlice";
+import { selectPlaysData, fetchTicketingData } from '../../../ticketing/ticketingSlice'
 
 export default function ManageEventsPage() {
     const history = useHistory()
     const classes = useStyles()
+    const dispatch = useAppDispatch()
     const eventsData = appSelector(selectPlaysData)
 
     const onEditClick = (id: number|string) => {
         history.push(`/admin/EditEvent/${id}`)
     }
-    const onDeleteClick = (id: any) => {console.log('Delete clicked', id)}
+    const onDeleteClick = async (id: any) => {
+        const res = await fetch("/api/delete-event", {
+           credentials: 'include',
+           method: 'POST',
+           headers: { 'Content-Type': 'application/json' },
+           body: JSON.stringify({id}),
+        });
+        if (res.ok) {
+            dispatch(fetchTicketingData())
+            dispatch(fetchEventData())
+        }
+        else {
+            console.error(res.status, res.statusText)
+        }
+    }
 
     const columns = [
         { field: "id", headerName: "ID", width: 100},

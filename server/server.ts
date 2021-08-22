@@ -434,14 +434,16 @@ app.post("/api/create-showings", isAuthenticated, async (req, res) => {
     }
 });
 
-// Updates salestatus in showtimes table when given an id, date, and time
+// Updates salestatus in showtimes table and active flag in plays table when given a play id
 app.post("/api/delete-event", isAuthenticated, async (req, res) => {
     try {
-        let body = req.body;
-        const values = [body.id];
-        const query = "update showtimes set salestatus = false where id = $1";
-        const remove_event = await pool.query(query, values);
-        res.json(remove_event.rows)
+        const {id} = req.body; // playid
+        const archivePlay = 'UPDATE plays SET active=false WHERE id=$1;'
+        const archiveShowtimes = 'UPDATE showtimes SET salestatus=false WHERE playid=$1;'
+
+        const archivedPlay = await pool.query(archivePlay, [id])
+        const archivedShowtimes = await pool.query(archiveShowtimes, [id])
+        res.json({rows: [...archivedPlay.rows, ...archivedShowtimes.rows]})
     } catch (error) {
         console.error(error);
     }
@@ -672,6 +674,7 @@ const reduceToTicketState = (res, t: Ticket) => {
         : {byId: {...byId, [id]: t}, allIds: [...allIds, id]}
 }
 
+// Responds with tickets subset of Redux state
 app.get('/api/tickets', async (req, res) => {
     try {
         const qs =
@@ -688,7 +691,7 @@ app.get('/api/tickets', async (req, res) => {
             FROM showtimes sh
                 JOIN linkedtickets lt ON sh.id=lt.showid
                 JOIN tickettype tt ON lt.ticket_type=tt.id
-            WHERE isseason=false AND availableseats > 0
+            WHERE sh.salestatus=true AND isseason=false AND availableseats > 0
             ORDER BY playid, eventid;`
         const query_res = await pool.query(qs)
         res.json(
