@@ -6,7 +6,6 @@ import { createStyles, makeStyles } from '@material-ui/core/styles'
 import { toDollarAmount } from '../../../utils'
 import { removeTicketFromCart, removeAllTicketsFromCart, selectCartContents } from '../ticketingSlice'
 import { useHistory } from "react-router-dom";
-import { NavLink } from 'react-router-dom'
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({

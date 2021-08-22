@@ -1,9 +1,12 @@
 import { Button, makeStyles, Theme, Typography } from "@material-ui/core"
+import { useState } from 'react'
+import { Backdrop, Fade, Modal, Paper } from "@material-ui/core";
 import { DataGrid } from '@material-ui/data-grid';
 import { useHistory } from "react-router"
 import { appSelector, useAppDispatch } from "../../../../app/hooks"
 import { fetchEventData } from "../../../events/eventsSlice";
 import { selectPlaySummarData, fetchTicketingData } from '../../../ticketing/ticketingSlice'
+import { openSnackbar } from '../../../snackbarSlice'
 
 export default function ManageEventsPage() {
     const history = useHistory()
@@ -11,17 +14,33 @@ export default function ManageEventsPage() {
     const dispatch = useAppDispatch()
     const eventsData = appSelector(selectPlaySummarData)
 
+    const [modalOpen, setModalOpen] = useState(false)
+    const [eventToDelete, setEventToDelete] = useState<string|null>()
+
     const onEditClick = (id: number|string) => {
         history.push(`/admin/EditEvent/${id}`)
     }
-    const onDeleteClick = async (id: any) => {
+
+    const onDeleteClick = (id: string) => {
+        setModalOpen(true)
+        setEventToDelete(id)
+    }
+
+    const onCancelDelete = () => {
+        setEventToDelete(null)
+        setModalOpen(false)
+    }
+
+    const deleteEvent = async () => {
+        setModalOpen(false)
         const res = await fetch("/api/delete-event", {
            credentials: 'include',
            method: 'POST',
            headers: { 'Content-Type': 'application/json' },
-           body: JSON.stringify({id}),
+           body: JSON.stringify({id: eventToDelete}),
         });
         if (res.ok) {
+            dispatch(openSnackbar('Deleted Event'))
             dispatch(fetchTicketingData())
             dispatch(fetchEventData())
         }
@@ -59,6 +78,29 @@ export default function ManageEventsPage() {
             >
                 Create New Event
             </Button>
+
+            <Modal
+                className={classes.modal}
+                open={modalOpen}
+                onClose={onCancelDelete}
+                closeAfterTransition
+                BackdropComponent={Backdrop}
+                BackdropProps={{ timeout: 500 }}
+            >
+                <Fade in={modalOpen}>
+                    <Paper className={classes.modalContent}>
+                        <Typography>Are you sure you want to delete this?</Typography>
+                        <div className={classes.btnGroup}>
+                            <Button variant='outlined' onClick={() => deleteEvent()}>
+                                Yes
+                            </Button>
+                            <Button variant='contained' onClick={onCancelDelete}>
+                                No, Cancel
+                            </Button>
+                        </div>
+                    </Paper>
+                </Fade>
+            </Modal>
         </div>
     )
 }
@@ -66,4 +108,17 @@ export default function ManageEventsPage() {
 const useStyles = makeStyles((theme: Theme) => ({
     root: { marginBottom: theme.spacing(10), '& h1': {marginBottom: theme.spacing(5)} },
     newEventBtn: { marginTop: theme.spacing(5) },
+    modal: {
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    modalContent: {
+        padding: '15px',
+    },
+    btnGroup: {
+        display: 'flex',
+        margin: '10px auto',
+        justifyContent: 'space-around',
+    },
 }))
