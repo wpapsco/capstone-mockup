@@ -124,8 +124,8 @@ export default function AdminPanel() {
                     text: "Delete an event",
                     icon: <DeleteForever />
                 }, {
-                    link: "/events",
-                    text: "View events",
+                    link: "/admin/ManageEvents",
+                    text: "Manage events",
                     icon: <ViewListIcon />
                 }, {
                     link: "/admin/doorlist",
