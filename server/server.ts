@@ -406,21 +406,36 @@ app.post("/api/create-play", isAuthenticated, async (req, res) => {
     }
 })
 
+interface Showing {
+    playid: string,
+    eventdate: string,
+    starttime: string,
+    totalseats: number,
+    tickettype: number, // ticket type ID
+}
+const insertAllShowings = async (showings: Showing[]) => {
+    const query =
+        `INSERT INTO showtimes (playid, eventdate, starttime, totalseats, availableseats, salestatus)
+        VALUES ($1, $2, $3, $4, $4, true) RETURNING *;`
+        
+    const res = []
+    for (const showing of showings) {
+        const {playid, eventdate, starttime, totalseats, tickettype} = showing
+        if (tickettype === undefined) {
+            throw new Error('No ticket type provided')
+        }
+        const {rows} = await pool.query(query, [playid, eventdate, starttime, totalseats])
+        res.push({...rows[0], tickettype})
+    }
+    return res
+}
+
 // End point to create a new showing
 app.post("/api/create-showings", isAuthenticated, async (req, res) => {
+    const {showings} = req.body;
+    let newShowtimes;
     try {
-        const query =
-            `INSERT INTO showtimes (playid, eventdate, starttime, totalseats, availableseats, salestatus)
-            VALUES ($1, $2, $3, $4, $4, true) RETURNING *;`
-        const {showings} = req.body;
-
-        let newShowtimes = []
-        for (const showing of showings) {
-            const {playid, eventdate, starttime, totalseats, tickettype} = showing
-            console.log('showing', showing)
-            const {rows} = await pool.query(query, [playid, eventdate, starttime, totalseats])
-            newShowtimes.push({...rows[0], tickettype})
-        }
+        newShowtimes = await insertAllShowings(showings)
         // Link showtime to ticket type
         const showdata = newShowtimes.map(s => ({id: s.id, tickettype: s.tickettype}))
         const query2 = 'INSERT INTO linkedtickets (showid, ticket_type) VALUES ($1, $2)'
@@ -429,8 +444,11 @@ app.post("/api/create-showings", isAuthenticated, async (req, res) => {
             await pool.query(query2, [id, tickettype])
         }
         res.json({newShowtimes});
-    } catch (error) {
-        console.error(error);
+    }
+    catch (err) {
+        console.error(err)
+        res.status(400)
+        res.send(err)
     }
 });
 
@@ -691,7 +709,7 @@ app.get('/api/tickets', async (req, res) => {
             FROM showtimes sh
                 JOIN linkedtickets lt ON sh.id=lt.showid
                 JOIN tickettype tt ON lt.ticket_type=tt.id
-            WHERE sh.salestatus=true AND isseason=false AND availableseats > 0
+            WHERE salestatus=true AND isseason=false AND availableseats > 0
             ORDER BY playid, eventid;`
         const query_res = await pool.query(qs)
         res.json(

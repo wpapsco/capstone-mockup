@@ -9,10 +9,10 @@ import { Typography } from '@material-ui/core'
 import { format } from 'date-fns'
 
 const formatShowingData = (playid: number) => (data: any) => {
-    const {DateTime, totalseats, ticketType} = data
+    const {DateTime, totalseats, ticketTypeId} = data
     const eventdate = format(DateTime, 'yyyy-MM-dd')
     const starttime = format(DateTime, 'HH:mm:00')
-    return {playid, eventdate, starttime, totalseats, tickettype: ticketType}
+    return {playid, eventdate, starttime, totalseats, tickettype: ticketTypeId}
 }
 
 export default function CreateEventPage() {
@@ -38,6 +38,7 @@ export default function CreateEventPage() {
             method: 'POST',
             body: JSON.stringify({playname, playdescription, image_url})
         })
+
         if (createPlayRes.ok) {
             const playData = await createPlayRes.json()
             const { id } = playData.rows[0]

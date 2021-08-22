@@ -35,7 +35,7 @@ const initialState = {
     showings: [{
         DateTime: undefined,
         ticketType: undefined,
-        totalseats: undefined
+        ticketTypeId: undefined
     }]
 }
 
