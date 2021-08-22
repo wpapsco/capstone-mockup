@@ -1,104 +1,53 @@
-import {
-    Button,
-    Card,
-    CardContent,
-    CardActions,
-    makeStyles,
-    Theme,
-    Typography,
-} from "@material-ui/core"
+import { Button, makeStyles, Theme, Typography } from "@material-ui/core"
+import { DataGrid } from '@material-ui/data-grid';
 import { useHistory } from "react-router"
 import { appSelector } from "../../../../app/hooks"
-
-
-const TEST_ID = '1'
+import { selectPlaysData } from '../../../ticketing/ticketingSlice'
 
 export default function ManageEventsPage() {
-    // const events = appSelector(state => state.ticketing.plays)
-    const classes = useStyles()
     const history = useHistory()
+    const classes = useStyles()
+    const eventsData = appSelector(selectPlaysData)
+
+    const onEditClick = (id: number|string) => {
+        history.push(`/admin/EditEvent/${id}`)
+    }
+    const onDeleteClick = (id: any) => {console.log('Delete clicked', id)}
+
+    const columns = [
+        { field: "id", headerName: "ID", width: 100},
+        { field: "playname", headerName: "Title", width: 200},
+        { field: "playdescription", headerName: "Description", width: 200},
+        { field: "numShows", headerName: "No. Shows", width: 150},
+        { field: "Edit", headerName: "Edit", width: 130, renderCell: (params: any) => (
+            <Button variant="contained" color="secondary" onClick={() => onEditClick(params.row.id)}>Edit</Button>
+        )},
+        { field: "Delete", headerName: "Delete", width: 150, renderCell: (params: any) => (
+            <Button variant="contained" color="secondary" onClick={() => onDeleteClick(params.row.id)}>Delete</Button>
+        )}
+    ]
 
     return (
-        <div>
-            <Typography component='h1' variant='h4'>Manage Events</Typography>
+        <div className={classes.root}>
+            <Typography component='h1' variant='h4'>
+                Manage Events
+            </Typography>
+            
+            <DataGrid autoHeight columns={columns} rows={eventsData} pageSize={10} />
 
-            <Event
-                className={classes.eventCard}
-                title='Test Play 1'
-                onClickEdit={() => history.push(`/admin/EditEvent/${TEST_ID}`)}
-            />
-
-            <Button onClick={() => history.push('/admin/CreateEvents')} variant='contained' color='primary'>
+            <Button
+                className={classes.newEventBtn}
+                onClick={() => history.push('/admin/CreateEvents')}
+                variant='contained'
+                color='primary'
+            >
                 Create New Event
             </Button>
         </div>
     )
 }
 
-interface EventProps {
-    className?: string,
-    title: string,
-    onClickEdit: () => void
-}
-const Event = (props: EventProps) => {
-    return (
-        <Card className={props.className}>
-            <Typography component='h2' variant='h5'>{props.title}</Typography>
-            <CardContent className='eventBody'>
-                <div className='eventInfo'>
-                    <Typography><b>Details:</b></Typography>
-                    <Typography variant='body1'>Capacity: 30</Typography>
-                    <Typography variant='body1'>Admission type: General Admission</Typography>
-                    <Typography variant='body1'>Ticket price: $15.00</Typography>
-                    <Typography variant='body1'>Concessions price: $5.00</Typography>
-                </div>
-                <div className='eventShowings'>
-                    <Typography><b>Showings:</b></Typography>
-                    <Typography variant='body1'>Mon, Aug 23, 7:30PM</Typography>
-                    <Typography variant='body1'>Mon, Aug 30, 8:00PM</Typography>
-                    <Typography variant='body1'>Mon, Sep 6, 7:30PM</Typography>
-                    <Typography variant='body1'>+ 8 more</Typography>
-                </div>
-                <CardActions className='eventActions'>
-                    <Button variant='outlined' onClick={props.onClickEdit}>
-                        Edit
-                    </Button>
-                    {/* TODO: Ask if sure about deleting & include # of showings associated */}
-                    <Button>Delete</Button>
-                </CardActions>
-            </CardContent>
-        </Card>
-    )
-}
-
 const useStyles = makeStyles((theme: Theme) => ({
-    eventCard: {
-        padding: theme.spacing(4),
-        margin: `${theme.spacing(2.5)}px 0`,
-        height: '200px',
-        display: 'flex',
-        justifyContent: 'space-around',
-        flexDirection: 'column',
-        '& :first-child': { margin: 0},
-        '& .eventBody': {
-            display: 'flex',
-            justifyContent: 'space-between',
-        },
-        '& .eventInfo, .eventShowings, .eventActions': {
-            display: 'flex',
-            flexDirection: 'column',
-            margin: `0 ${theme.spacing(1)}px`,
-        },
-        '& .eventActions': {
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'space-around',
-            '& > button': { minWidth: '140px' }
-        },
-        '& button:first-of-type:hover': {
-            backgroundColor: theme.palette.primary.main,
-            color: 'white',
-            fontWeight: 'bold'
-        },
-    },
+    root: { marginBottom: theme.spacing(10), '& h1': {marginBottom: theme.spacing(5)} },
+    newEventBtn: { marginTop: theme.spacing(5) },
 }))

@@ -212,6 +212,14 @@ export const selectCartTicketCount = (state: RootState): {[key: number]: number}
     )
 export const selectNumInCart = (state: RootState) => state.ticketing.cart.length
 export const selectCartContents = (state: RootState): CartItem[] => state.ticketing.cart
+
+
+const filterTicketsReducer = (ticketsById: {[key: number]: Ticket}, playid: PlayId) =>
+    (filtered: Ticket[], id: number) => {
+        return (ticketsById[id].playid===playid)
+            ? [...filtered, ticketsById[id]]
+            : filtered
+    }
 export interface EventPageData {
     title: string,
     description: string,
@@ -223,18 +231,37 @@ export const selectPlayData = (state: RootState, playId: PlayId): EventPageData|
     const play = state.ticketing.plays.find(byId(playId))
     if (play) {
         const {id, ...playData} = play
-        const tickets = state.ticketing.tickets.allIds
-            .reduce((filtered, id) => {
-                return (ticketData.byId[id].playid===playId)
-                    ? [...filtered, ticketData.byId[id]]
-                    : filtered
-            }, [] as Ticket[])
+        const tickets = ticketData.allIds
+            .reduce(filterTicketsReducer(ticketData.byId, playId), [] as Ticket[])
         return {...playData, tickets}
     }
     else {
         return undefined
     }
 }
+
+// Used for manage events page
+interface PlaySummaryData {
+    id: PlayId,
+    playname: string,
+    playdescription: string,
+    numShows: number,
+}
+export const selectPlaysData = (state: RootState) =>
+    state.ticketing.plays.reduce((res, play) => {
+            const {id, title, description} = play
+            const filteredTickets = state.ticketing.tickets.allIds.reduce(
+                filterTicketsReducer(state.ticketing.tickets.byId, id),
+                [] as Ticket[]
+            )
+
+            return [
+                ...res,
+                { id:play.id, playname:title, playdescription:description, numShows:filteredTickets.length, }
+            ]
+        },
+        [] as PlaySummaryData[]
+    )
 
 export const selectNumAvailable = (state: RootState, ticketid: number) => {
     const ticket = state.ticketing.tickets.byId[ticketid]
