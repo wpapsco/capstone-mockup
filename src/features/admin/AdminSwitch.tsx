@@ -1,6 +1,7 @@
 import {Switch, Route, useRouteMatch} from 'react-router'
 import CreateEventPage from './eventCreation/v2/CreateEventPage'
 import ManageEventsPage from './eventCreation/v2/ManageEvents'
+import EditEventPage from './eventCreation/v2/EditEventPage'
 import DeleteEvents from '../../components/DeleteEvents'
 import DoorList from '../../components/DoorList'
 import ShowingsPage from '../../components/ShowingsPage'
@@ -21,6 +22,9 @@ export default function AdminSwitch() {
         </Route>
         <Route path={`${path}/ManageEvents`}>
             <ManageEventsPage />
+        </Route>
+        <Route path={`${path}/EditEvent/:playid`}>
+            <EditEventPage />
         </Route>
         <Route path={`${path}/DeleteEvents`}>
             <DeleteEvents />

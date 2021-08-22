@@ -680,6 +680,7 @@ app.get('/api/tickets', async (req, res) => {
                 playid,
                 eventdate,
                 starttime,
+                totalseats,
                 availableseats,
                 tt.name AS admission_type,
                 price AS ticket_price,

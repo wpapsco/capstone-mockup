@@ -19,6 +19,7 @@ export interface Ticket {
     date: Date,
     ticket_price: number,
     concession_price: number,
+    totalseats?: number,
     availableseats: number,
 }
 
@@ -211,7 +212,7 @@ export const selectCartTicketCount = (state: RootState): {[key: number]: number}
     )
 export const selectNumInCart = (state: RootState) => state.ticketing.cart.length
 export const selectCartContents = (state: RootState): CartItem[] => state.ticketing.cart
-interface EventPageData {
+export interface EventPageData {
     title: string,
     description: string,
     image_url: string,

@@ -19,11 +19,11 @@ export interface NewEventData {
     playdescription: string,
     isPublished: boolean,
     image_url: string,
-    showings: [{
+    showings: {
         DateTime: Date,
-        ticketType: TicketType,
+        ticketTypeId: string,
         totalseats: number
-    }]
+    }[]
 }
 
 function validate(formData: any): ValidationErrors {
@@ -40,15 +40,17 @@ const initialState = {
 
 interface EventFormProps {
     onSubmit: (formData: NewEventData) => void
-    ticketTypes: TicketType[]
+    ticketTypes: TicketType[],
+    initialValues?: Partial<NewEventData>,
+    editMode?: boolean
 }
-export default function EventForm({onSubmit, ticketTypes}: EventFormProps) {
+export default function EventForm({onSubmit, ticketTypes, initialValues, editMode}: EventFormProps) {
     const classes = useStyles()
 
     return (
         <Form
             onSubmit={onSubmit}
-            initialValues={initialState}
+            initialValues={initialValues ?? initialState}
             mutators={{...arrayMutators}}
             validate={validate}
             render={({
@@ -111,7 +113,7 @@ export default function EventForm({onSubmit, ticketTypes}: EventFormProps) {
                     </div>
 
                     <Button className={classes.submitBtn} variant='contained' color='primary' type='submit' disabled={submitting || pristine}>
-                        Save New Event
+                        {editMode ? 'Save Changes' : 'Save New Event'}
                     </Button>
                 </form>
             )}
