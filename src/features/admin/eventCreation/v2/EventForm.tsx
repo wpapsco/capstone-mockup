@@ -30,6 +30,14 @@ function validate(formData: any): ValidationErrors {
     return (formData.showings?.length > 0) ? undefined : {error: 'Need one or more showings added'}
 }
 
+const initialState = {
+    showings: [{
+        DateTime: undefined,
+        ticketType: undefined,
+        totalseats: undefined
+    }]
+}
+
 interface EventFormProps {
     onSubmit: (formData: NewEventData) => void
     ticketTypes: TicketType[]
@@ -40,6 +48,7 @@ export default function EventForm({onSubmit, ticketTypes}: EventFormProps) {
     return (
         <Form
             onSubmit={onSubmit}
+            initialValues={initialState}
             mutators={{...arrayMutators}}
             validate={validate}
             render={({
@@ -49,6 +58,9 @@ export default function EventForm({onSubmit, ticketTypes}: EventFormProps) {
                 submitting,
             }) => (
                 <form className={classes.root} onSubmit={handleSubmit}>
+                    <Typography variant='h4' component='h2' className={classes.heading}>
+                        Event Information
+                    </Typography>
                     <TextField className={classes.field} name='playname' label='Event Title' required={true} />
                     <TextField className={classes.field} name='playdescription' label='Description' />
                     <TextField className={classes.field} name='image_url' label='Image URL' />
@@ -56,7 +68,9 @@ export default function EventForm({onSubmit, ticketTypes}: EventFormProps) {
                     <Typography variant='h4' component='h2' className={classes.heading}>
                         Showings
                     </Typography>
-                    
+                    <Typography variant='body1'>
+                        You can configure occurances of this event below. To add more, click the "Add Showing" button.
+                    </Typography>
                     <FieldArray name='showings'>
                         {({ fields }) =>
                             fields.map((name, i) => (
