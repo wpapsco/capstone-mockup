@@ -71,11 +71,6 @@ export default function EditEventPage() {
                 initialValues={initValues}
                 editMode
             />
-            <div style={{backgroundColor: 'lightgrey', padding: '30px', width: '500px', margin: '15px auto'}}>
-                <p>playid: {playid}</p>
-                changes:
-                <div style={{width: '100%', overflow: 'hidden'}}>{changes && JSON.stringify(changes)}</div>
-            </div>
         </div>
     )
 }
