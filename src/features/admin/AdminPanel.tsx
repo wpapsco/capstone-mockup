@@ -4,7 +4,6 @@ import { makeStyles } from "@material-ui/core";
 import AssessmentIcon from '@material-ui/icons/Assessment';
 import { AccountTree, AddBox, ExitToApp, VpnKey } from "@material-ui/icons";
 import ViewListIcon from "@material-ui/icons/ViewList";
-import { DeleteForever } from "@material-ui/icons";
 import { ConfirmationNumber } from "@material-ui/icons";
 import PeopleIcon from "@material-ui/icons/People";
 import MonetizationOnIcon from '@material-ui/icons/MonetizationOn';
@@ -17,7 +16,7 @@ import { Typography } from "@material-ui/core";
 import {NavLink, useHistory} from "react-router-dom";
 import {appSelector, useAppDispatch} from "../../app/hooks";
 import {openSnackbar} from "../snackbarSlice";
-import {ReactNode, useEffect, useState} from 'react';
+import {ReactNode} from 'react';
 import {clearUser, selectUser} from "./userSlice";
 
 const useStyles = makeStyles({
@@ -45,7 +44,6 @@ export default function AdminPanel() {
     const classes = useStyles();
     const history = useHistory();
     const dispatch = useAppDispatch()
-    // const [user, setUser] = useState<User | null>(null)
 
     const onLogout = async () => {
         await fetch('/logout', {credentials: "include"})
@@ -53,16 +51,6 @@ export default function AdminPanel() {
         dispatch(clearUser())
         history.push("/")
     }
-
-    ////TODO: possibly move this into redux state (not here but after logging in)
-    //const getUser = () => { (async () => {
-    //    const r = await fetch('/api/user', {credentials: 'include'})
-    //    if (!r.ok) 
-    //        return
-    //    const data = await r.json()
-    //    setUser(data)
-    //})()}
-    //useEffect(getUser, [])
 
     const user = appSelector(selectUser)
 
@@ -120,12 +108,8 @@ export default function AdminPanel() {
                     text: "Create an event",
                     icon: <AddBox />
                 }, {
-                    link: "/admin/DeleteEvents",
-                    text: "Delete an event",
-                    icon: <DeleteForever />
-                }, {
-                    link: "/events",
-                    text: "View events",
+                    link: "/admin/ManageEvents",
+                    text: "Manage events",
                     icon: <ViewListIcon />
                 }, {
                     link: "/admin/doorlist",

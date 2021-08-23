@@ -30,7 +30,7 @@ const useStyles = makeStyles((theme: Theme) => ({
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'space-between',
-        // maxWidth: '60%',
+        flexGrow: 1,
     },
     callToAction: {
         alignSelf: 'center',
