@@ -649,7 +649,7 @@ const toTicket = (row): Ticket => {
 
 interface TicketState {byId: {[key: number]: Ticket}, allIds: number[]}
 const reduceToTicketState = (res, t: Ticket) => {
-    const id = t.eventid
+    const id = t.event_instance_id
     const {byId, allIds} = res
     return (allIds.includes(id))
         ? res
