@@ -515,14 +515,19 @@ app.put('/api/edit-event', isAuthenticated, async (req, res) => {
 app.post("/api/delete-event", isAuthenticated, async (req, res) => {
     try {
         const {id} = req.body; // playid
+        if (id === undefined) {
+            throw new Error('No even id provided')
+        }
         const archivePlay = 'UPDATE events SET active=false WHERE id=$1;'
-        const archiveShowtimes = 'UPDATE event_instances SET salestatus=false WHERE playid=$1;'
+        const archiveShowtimes = 'UPDATE event_instances SET salestatus=false WHERE eventid=$1;'
 
         const archivedPlay = await pool.query(archivePlay, [id])
         const archivedShowtimes = await pool.query(archiveShowtimes, [id])
         res.json({rows: [...archivedPlay.rows, ...archivedShowtimes.rows]})
     } catch (error) {
         console.error(error);
+        res.status(400)
+        res.send(error)
     }
 })
 
