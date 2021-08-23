@@ -23,7 +23,6 @@ const formatToEventFormData = (data: EventPageData): Partial<NewEventData> => ({
     }))
 })
 
-// TODO compare which fields are 
 export default function EditEventPage() {
     const dispatch = useAppDispatch()
     const { eventid } = useParams<EditEventPageProps>()
@@ -40,10 +39,8 @@ export default function EditEventPage() {
         fetchTicketTypes()
     }, [])
 
-    const [changes, setChanges] = useState<ReturnType<typeof diff>>() //TODO: delete after testing
     const onSubmit = async (updatedData: NewEventData) => {
         const deltas = diff(initValues, updatedData)
-        setChanges(deltas)  //TODO: delete after testing
         
         const res = await fetch('/api/edit-event', {
             credentials: 'include',
@@ -57,6 +54,9 @@ export default function EditEventPage() {
             dispatch(fetchTicketingData())
             dispatch(fetchEventInstanceData())
             dispatch(openSnackbar(`Saved edit to ${playData?.title ?? 'event'}`))
+        }
+        else {
+            dispatch(openSnackbar('Save failed'))
         }
     }
 
