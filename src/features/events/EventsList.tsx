@@ -16,7 +16,7 @@ const useStyles = makeStyles(theme => ({
 }))
 
 const EventsList = () => {
-    const allEvents = appSelector(state => state.ticketing.plays)
+    const allEvents = appSelector(state => state.ticketing.events)
     const loadStatus = appSelector(state => state.ticketing.status)
 
     const classes = useStyles()    

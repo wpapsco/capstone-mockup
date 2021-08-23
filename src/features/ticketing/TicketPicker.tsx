@@ -7,7 +7,7 @@ import {
     makeStyles, Theme
 } from '@material-ui/core'
 import MultiSelectCalendar from '../../components/MultiSelectCalendar'
-import ShowtimeSelect from '../events/ShowtimeSelect'
+import EventInstanceSelect from '../events/EventInstanceSelect'
 import { range } from '../../utils'
 import format from "date-fns/format";
 import isSameDay from "date-fns/isSameDay";
@@ -97,15 +97,15 @@ const TicketPicker = ({tickets}: TicketPickerProps) => {
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault()
         if (selectedTicket && qty) {
-            appDispatch(addTicketToCart({id: selectedTicket.eventid, qty, concessions}))
+            appDispatch(addTicketToCart({id: selectedTicket.event_instance_id, qty, concessions}))
             appDispatch(openSnackbar(`Added ${qty} ticket${qty === 1 ? "" : "s"} to cart!`))
             dispatch(resetWidget())
         }
     }
 
     const numAvail = selectedTicket
-        ? cartTicketCount[selectedTicket.eventid]
-            ? selectedTicket.availableseats - cartTicketCount[selectedTicket.eventid]
+        ? cartTicketCount[selectedTicket.event_instance_id]
+            ? selectedTicket.availableseats - cartTicketCount[selectedTicket.event_instance_id]
             : selectedTicket.availableseats
         : 0
 
@@ -136,9 +136,9 @@ const TicketPicker = ({tickets}: TicketPickerProps) => {
                 />
             </Collapse>
             <Collapse in={showTimes}>
-                <ShowtimeSelect
-                    showings={displayedShowings}
-                    showingSelected={(t) => dispatch(timeSelected(t))}
+                <EventInstanceSelect
+                    eventInstances={displayedShowings}
+                    eventInstanceSelected={(t) => dispatch(timeSelected(t))}
                 />
             </Collapse>
             <FormControl className={classes.formControl}>

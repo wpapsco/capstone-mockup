@@ -9,15 +9,15 @@ import {
 import SplitPane from '../../components/SplitPane'
 import HeroBanner from '../../components/HeroBanner'
 import { titleCase } from '../../utils'
-import { selectPlayData } from '../ticketing/ticketingSlice'
+import { selectEventData } from '../ticketing/ticketingSlice'
 import TicketPicker from '../ticketing/TicketPicker'
 import ScrollToTop from '../../components/ScrollToTop'
 
-type EventPageProps = {playid: string}
+type EventPageProps = {eventid: string}
 const EventPage = () => {
     const classes = useStyle()
-    const {playid} = useParams<EventPageProps>()
-    const eventData = appSelector(state => selectPlayData(state, playid))
+    const {eventid} = useParams<EventPageProps>()
+    const eventData = appSelector(state => selectEventData(state, eventid))
     if (eventData === undefined) return <p>Whoops! Event not found</p>
     const {title, description, image_url, tickets} = eventData
 

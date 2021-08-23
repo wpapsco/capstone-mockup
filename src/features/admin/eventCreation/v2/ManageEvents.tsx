@@ -4,7 +4,7 @@ import { Backdrop, Fade, Modal, Paper } from "@material-ui/core";
 import { DataGrid } from '@material-ui/data-grid';
 import { useHistory } from "react-router"
 import { appSelector, useAppDispatch } from "../../../../app/hooks"
-import { fetchEventData } from "../../../events/eventsSlice";
+import { fetchEventInstanceData } from "../../../events/eventsSlice";
 import { selectPlaysData, fetchTicketingData } from '../../../ticketing/ticketingSlice'
 import { openSnackbar } from "../../../snackbarSlice";
 
@@ -42,7 +42,7 @@ export default function ManageEventsPage() {
         if (res.ok) {
             dispatch(openSnackbar('Deleted Event'))
             dispatch(fetchTicketingData())
-            dispatch(fetchEventData())
+            dispatch(fetchEventInstanceData())
         }
         else {
             console.error(res.status, res.statusText)
@@ -51,8 +51,8 @@ export default function ManageEventsPage() {
 
     const columns = [
         { field: "id", headerName: "ID", width: 100},
-        { field: "playname", headerName: "Title", width: 200},
-        { field: "playdescription", headerName: "Description", width: 200},
+        { field: "eventname", headerName: "Title", width: 200},
+        { field: "eventdescription", headerName: "Description", width: 200},
         { field: "numShows", headerName: "No. Shows", width: 150},
         { field: "Edit", headerName: "Edit", width: 130, renderCell: (params: any) => (
             <Button variant="contained" color="secondary" onClick={() => onEditClick(params.row.id)}>Edit</Button>

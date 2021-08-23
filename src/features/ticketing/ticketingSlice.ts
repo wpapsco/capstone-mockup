@@ -4,7 +4,7 @@ import format from "date-fns/format";
 import { bound, titleCase } from '../../utils'
 
 export interface CartItem {
-    product_id: number,     // references state.tickets.eventid
+    product_id: number,     // references state.tickets.event_instance_id
     qty: number,
     name: string,
     desc: string,
@@ -13,8 +13,8 @@ export interface CartItem {
 }
 
 export interface Ticket {
-    eventid: number,             // references showtime.id in database
-    playid: string,
+    event_instance_id: number,
+    eventid: string,
     admission_type: 'General Admission',
     date: Date,
     ticket_price: number,
@@ -23,7 +23,7 @@ export interface Ticket {
     availableseats: number,
 }
 
-export interface Play {
+export interface Event {
     id: string,
     title: string,
     description: string,
@@ -35,7 +35,7 @@ export type LoadStatus = 'idle' | 'loading' | 'success' | 'failed'
 export interface ticketingState {
     cart: CartItem[],
     tickets: TicketsState,
-    plays: Play[],
+    events: Event[],
     status: LoadStatus,
 }
 
@@ -53,36 +53,36 @@ const fetchData = async (url: string) => {
 export const fetchTicketingData = createAsyncThunk(
     'ticketing/fetch',
     async () => {
-        const plays: Play[] = await fetchData('/api/plays')
+        const events: Event[] = await fetchData('/api/events')
         const ticketRes: TicketsState = await fetchData('/api/tickets')
         const tickets = Object.entries(ticketRes.byId)
             .reduce((res, [key, val]) => ({...res, [key]: {...val, date: new Date(val.date)}}), {})
-        return {plays, tickets: {byId: tickets, allIds: ticketRes.allIds}}
+        return {events, tickets: {byId: tickets, allIds: ticketRes.allIds}}
     }
 )
 
 
 export const toPartialCartItem = <T extends Ticket>(ticketLike: T) => ({
-    product_id: ticketLike.eventid,
+    product_id: ticketLike.event_instance_id,
     price: ticketLike.ticket_price,
     desc: `${ticketLike.admission_type} - ${format(ticketLike.date, 'eee, MMM dd - h:mm a')}`,
 })
 
 const appendCartField = <T extends CartItem>(key: keyof T, val: T[typeof key]) => (obj: any) => ({...obj, [key]: val})
 
-export const createCartItem = (data: {ticket: Ticket, play: Play, qty: number}): CartItem =>
+export const createCartItem = (data: {ticket: Ticket, event: Event, qty: number}): CartItem =>
     [data.ticket].map(toPartialCartItem)
-        .map(appendCartField('name', `${titleCase(data.play.title)} Ticket${(data.qty>1) ? 's' : ''}`))
+        .map(appendCartField('name', `${titleCase(data.event.title)} Ticket${(data.qty>1) ? 's' : ''}`))
         .map(appendCartField('qty', data.qty))
-        .map(appendCartField('product_img_url', data.play.image_url))[0]
+        .map(appendCartField('product_img_url', data.event.image_url))[0]
 
-type PlayId = string
-const isTicket = (obj: any): obj is Ticket => Object.keys(obj).some(k => k==='eventid')
+type EventId = string
+const isTicket = (obj: any): obj is Ticket => Object.keys(obj).some(k => k==='event_instance_id')
 const isCartItem = (obj: any): obj is CartItem => Object.keys(obj).some(k => k==='product_id')
 
-const byId = (id: number|PlayId) => (obj: Ticket|Play|CartItem) =>
+const byId = (id: number|EventId) => (obj: Ticket|Event|CartItem) =>
     (isTicket(obj))
-        ? obj.eventid===id
+        ? obj.event_instance_id===id
         : isCartItem(obj)
             ? obj.product_id===id
             : obj.id===id
@@ -128,8 +128,8 @@ const addTicketReducer: CaseReducer<ticketingState, PayloadAction<{ id: number, 
         }
     }
     else {
-        const play = state.plays.find(byId(ticket.playid))
-        const newCartItem = play ? createCartItem({ticket, play, qty}) : null
+        const event = state.events.find(byId(ticket.eventid))
+        const newCartItem = event ? createCartItem({ticket, event, qty}) : null
         return newCartItem
             ? {
                 ...state,
@@ -156,7 +156,7 @@ const editQtyReducer: CaseReducer<ticketingState, PayloadAction<{id: number, qty
 export const INITIAL_STATE: ticketingState = {
     cart: [],
     tickets: {byId: {}, allIds: []},
-    plays: [],
+    events: [],
     status: 'idle',
 }
 
@@ -185,8 +185,8 @@ const ticketingSlice = createSlice({
                 state.tickets = (action.payload.tickets)
                     ? action.payload.tickets
                     : {byId: {}, allIds: []}
-                state.plays = (action.payload.plays)
-                    ? action.payload.plays
+                state.events = (action.payload.events)
+                    ? action.payload.events
                     : []
             })
             .addCase(fetchTicketingData.rejected, state => {
@@ -213,10 +213,9 @@ export const selectCartTicketCount = (state: RootState): {[key: number]: number}
 export const selectNumInCart = (state: RootState) => state.ticketing.cart.length
 export const selectCartContents = (state: RootState): CartItem[] => state.ticketing.cart
 
-
-const filterTicketsReducer = (ticketsById: {[key: number]: Ticket}, playid: PlayId) =>
+const filterTicketsReducer = (ticketsById: {[key: number]: Ticket}, eventid: EventId) =>
     (filtered: Ticket[], id: number) => {
-        return (ticketsById[id].playid===playid)
+        return (ticketsById[id].eventid===eventid)
             ? [...filtered, ticketsById[id]]
             : filtered
     }
@@ -226,13 +225,13 @@ export interface EventPageData {
     image_url: string,
     tickets: Ticket[],
 }
-export const selectPlayData = (state: RootState, playId: PlayId): EventPageData|undefined => {
+export const selectEventData = (state: RootState, eventid: EventId): EventPageData|undefined => {
     const ticketData = state.ticketing.tickets
-    const play = state.ticketing.plays.find(byId(playId))
-    if (play) {
-        const {id, ...playData} = play
+    const event = state.ticketing.events.find(byId(eventid))
+    if (event) {
+        const {id, ...playData} = event
         const tickets = ticketData.allIds
-            .reduce(filterTicketsReducer(ticketData.byId, playId), [] as Ticket[])
+            .reduce(filterTicketsReducer(ticketData.byId, eventid), [] as Ticket[])
         return {...playData, tickets}
     }
     else {
@@ -241,15 +240,15 @@ export const selectPlayData = (state: RootState, playId: PlayId): EventPageData|
 }
 
 // Used for manage events page
-interface PlaySummaryData {
-    id: PlayId,
-    playname: string,
-    playdescription: string,
+interface EventSummaryData {
+    id: EventId,
+    eventname: string,
+    eventdescription: string,
     numShows: number,
 }
 export const selectPlaysData = (state: RootState) =>
-    state.ticketing.plays.reduce((res, play) => {
-            const {id, title, description} = play
+    state.ticketing.events.reduce((res, event) => {
+            const {id, title, description} = event
             const filteredTickets = state.ticketing.tickets.allIds.reduce(
                 filterTicketsReducer(state.ticketing.tickets.byId, id),
                 [] as Ticket[]
@@ -257,10 +256,10 @@ export const selectPlaysData = (state: RootState) =>
 
             return [
                 ...res,
-                { id:play.id, playname:title, playdescription:description, numShows:filteredTickets.length, }
+                { id:event.id, eventname:title, eventdescription:description, numShows:filteredTickets.length, }
             ]
         },
-        [] as PlaySummaryData[]
+        [] as EventSummaryData[]
     )
 
 export const selectNumAvailable = (state: RootState, ticketid: number) => {

@@ -15,8 +15,8 @@ interface TicketType {
 }
 
 export interface NewEventData {
-    playname: string,
-    playdescription: string,
+    eventname: string,
+    eventdescription: string,
     isPublished: boolean,
     image_url: string,
     showings: {
@@ -65,8 +65,8 @@ export default function EventForm({onSubmit, ticketTypes, initialValues, editMod
                         <Typography variant='h4' component='h2'>
                             Event Information
                         </Typography>
-                        <TextField className={classes.field} name='playname' label='Event Title' required={true} />
-                        <TextField className={classes.field} name='playdescription' label='Description' />
+                        <TextField className={classes.field} name='eventname' label='Event Title' required={true} />
+                        <TextField className={classes.field} name='eventdescription' label='Description' />
                         <TextField className={classes.field} name='image_url' label='Image URL' />
                     </Paper>
 

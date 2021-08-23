@@ -5,7 +5,7 @@ import RemoveIcon from "@material-ui/icons/Remove";
 import EditRoundedIcon from "@material-ui/icons/EditRounded";
 import CheckCircleIcon from "@material-ui/icons/CheckCircle";
 
-type CreatedShowTimesProps = {
+type CreatedEventInstanceProps = {
     id: number,
     eventDate: Date,
     startTime: string,
@@ -23,7 +23,7 @@ const useStyles = makeStyles({
     }
 })
 
-export default function ShowTimeListing({id, eventDate, startTime, totalSeats}: CreatedShowTimesProps) {
+export default function EventInstanceListing({id, eventDate, startTime, totalSeats}: CreatedEventInstanceProps) {
     const classes = useStyles();
     const [isEditMode, setIsEditMode] = useState<boolean>(true);
 

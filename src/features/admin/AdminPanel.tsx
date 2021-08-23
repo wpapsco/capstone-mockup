@@ -120,9 +120,9 @@ export default function AdminPanel() {
             </Grid>
             <Grid item xs={6}>
                 <Panel title="Newsletter" icon={<CreateIcon fontSize="large" className={ classes.icon } />} buttons={[{
-                    link: "/admin/newsletter_create",
-                    text: "Create newsletter",
-                    icon: <AddBox />
+                    link: "/admin/email_subscriptions",
+                    text: "Email Subscriptions",
+                    icon: <ViewListIcon />
                 }]} />
             </Grid>
             <Grid item xs={6}>

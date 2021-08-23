@@ -19,7 +19,7 @@ const useStyles = makeStyles({
     },
 });
 
-export interface ShowingProps {
+export interface InstanceProps {
     id: string,
     eventName: string,
     eventdate: string,
@@ -27,7 +27,7 @@ export interface ShowingProps {
     desc?: string,
     image_url: string,
 }
-export default function ShowingCard(props: ShowingProps) {
+export default function InstanceCard(props: InstanceProps) {
     const classes = useStyles();
 
     return (

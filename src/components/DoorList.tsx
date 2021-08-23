@@ -32,16 +32,16 @@ const renderCheckin = ((params: GridCellParams) =>
 const columns = [
     { field: "name", headerName: "Name", width: 200 },
     { field: "vip", headerName: "VIP", width: 100, renderCell: renderCheckbox },
-    { field: "donorbadge", headerName: "Donor", width: 100, renderCell: renderCheckbox },
-    { field: "accomodations", headerName: "Seating Accomodations", width: 180, renderCell: renderCheckbox },
-    { field: "num_tickets", headerName: "Tickets", width: 100 },
-    { field: "checkedin", headerName: "Checked In", width: 100, renderCell: renderCheckin },
+    { field: "donorbadge", headerName: "Donor", width: 125, renderCell: renderCheckbox },
+    { field: "accomodations", headerName: "Accomodations", width: 180, renderCell: renderCheckbox },
+    { field: "num_tickets", headerName: "Tickets", width: 130 },
+    { field: "arrived", headerName: "Arrived", width: 130, renderCell: renderCheckin },
 ]
 
-type DoorListProps = {showid: string}
+type DoorListProps = {eventinstanceid: string}
 export default function DoorList() {
 
-    const { showid } = useParams<DoorListProps>()
+    const { eventinstanceid } = useParams<DoorListProps>()
     const [doorList, setDoorList] = useState([])
     const [eventName, setEventName] = useState('')
     const [date, setDate] = useState('')
@@ -49,7 +49,7 @@ export default function DoorList() {
 
     const getDoorList = async () => {
         try {
-            const response = await fetch(`/api/doorlist?showid=${showid}`, {credentials: "include", method: "GET"})
+            const response = await fetch(`/api/doorlist?eventinstanceid=${eventinstanceid}`, {credentials: "include", method: "GET"})
             const jsonData = await response.json()
 
             // doorlistData.data {id: custid, name, vip, donor: donorbadge, accomodations: seatingaccom, num_tickets, checkedin, ticketno }
