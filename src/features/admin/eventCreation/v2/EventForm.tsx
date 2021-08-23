@@ -90,12 +90,20 @@ export default function EventForm({onSubmit, ticketTypes, initialValues, editMod
                                                     label='Event Date & Time'
                                                     required
                                                     dateFunsUtils={DateFnsUtils}
+                                                    disabled={editMode}
                                                 />
-                                                <TextField name={`${name}.totalseats`} label='Seating Capacity' type='number' required />
+                                                <TextField
+                                                    name={`${name}.totalseats`}
+                                                    label='Seating Capacity'
+                                                    type='number'
+                                                    required
+                                                    disabled={editMode}
+                                                />
                                                 <Select
                                                     name={`${name}.ticketTypeId`}
                                                     label='Select Ticket Type'
                                                     required
+                                                    disabled={editMode}
                                                 >
                                                     {ticketTypes.map(t =>
                                                         <MenuItem key={t.id} value={t.id}>
@@ -104,7 +112,11 @@ export default function EventForm({onSubmit, ticketTypes, initialValues, editMod
                                                     )}
                                                 </Select>
                                             </div>
-                                            <Button variant='contained' onClick={() => fields.remove(i)}>
+                                            <Button
+                                                variant='contained'
+                                                onClick={() => fields.remove(i)}
+                                                disabled={editMode}
+                                            >
                                                 Delete
                                             </Button>
                                         </Paper>
@@ -114,7 +126,13 @@ export default function EventForm({onSubmit, ticketTypes, initialValues, editMod
                         </div>
                         
                         <div className={classes.buttonGroup}>
-                            <Button color='secondary' variant='outlined' type='button' onClick={() => push('showings', undefined)}>
+                            <Button
+                                color='secondary'
+                                variant='outlined'
+                                type='button'
+                                onClick={() => push('showings', undefined)}
+                                disabled={editMode}
+                            >
                                 Add Showing
                             </Button>
                         </div>
