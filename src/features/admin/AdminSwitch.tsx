@@ -3,7 +3,7 @@ import {Switch, Route, useRouteMatch} from "react-router";
 import NewEventMain from "./eventCreation/newEventMain";
 import DeleteEvents from "../../components/DeleteEvents";
 import DoorList from "../../components/DoorList";
-import ShowingsPage from "../../components/ShowingsPage";
+import InstancesPage from "../../components/InstancesPage";
 import NewsletterCreate from "../newsletter/NewsletterCreate";
 import AdminPanel from "./AdminPanel";
 import EmailSubscriptions from "./EmailSubscriptions";
@@ -23,7 +23,7 @@ export default function AdminSwitch() {
             <DeleteEvents />
         </Route>
         <Route exact path={`${path}/doorlist`}>
-            <ShowingsPage />
+            <InstancesPage />
         </Route>
         <Route path={`${path}/doorlist/:showid`}>
             <DoorList />
