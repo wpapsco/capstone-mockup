@@ -394,41 +394,135 @@ app.post('/api/checkout', async (req, res) => {
 //End point to create a new play
 app.post("/api/create-play", isAuthenticated, async (req, res) => {
     try {
-        let body = req.body;
-        //change this based on the data we need to store in the database
-        const values = [body.playname, body.description, true, null];
-        const query = "INSERT INTO plays (seasonid, playname, playdescription, active, image_url)\
-        values (1, $1, $2. $3, $4)";
-        const new_event = await pool.query(query, values);
-        res.json(new_event.rows);
+        const {playname, playdescription, image_url} = req.body;
+        const values = [playname, playdescription, image_url];
+        const query = 
+            `INSERT INTO plays (seasonid, playname, playdescription, active, image_url)
+            values (0, $1, $2, true, $3) RETURNING *`;
+        const { rows } = await pool.query(query, values);
+        console.log('new play inserted:', rows)
+        res.json({rows});
     } catch (error) {
         console.error(error);
     }
 })
 
+interface Showing {
+    playid: string,
+    eventdate: string,
+    starttime: string,
+    totalseats: number,
+    tickettype: number, // ticket type ID
+}
+const insertAllShowings = async (showings: Showing[]) => {
+    const query =
+        `INSERT INTO showtimes (playid, eventdate, starttime, totalseats, availableseats, salestatus)
+        VALUES ($1, $2, $3, $4, $4, true) RETURNING *;`
+        
+    const res = []
+    for (const showing of showings) {
+        const {playid, eventdate, starttime, totalseats, tickettype} = showing
+        if (tickettype === undefined) {
+            throw new Error('No ticket type provided')
+        }
+        const {rows} = await pool.query(query, [playid, eventdate, starttime, totalseats])
+        res.push({...rows[0], tickettype})
+    }
+    return res
+}
+
 // End point to create a new showing
-app.post("/api/create-showing", isAuthenticated, async (req, res) => {
+app.post("/api/create-showings", isAuthenticated, async (req, res) => {
+    const {showings} = req.body;
+    let newShowtimes;
     try {
-        let body = req.body;
-        const values = [body.eventName, body.eventDate, body.eventTime, body.eventTickets, null];
-        console.log(values);
-        // const query = "insert into showtimes (playid, eventdate, starttime, totalseats, availableseats, purchaseuri)\
-        // values ($1, $2, $3, $4, $4, $5);"
-        // const create_event = await pool.query(query, values);
-        // res.json(create_event);
-    } catch (error) {
-        console.error(error);
+        newShowtimes = await insertAllShowings(showings)
+        // Link showtime to ticket type
+        const showdata = newShowtimes.map(s => ({id: s.id, tickettype: s.tickettype}))
+        const query2 = 'INSERT INTO linkedtickets (showid, ticket_type) VALUES ($1, $2)'
+        for (const sh of showdata) {
+            const {id, tickettype} = sh
+            await pool.query(query2, [id, tickettype])
+        }
+        res.json({newShowtimes});
+    }
+    catch (err) {
+        console.error(err)
+        res.status(400)
+        res.send(err)
     }
 });
 
-// Updates salestatus in showtimes table when given an id, date, and time
+/*
+* N: newly added property/element
+* E: property/element was edited
+* D: property/element was deleted
+* A: Change occured within array
+*/
+interface Delta {
+    kind: 'N'|'E'|'D'|'A',
+    path: Array<string|number>,
+    lhs?: any,
+    rhs: any,
+}
+
+const isShowingChange = (d: Delta) => d.path.includes('showings')
+const isPlayChange = (d: Delta) => !isShowingChange(d) && d.kind==='E'
+const playFields = ['playname','playdescription','image_url']
+
+const updatePlay = async (id: string, changes: Delta[]) => {
+    const edits = changes.map(d => [d.path[0], d.rhs])
+    let queryResults = []
+    for (const edit of edits) {
+        if (!playFields.includes(edit[0])) {
+            throw new Error('Invalid field provided')
+        }
+        const query = `UPDATE plays SET ${edit[0]} = $1 WHERE id = $2;`
+        const values = [edit[1], id]
+        const res = await pool.query(query, values)
+        queryResults.push(res.rows)
+    }
+    return queryResults
+}
+
+app.put('/api/edit-event', isAuthenticated, async (req, res) => {
+    const { playid, deltas }: { playid: string, deltas: Delta[] } = req.body
+    if (deltas===undefined || deltas.length===0) {
+        res.status(400)
+        res.send('No edits provided')
+    }
+    const playChanges = deltas.filter(isPlayChange)
+    const showingChanges = deltas.filter(isShowingChange)
+
+    try {
+        let results = []
+        if (playChanges.length > 0) {
+            const result = await updatePlay(playid, playChanges)
+            results.push(result)
+        }
+        if (showingChanges.length > 0) {
+            console.log('TODO: edit showings')
+        }
+
+        res.json({rows: results})
+    }
+    catch (err) {
+        console.error(err.message)
+        res.status(500)
+        res.send('Edit event failed: ' + err.message)
+    }
+})
+
+// Updates salestatus in showtimes table and active flag in plays table when given a play id
 app.post("/api/delete-event", isAuthenticated, async (req, res) => {
     try {
-        let body = req.body;
-        const values = [body.id];
-        const query = "update showtimes set salestatus = false where id = $1";
-        const remove_event = await pool.query(query, values);
-        res.json(remove_event.rows)
+        const {id} = req.body; // playid
+        const archivePlay = 'UPDATE plays SET active=false WHERE id=$1;'
+        const archiveShowtimes = 'UPDATE showtimes SET salestatus=false WHERE playid=$1;'
+
+        const archivedPlay = await pool.query(archivePlay, [id])
+        const archivedShowtimes = await pool.query(archiveShowtimes, [id])
+        res.json({rows: [...archivedPlay.rows, ...archivedShowtimes.rows]})
     } catch (error) {
         console.error(error);
     }
@@ -659,6 +753,7 @@ const reduceToTicketState = (res, t: Ticket) => {
         : {byId: {...byId, [id]: t}, allIds: [...allIds, id]}
 }
 
+// Responds with tickets subset of Redux state
 app.get('/api/tickets', async (req, res) => {
     try {
         const qs =
@@ -667,6 +762,7 @@ app.get('/api/tickets', async (req, res) => {
                 playid,
                 eventdate,
                 starttime,
+                totalseats,
                 availableseats,
                 tt.name AS admission_type,
                 price AS ticket_price,
@@ -674,7 +770,7 @@ app.get('/api/tickets', async (req, res) => {
             FROM showtimes sh
                 JOIN linkedtickets lt ON sh.id=lt.showid
                 JOIN tickettype tt ON lt.ticket_type=tt.id
-            WHERE isseason=false AND availableseats > 0
+            WHERE salestatus=true AND isseason=false AND availableseats > 0
             ORDER BY playid, eventid;`
         const query_res = await pool.query(qs)
         res.json(
