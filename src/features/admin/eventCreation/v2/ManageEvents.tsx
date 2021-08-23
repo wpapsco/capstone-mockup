@@ -5,14 +5,14 @@ import { DataGrid } from '@material-ui/data-grid';
 import { useHistory } from "react-router"
 import { appSelector, useAppDispatch } from "../../../../app/hooks"
 import { fetchEventData } from "../../../events/eventsSlice";
-import { selectPlaySummarData, fetchTicketingData } from '../../../ticketing/ticketingSlice'
-import { openSnackbar } from '../../../snackbarSlice'
+import { selectPlaysData, fetchTicketingData } from '../../../ticketing/ticketingSlice'
+import { openSnackbar } from "../../../snackbarSlice";
 
 export default function ManageEventsPage() {
     const history = useHistory()
     const classes = useStyles()
     const dispatch = useAppDispatch()
-    const eventsData = appSelector(selectPlaySummarData)
+    const eventsData = appSelector(selectPlaysData)
 
     const [modalOpen, setModalOpen] = useState(false)
     const [eventToDelete, setEventToDelete] = useState<string|null>()

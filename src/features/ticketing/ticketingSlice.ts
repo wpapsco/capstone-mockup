@@ -241,13 +241,13 @@ export const selectPlayData = (state: RootState, playId: PlayId): EventPageData|
 }
 
 // Used for manage events page
-interface PlaysSummaryData {
+interface PlaySummaryData {
     id: PlayId,
     playname: string,
     playdescription: string,
     numShows: number,
 }
-export const selectPlaySummarData = (state: RootState) =>
+export const selectPlaysData = (state: RootState) =>
     state.ticketing.plays.reduce((res, play) => {
             const {id, title, description} = play
             const filteredTickets = state.ticketing.tickets.allIds.reduce(
@@ -260,7 +260,7 @@ export const selectPlaySummarData = (state: RootState) =>
                 { id:play.id, playname:title, playdescription:description, numShows:filteredTickets.length, }
             ]
         },
-        [] as PlaysSummaryData[]
+        [] as PlaySummaryData[]
     )
 
 export const selectNumAvailable = (state: RootState, ticketid: number) => {
