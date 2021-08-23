@@ -130,7 +130,7 @@ const Cart = () => {
 
             <div className={classes.actionButtons}>
                 <Button variant="contained" color="secondary" disabled={items.length === 0} onClick={removeAllCartItems}>Empty Cart</Button>
-                <Button variant="contained" color="primary" disabled={items.length === 0} onClick={navigateToCompleteOrder}>Procede To Checkout</Button>
+                <Button variant="contained" color="primary" disabled={items.length === 0} onClick={navigateToCompleteOrder}>Proceed To Checkout</Button>
             </div>
 
             <Modal
