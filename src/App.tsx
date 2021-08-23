@@ -60,7 +60,7 @@ function App() {
                             <Button onClick={() => setDates([])}>Clear</Button>
                             {dates.map(d => <p key={d.getTime()}>{d.toLocaleString()}</p>)}
                         </Route>
-                        <Route path="/events/:playid">
+                        <Route path="/events/:eventid">
                             <EventPage />
                         </Route>
 
