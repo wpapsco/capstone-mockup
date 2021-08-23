@@ -177,7 +177,7 @@ app.get("/api/active-event-instance-list", async (req, res) => {
 });
 
 const formatDoorlistResponse = rowdata => ({
-    eventname: rowdata[0].playname,
+    eventname: rowdata[0].eventname,
     eventdate: rowdata[0].eventdate,
     starttime: rowdata[0].starttime,
     data: rowdata.map(datum => {
@@ -189,17 +189,15 @@ const formatDoorlistResponse = rowdata => ({
 // TODO: JESSE WILL FIX THIS
 app.get('/api/doorlist', isAuthenticated, async (req, res) => {
     try {
-        const querystring =
-            `select cust.id as "custid", cust.custname as "name", cust.vip, cust.donorbadge, cust.seatingaccom,
-            plays.id as "playid", plays.playname, shwtm.id as "eventid", shwtm.eventdate, shwtm.starttime, tix.checkedin as "arrived",
-            count(cust.id) as "num_tickets"
-            from showtimes as shwtm left join plays on shwtm.playid = plays.id left join
-            tickets as tix on shwtm.id = tix.eventid left join tickets as tix2 on tix.ticketno = tix2.ticketno
+        const querystring = `select cust.id as "custid", cust.custname as "name", cust.vip, cust.donorbadge, cust.seatingaccom,
+            events.id as "eventid", events.eventname, event_instance.id as "event_instance_id", event_instance.eventdate, event_instance.starttime, tix.checkedin as "arrived", count(cust.id) as "num_tickets"
+            from event_instances as event_instance left join events on event_instance.eventid = events.id left join
+            tickets as tix on event_instance.id = tix.eventinstanceid
             join customers as cust on tix.custid = cust.id
-            where shwtm.id = $1
-            group by cust.id, name ,plays.id, plays.playname, shwtm.id, shwtm.eventdate, shwtm.starttime, tix.checkedin
+            where event_instance.id = $1
+            group by cust.id, name, events.id, events.eventname, event_instance.id, event_instance.eventdate, event_instance.starttime, tix.checkedin
             order by name`;
-        const values = [req.query.showid]
+        const values = [req.query.eventinstanceid]
         const doorlist = await pool.query(querystring, values);
         res.json(formatDoorlistResponse(doorlist.rows));
     }
