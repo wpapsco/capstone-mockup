@@ -27,11 +27,11 @@ export interface Event {
 
 export const aggregateInstances = (events: EventInstance[]) =>
     events.reduce<Dictionary<Event>>((events, event) => {
-        const { eventname, eventdescription, image_url, eventid, ...showing } = event
+        const { eventname, eventdescription, image_url, eventid, ...instance } = event
 
         return (events[eventid]) ?
-            { ...events, [eventid]: {...events[eventid], instances: [...events[eventid].instances, showing] as Instance[]}} :
-            { ...events, [eventid]: { eventid, eventname, eventdescription, image_url, instances: [showing] }}
+            { ...events, [eventid]: {...events[eventid], instances: [...events[eventid].instances, instance] as Instance[]}} :
+            { ...events, [eventid]: { eventid, eventname, eventdescription, image_url, instances: [instance] }}
         }, {})
 
 export const fetchEventInstanceData = createAsyncThunk(
