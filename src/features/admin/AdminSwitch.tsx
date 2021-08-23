@@ -25,7 +25,7 @@ export default function AdminSwitch() {
         <Route exact path={`${path}/doorlist`}>
             <InstancesPage />
         </Route>
-        <Route path={`${path}/doorlist/:showid`}>
+        <Route path={`${path}/doorlist/:eventinstanceid`}>
             <DoorList />
         </Route>
         <Route path={`${path}/email_subscriptions`}>
