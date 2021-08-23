@@ -186,7 +186,6 @@ const formatDoorlistResponse = rowdata => ({
     })
 })
 
-// TODO: JESSE WILL FIX THIS
 app.get('/api/doorlist', isAuthenticated, async (req, res) => {
     try {
         const querystring = `select cust.id as "custid", cust.custname as "name", cust.vip, cust.donorbadge, cust.seatingaccom,
