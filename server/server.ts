@@ -453,6 +453,66 @@ app.post("/api/create-showings", isAuthenticated, async (req, res) => {
     }
 });
 
+/*
+* N: newly added property/element
+* E: property/element was edited
+* D: property/element was deleted
+* A: Change occured within array
+*/
+interface Delta {
+    kind: 'N'|'E'|'D'|'A',
+    path: Array<string|number>,
+    lhs?: any,
+    rhs: any,
+}
+
+const isShowingChange = (d: Delta) => d.path.includes('showings')
+const isPlayChange = (d: Delta) => !isShowingChange(d) && d.kind==='E'
+const playFields = ['playname','playdescription','image_url']
+
+const updatePlay = async (id: string, changes: Delta[]) => {
+    const edits = changes.map(d => [d.path[0], d.rhs])
+    let queryResults = []
+    for (const edit of edits) {
+        if (!playFields.includes(edit[0])) {
+            throw new Error('Invalid field provided')
+        }
+        const query = `UPDATE plays SET ${edit[0]} = $1 WHERE id = $2;`
+        const values = [edit[1], id]
+        const res = await pool.query(query, values)
+        queryResults.push(res.rows)
+    }
+    return queryResults
+}
+
+app.put('/api/edit-event', isAuthenticated, async (req, res) => {
+    const { playid, deltas }: { playid: string, deltas: Delta[] } = req.body
+    if (deltas===undefined || deltas.length===0) {
+        res.status(400)
+        res.send('No edits provided')
+    }
+    const playChanges = deltas.filter(isPlayChange)
+    const showingChanges = deltas.filter(isShowingChange)
+
+    try {
+        let results = []
+        if (playChanges.length > 0) {
+            const result = await updatePlay(playid, playChanges)
+            results.push(result)
+        }
+        if (showingChanges.length > 0) {
+            console.log('TODO: edit showings')
+        }
+
+        res.json({rows: results})
+    }
+    catch (err) {
+        console.error(err.message)
+        res.status(500)
+        res.send('Edit event failed: ' + err.message)
+    }
+})
+
 // Updates salestatus in showtimes table and active flag in plays table when given a play id
 app.post("/api/delete-event", isAuthenticated, async (req, res) => {
     try {

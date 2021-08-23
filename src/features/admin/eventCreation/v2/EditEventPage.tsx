@@ -2,9 +2,11 @@ import { useState, useEffect } from 'react'
 import EventForm, { NewEventData } from './EventForm'
 import { Typography } from '@material-ui/core'
 import { useParams } from 'react-router-dom'
-import { selectPlayData, EventPageData } from '../../../ticketing/ticketingSlice'
-import { appSelector } from '../../../../app/hooks'
+import { selectPlayData, EventPageData, fetchTicketingData } from '../../../ticketing/ticketingSlice'
+import { appSelector, useAppDispatch } from '../../../../app/hooks'
 import { diff } from 'deep-diff'
+import { fetchEventData } from '../../../events/eventsSlice'
+import { openSnackbar } from '../../../snackbarSlice'
 
 
 interface EditEventPageProps { playid: string }
@@ -23,6 +25,7 @@ const formatToEventFormData = (data: EventPageData): Partial<NewEventData> => ({
 
 // TODO compare which fields are 
 export default function EditEventPage() {
+    const dispatch = useAppDispatch()
     const { playid } = useParams<EditEventPageProps>()
     const [ticketTypes, setTicketTypes] = useState([])
 
@@ -37,26 +40,24 @@ export default function EditEventPage() {
         fetchTicketTypes()
     }, [])
 
-    // TODO update in database
+    const [changes, setChanges] = useState<ReturnType<typeof diff>>() //TODO: delete after testing
     const onSubmit = async (updatedData: NewEventData) => {
-        // calc diff between init values and new values
-        const changes = diff(initValues, updatedData)
-        console.log('init', initValues)
-        console.log('newdata', updatedData)
-        console.log('diff', changes)
+        const deltas = diff(initValues, updatedData)
+        setChanges(deltas)  //TODO: delete after testing
         
-        // const res = await fetch('/api/EditEvent?playid', {
-        //     method: 'PUT',
-        //     credentials: 'include',
-        //     body: JSON.stringify(changes)
-        // })
-
-        // if (res.ok) {
-        //     const resBody = await res.json()
-        // }
-        // else {
-        //     console.error(res.statusText)
-        // }
+        const res = await fetch('/api/edit-event', {
+            credentials: 'include',
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ playid, deltas })
+        })
+        if (res.ok) {
+            const results = await res.json()
+            console.log(results)
+            dispatch(fetchTicketingData())
+            dispatch(fetchEventData())
+            dispatch(openSnackbar(`Saved edit to ${playData?.title ?? 'event'}`))
+        }
     }
 
     return (
@@ -70,9 +71,11 @@ export default function EditEventPage() {
                 initialValues={initValues}
                 editMode
             />
-            <pre style={{backgroundColor: 'lightgrey', padding: '30px', width: '50%', margin: '15px auto'}}>
-                playid: {playid}
-            </pre>
+            <div style={{backgroundColor: 'lightgrey', padding: '30px', width: '500px', margin: '15px auto'}}>
+                <p>playid: {playid}</p>
+                changes:
+                <div style={{width: '100%', overflow: 'hidden'}}>{changes && JSON.stringify(changes)}</div>
+            </div>
         </div>
     )
 }
