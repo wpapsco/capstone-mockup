@@ -126,7 +126,7 @@ describe('ticketing slice', () => {
                     description: 'lorem ipsum donor',
                     image_url: 'https://image',
                     tickets: [{
-                        eventid: 1,
+                        event_instance_id: 1,
                         eventid: '1',
                         admission_type: 'General Admission',
                         ticket_price: 15.99,
@@ -134,7 +134,7 @@ describe('ticketing slice', () => {
                         availableseats: 34,
                         date: new Date('2021-07-31T19:00:00')
                     },{
-                        eventid: 2,
+                        event_instance_id: 2,
                         eventid: '1',
                         admission_type: 'General Admission',
                         ticket_price: 19.99,
