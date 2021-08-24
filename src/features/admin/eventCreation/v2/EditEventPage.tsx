@@ -2,34 +2,33 @@ import { useState, useEffect } from 'react'
 import EventForm, { NewEventData } from './EventForm'
 import { Typography } from '@material-ui/core'
 import { useParams } from 'react-router-dom'
-import { selectPlayData, EventPageData, fetchTicketingData } from '../../../ticketing/ticketingSlice'
+import { selectEventData, EventPageData, fetchTicketingData } from '../../../ticketing/ticketingSlice'
 import { appSelector, useAppDispatch } from '../../../../app/hooks'
 import { diff } from 'deep-diff'
-import { fetchEventData } from '../../../events/eventsSlice'
+import { fetchEventInstanceData } from '../../../events/eventsSlice'
 import { openSnackbar } from '../../../snackbarSlice'
 
 
-interface EditEventPageProps { playid: string }
+interface EditEventPageProps { eventid: string }
 
 const formatToEventFormData = (data: EventPageData): Partial<NewEventData> => ({
-    playname: data.title,
-    playdescription: data.description,
+    eventname: data.title,
+    eventdescription: data.description,
     image_url: data.image_url,
     showings: data.tickets.map(t => ({
-        id: t.eventid,
+        id: t.event_instance_id,
         DateTime: t.date,
         totalseats: t.totalseats ?? 0,
         ticketTypeId: '0'
     }))
 })
 
-// TODO compare which fields are 
 export default function EditEventPage() {
     const dispatch = useAppDispatch()
-    const { playid } = useParams<EditEventPageProps>()
+    const { eventid } = useParams<EditEventPageProps>()
     const [ticketTypes, setTicketTypes] = useState([])
 
-    const playData = appSelector(state => selectPlayData(state, playid))
+    const playData = appSelector(state => selectEventData(state, eventid))
     const initValues = playData ? formatToEventFormData(playData) : undefined
 
     const fetchTicketTypes = async () => {
@@ -40,23 +39,24 @@ export default function EditEventPage() {
         fetchTicketTypes()
     }, [])
 
-    const [changes, setChanges] = useState<ReturnType<typeof diff>>() //TODO: delete after testing
     const onSubmit = async (updatedData: NewEventData) => {
         const deltas = diff(initValues, updatedData)
-        setChanges(deltas)  //TODO: delete after testing
         
         const res = await fetch('/api/edit-event', {
             credentials: 'include',
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ playid, deltas })
+            body: JSON.stringify({ eventid, deltas })
         })
         if (res.ok) {
             const results = await res.json()
             console.log(results)
             dispatch(fetchTicketingData())
-            dispatch(fetchEventData())
+            dispatch(fetchEventInstanceData())
             dispatch(openSnackbar(`Saved edit to ${playData?.title ?? 'event'}`))
+        }
+        else {
+            dispatch(openSnackbar('Save failed'))
         }
     }
 

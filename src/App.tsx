@@ -18,7 +18,7 @@ import { closeSnackbar, selectSnackbar } from "./features/snackbarSlice"
 
 import AllEventsPage from './features/events/AllEventsPage'
 import EventPage from "./features/events/EventPage"
-import { fetchEventData } from "./features/events/eventsSlice";
+import { fetchEventInstanceData } from "./features/events/eventsSlice";
 import { fetchTicketingData } from './features/ticketing/ticketingSlice'
 
 import LoginPage from "./components/LoginPage";
@@ -36,7 +36,7 @@ function App() {
 
     useEffect(() => {
         if(eventsStatus === 'idle') {
-            dispatch(fetchEventData())
+            dispatch(fetchEventInstanceData())
             dispatch(fetchTicketingData())
         }
     }, [dispatch])
@@ -60,7 +60,7 @@ function App() {
                             <Button onClick={() => setDates([])}>Clear</Button>
                             {dates.map(d => <p key={d.getTime()}>{d.toLocaleString()}</p>)}
                         </Route>
-                        <Route path="/events/:playid">
+                        <Route path="/events/:eventid">
                             <EventPage />
                         </Route>
 

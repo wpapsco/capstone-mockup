@@ -4,7 +4,7 @@ import Select from "@material-ui/core/Select";
 import MenuItem from "@material-ui/core/MenuItem";
 import InputLabel from "@material-ui/core/InputLabel";
 import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
-import EventTimes from "./eventTimes";
+import EventInstanceTimes from "./EventInstanceTimes";
 import NewEvent from "./createEvent";
 //import Event from '../../events/eventsSlice'; Why doesn't this work??
 
@@ -17,15 +17,15 @@ const useStyles = makeStyles((theme: Theme) =>
     })
 );
 
-interface PlayListings {
+interface EventListings {
     name: string,
     id: number,
 }
 
-interface EventDetails {
+interface EventInstanceDetails {
     id: number,
-    playid: number,
-    showid: number,
+    eventid: number,
+    eventInstanceid: number,
     eventName: string,
     eventDate: Date,
     eventTime: string,
@@ -34,36 +34,36 @@ interface EventDetails {
 }
 
 /* TODO: 
-    - Francis '/api/play-list' needs to return id's as well 
-    - There should be no play with an id of 0    
+    - Francis '/api/event-list' needs to return id's as well 
+    - There should be no event with an id of 0    
 */
 
 export default function NewEventMain() {
     const classes = useStyles();
     const [eventIndex, setEventIndex] = useState<number>(0);
     // "New" should always be the first value, set in useEffect
-    const [eventTitles, setEventTitles] = useState<PlayListings[]>([]);
-    const [eventDetails, setEventDetails] = useState<EventDetails[]>([]);
+    const [eventTitles, setEventTitles] = useState<EventListings[]>([]);
+    const [eventInstanceDetails, setEventInstanceDetails] = useState<EventInstanceDetails[]>([]);
 
     useEffect(() => {
-        fetch('/api/play-list')
+        fetch('/api/event-list')
             .then(response => response.json())
             .then(data => {
-                let val: PlayListings[] = [{ name: 'New', id: 0 }];
+                let val: EventListings[] = [{ name: 'New', id: 0 }];
                 console.log(data);
                 data.forEach((x: any) => {
-                    val.push({ name: x.playname, id: x.id });
+                    val.push({ name: x.eventname, id: x.id });
                 })
                 setEventTitles(val);
             })
-    }, [setEventTitles, eventDetails])
+    }, [setEventTitles, eventInstanceDetails])
 
     /* Prop passed down to createEvent. When an event is saved, we store the
        values and pass them along to eventTimes */
     const onEventSaved = (title: string, marquee: string[], description: string) => {
        // I think this should call the server to get a UUID and store the information
-       // about the play.
-       console.log('Play Name: ' + title);
+       // about the event.
+       console.log('Event Name: ' + title);
        let titles = eventTitles.slice();
        titles.push({ name: title, id: 100 }); // TODO we should get a UUID for this
        setEventTitles(titles);
@@ -73,17 +73,17 @@ export default function NewEventMain() {
     /* Handler for the select event */
     const onInputChange = (event: React.ChangeEvent<{ value: unknown }>) => {
         setEventIndex(event.target.value as number);
-        let rows: EventDetails[] = [];
-        fetch(`/api/show-tickets?play=${eventTitles[event.target.value as number].id}`)
+        let rows: EventInstanceDetails[] = [];
+        fetch(`/api/show-tickets?event=${eventTitles[event.target.value as number].id}`)
             .then(request => request.json())
             .then(data => {
                 console.log(data.rows);
                 data.rows.forEach((val: any, index: number) => {
                     rows.push({
                         id: index,
-                        playid: val.play_id,
-                        showid: val.show_id,
-                        eventName: val.playname,
+                        eventid: val.event_id,
+                        eventInstanceid: val.event_instance_id,
+                        eventName: val.eventname,
                         eventDate: new Date(val.eventdate),
                         eventTime: val.starttime.slice(0, 5),
                         seats: val.availableseats,
@@ -91,7 +91,7 @@ export default function NewEventMain() {
                     })
                 })
             })
-            setEventDetails(rows);
+            setEventInstanceDetails(rows);
             console.log(rows);
     }
 
@@ -118,8 +118,8 @@ export default function NewEventMain() {
             </div>
             {
                 // If the index is 0, then we have a new event, show the event creation page (createEvent) or if the
-                // value is something else, we can edit the events show times (eventTimes).
-                eventIndex === 0 ? <NewEvent eventSaved={onEventSaved} /> : <EventTimes eventTitle={eventTitles[eventIndex].name} eventDetails={eventDetails} />
+                // value is something else, we can edit the event event instance times (eventInstanceTimes).
+                eventIndex === 0 ? <NewEvent eventSaved={onEventSaved} /> : <EventInstanceTimes eventTitle={eventTitles[eventIndex].name} eventInstanceDetails={eventInstanceDetails} />
             }            
         </div>
     )

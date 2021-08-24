@@ -106,7 +106,7 @@ app.post('/api/newUser', isSuperadmin, async (req, res) => {
     const passHash = await bcrypt.hash(req.body.password, 10);
     try {
         await pool.query('INSERT INTO users (username, pass_hash) VALUES ($1, $2);', [req.body.username, passHash]);
-    } catch (e)  {
+    } catch (e) {
         res.json({error: "USER_EXISTS"})
         return
     }
@@ -138,38 +138,38 @@ app.post('/api/login', passport.authenticate('local'), (req, res) => {
     res.sendStatus(200);
 })
 
-//Endpont to get list of plays
-app.get("/api/play-list", async (req, res) =>{
+//Endpont to get list of events
+app.get("/api/event-list", async (req, res) =>{
     try {
-        const plays = await pool.query('select id, playname from plays where active = true')
-        res.json(plays.rows);
+        const events = await pool.query('select id, eventname from events where active = true')
+        res.json(events.rows);
     } catch (error) {
         console.error(error.message);
     }
 })
 
-//Endpoint to get play id
-app.get("/api/play-id", async (req, res) => {
+//Endpoint to get event id
+app.get("/api/event-id", async (req, res) => {
     try {
-        const values = [req.body.playname];
+        const values = [req.body.eventname];
         // let values =['united']
-        const ids = await pool.query('select id, playname from plays where playname = $1', values);
-        if (ids.rowCount === 0) res.status(404).json('No play was found.');
+        const ids = await pool.query('select id, eventname from events where eventname = $1', values);
+        if (ids.rowCount === 0) res.status(404).json('No event was found.');
         else res.json(ids.rows);
     }
-    catch(error){
+    catch(error) {
         console.error(error);
     }
 })
 
-// Endpoint to get the list of all events that are currently active
-app.get("/api/event-list", async (req, res) => {
+// Endpoint to get the list of all event instances that are currently active
+app.get("/api/active-event-instance-list", async (req, res) => {
   try {
     const events = await pool.query(
-        `select shwtm.id, shwtm.playid, plays.playname, plays.playdescription, plays.image_url,
-        shwtm.eventdate, shwtm.starttime, shwtm.totalseats, shwtm.availableseats
-        from showtimes as shwtm join plays on shwtm.playid = plays.id 
-        where plays.active = true and shwtm.salestatus = true`);
+        `select ei.id, ei.eventid, events.eventname, events.eventdescription, events.image_url,
+        ei.eventdate, ei.starttime, ei.totalseats, ei.availableseats
+        from event_instances as ei join events on ei.eventid = events.id 
+        where events.active = true and ei.salestatus = true`);
     res.json(events.rows);
   } catch (err) {
     console.error(err.message);
@@ -177,7 +177,7 @@ app.get("/api/event-list", async (req, res) => {
 });
 
 const formatDoorlistResponse = rowdata => ({
-    eventname: rowdata[0].playname,
+    eventname: rowdata[0].eventname,
     eventdate: rowdata[0].eventdate,
     starttime: rowdata[0].starttime,
     data: rowdata.map(datum => {
@@ -189,15 +189,14 @@ const formatDoorlistResponse = rowdata => ({
 app.get('/api/doorlist', isAuthenticated, async (req, res) => {
     try {
         const querystring = `select cust.id as "custid", cust.custname as "name", cust.vip, cust.donorbadge, cust.seatingaccom,
-        plays.id as "playid", plays.playname, shwtm.id as "eventid", shwtm.eventdate, shwtm.starttime, tix.checkedin as "arrived",
-        count(cust.id) as "num_tickets"
-        from showtimes as shwtm left join plays on shwtm.playid = plays.id left join
-        tickets as tix on shwtm.id = tix.eventid left join tickets as tix2 on tix.ticketno = tix2.ticketno
-        join customers as cust on tix.custid = cust.id
-        where shwtm.id = $1
-        group by cust.id, name ,plays.id, plays.playname, shwtm.id, shwtm.eventdate, shwtm.starttime, tix.checkedin
-        order by name`;
-        const values = [req.query.showid]
+            events.id as "eventid", events.eventname, event_instance.id as "event_instance_id", event_instance.eventdate, event_instance.starttime, tix.checkedin as "arrived", count(cust.id) as "num_tickets"
+            from event_instances as event_instance left join events on event_instance.eventid = events.id left join
+            tickets as tix on event_instance.id = tix.eventinstanceid
+            join customers as cust on tix.custid = cust.id
+            where event_instance.id = $1
+            group by cust.id, name, events.id, events.eventname, event_instance.id, event_instance.eventdate, event_instance.starttime, tix.checkedin
+            order by name`;
+        const values = [req.query.eventinstanceid]
         const doorlist = await pool.query(querystring, values);
         res.json(formatDoorlistResponse(doorlist.rows));
     }
@@ -359,7 +358,7 @@ app.post('/api/checkout', async (req, res) => {
 
     const session = await stripe.checkout.sessions.create({
         payment_method_types: ['card'],
-        //this is the offending area all this stuff needs to be replaced by info from DB based on play ID or something
+        //this is the offending area all this stuff needs to be replaced by info from DB based on event ID or something
         line_items: data.map(item => ({
             price_data: {
                 currency: "usd",
@@ -391,16 +390,14 @@ app.post('/api/checkout', async (req, res) => {
     res.json({id: session.id})
 });
 
-//End point to create a new play
-app.post("/api/create-play", isAuthenticated, async (req, res) => {
+//End point to create a new event
+app.post("/api/create-event", isAuthenticated, async (req, res) => {
     try {
-        const {playname, playdescription, image_url} = req.body;
-        const values = [playname, playdescription, image_url];
+        const {eventname, eventdescription, image_url} = req.body;
         const query = 
-            `INSERT INTO plays (seasonid, playname, playdescription, active, image_url)
+            `INSERT INTO events (seasonid, eventname, eventdescription, active, image_url)
             values (0, $1, $2, true, $3) RETURNING *`;
-        const { rows } = await pool.query(query, values);
-        console.log('new play inserted:', rows)
+        const { rows } = await pool.query(query, [eventname, eventdescription, image_url]);
         res.json({rows});
     } catch (error) {
         console.error(error);
@@ -408,7 +405,7 @@ app.post("/api/create-play", isAuthenticated, async (req, res) => {
 })
 
 interface Showing {
-    playid: string,
+    eventid: string,
     eventdate: string,
     starttime: string,
     totalseats: number,
@@ -416,35 +413,35 @@ interface Showing {
 }
 const insertAllShowings = async (showings: Showing[]) => {
     const query =
-        `INSERT INTO showtimes (playid, eventdate, starttime, totalseats, availableseats, salestatus)
+        `INSERT INTO event_instances (eventid, eventdate, starttime, totalseats, availableseats, salestatus)
         VALUES ($1, $2, $3, $4, $4, true) RETURNING *;`
         
     const res = []
     for (const showing of showings) {
-        const {playid, eventdate, starttime, totalseats, tickettype} = showing
+        const {eventid, eventdate, starttime, totalseats, tickettype} = showing
         if (tickettype === undefined) {
             throw new Error('No ticket type provided')
         }
-        const {rows} = await pool.query(query, [playid, eventdate, starttime, totalseats])
+        const {rows} = await pool.query(query, [eventid, eventdate, starttime, totalseats])
         res.push({...rows[0], tickettype})
     }
     return res
 }
 
 // End point to create a new showing
-app.post("/api/create-showings", isAuthenticated, async (req, res) => {
-    const {showings} = req.body;
-    let newShowtimes;
+app.post("/api/create-event-instances", isAuthenticated, async (req, res) => {
+    const {instances} = req.body;
+    let newInstances;
     try {
-        newShowtimes = await insertAllShowings(showings)
+        newInstances = await insertAllShowings(instances)
         // Link showtime to ticket type
-        const showdata = newShowtimes.map(s => ({id: s.id, tickettype: s.tickettype}))
-        const query2 = 'INSERT INTO linkedtickets (showid, ticket_type) VALUES ($1, $2)'
-        for (const sh of showdata) {
+        const linkingdata = newInstances.map(s => ({id: s.id, tickettype: s.tickettype}))
+        const query2 = 'INSERT INTO linkedtickets (event_instance_id, ticket_type) VALUES ($1, $2)'
+        for (const sh of linkingdata) {
             const {id, tickettype} = sh
             await pool.query(query2, [id, tickettype])
         }
-        res.json({newShowtimes});
+        res.json({newInstances});
     }
     catch (err) {
         console.error(err)
@@ -467,17 +464,17 @@ interface Delta {
 }
 
 const isShowingChange = (d: Delta) => d.path.includes('showings')
-const isPlayChange = (d: Delta) => !isShowingChange(d) && d.kind==='E'
-const playFields = ['playname','playdescription','image_url']
+const isEventChange = (d: Delta) => !isShowingChange(d) && d.kind==='E'
+const eventFields = ['eventname','eventdescription','image_url']
 
-const updatePlay = async (id: string, changes: Delta[]) => {
+const updateEvent = async (id: string, changes: Delta[]) => {
     const edits = changes.map(d => [d.path[0], d.rhs])
     let queryResults = []
     for (const edit of edits) {
-        if (!playFields.includes(edit[0])) {
+        if (!eventFields.includes(edit[0])) {
             throw new Error('Invalid field provided')
         }
-        const query = `UPDATE plays SET ${edit[0]} = $1 WHERE id = $2;`
+        const query = `UPDATE events SET ${edit[0]} = $1 WHERE id = $2;`
         const values = [edit[1], id]
         const res = await pool.query(query, values)
         queryResults.push(res.rows)
@@ -486,18 +483,18 @@ const updatePlay = async (id: string, changes: Delta[]) => {
 }
 
 app.put('/api/edit-event', isAuthenticated, async (req, res) => {
-    const { playid, deltas }: { playid: string, deltas: Delta[] } = req.body
-    if (deltas===undefined || deltas.length===0) {
+    const { eventid, deltas }: { eventid: string, deltas: Delta[] } = req.body
+    if (eventid===undefined || deltas===undefined || deltas.length===0) {
         res.status(400)
-        res.send('No edits provided')
+        res.send('No edits or event ID provided')
     }
-    const playChanges = deltas.filter(isPlayChange)
+    const eventChanges = deltas.filter(isEventChange)
     const showingChanges = deltas.filter(isShowingChange)
 
     try {
         let results = []
-        if (playChanges.length > 0) {
-            const result = await updatePlay(playid, playChanges)
+        if (eventChanges.length > 0) {
+            const result = await updateEvent(eventid, eventChanges)
             results.push(result)
         }
         if (showingChanges.length > 0) {
@@ -517,14 +514,19 @@ app.put('/api/edit-event', isAuthenticated, async (req, res) => {
 app.post("/api/delete-event", isAuthenticated, async (req, res) => {
     try {
         const {id} = req.body; // playid
-        const archivePlay = 'UPDATE plays SET active=false WHERE id=$1;'
-        const archiveShowtimes = 'UPDATE showtimes SET salestatus=false WHERE playid=$1;'
+        if (id === undefined) {
+            throw new Error('No even id provided')
+        }
+        const archivePlay = 'UPDATE events SET active=false WHERE id=$1;'
+        const archiveShowtimes = 'UPDATE event_instances SET salestatus=false WHERE eventid=$1;'
 
         const archivedPlay = await pool.query(archivePlay, [id])
         const archivedShowtimes = await pool.query(archiveShowtimes, [id])
         res.json({rows: [...archivedPlay.rows, ...archivedShowtimes.rows]})
     } catch (error) {
         console.error(error);
+        res.status(400)
+        res.send(error)
     }
 })
 
@@ -543,8 +545,8 @@ app.get("/api/tickets/type", async (req, res) => {
 app.post("/api/set-tickets", async (req, res) => {
     try {
         let body = req.body;
-        const values = [body.showid, body.ticket_type];
-        const query = "insert into linkedtickets (showid, type) values ($1, $2)";
+        const values = [body.event_instance_id, body.ticket_type];
+        const query = "insert into linkedtickets (event_instance_id, type) values ($1, $2)";
         const set_tickets = await pool.query(query, values);
         res.json(set_tickets);
     } catch (error) {
@@ -556,13 +558,13 @@ app.post("/api/set-tickets", async (req, res) => {
 app.get("/api/show-tickets", async (req, res) => {
     try {
         const query = 
-            `SELECT pl.id as play_id, sh.id as show_id, playname, playdescription, eventdate, starttime, totalseats, availableseats, price, concessions
-            FROM plays pl
-                LEFT JOIN showtimes sh ON pl.id=sh.playid
-                JOIN linkedtickets lt ON lt.showid=sh.id
+            `SELECT ev.id as event_id, ei.id as event_instance_id, eventname, eventdescription, eventdate, starttime, totalseats, availableseats, price, concessions
+            FROM events ev
+                LEFT JOIN event_instances ei ON ev.id=ei.eventid
+                JOIN linkedtickets lt ON lt.event_instance_id=ei.id
                 JOIN tickettype tt ON lt.ticket_type=tt.id
-            WHERE pl.id=$1 AND isseason=false;`;
-        const values = [req.query.play];
+            WHERE ev.id=$1 AND isseason=false;`;
+        const values = [req.query.event];
         const available_tickets = await pool.query(query, values);
         res.json(available_tickets);
         console.log(available_tickets.rows);
@@ -713,15 +715,15 @@ app.post("/webhook", async(req, res) =>{
 const propToString = prop => obj =>
     ({...obj, [prop]: obj[prop].toString()})
     
-app.get('/api/plays', async (req, res) => {
+app.get('/api/events', async (req, res) => {
     try {
         const querystring = `
-            SELECT id, playname title, playdescription description, image_url
-            FROM plays
+            SELECT id, eventname title, eventdescription description, image_url
+            FROM events
             WHERE active=true;`
         const data = await pool.query(querystring)
-        const plays = data.rows.map(propToString('id'))
-        res.json(plays)
+        const events = data.rows.map(propToString('id'))
+        res.json(events)
     }
     catch (err) {
         console.error(err.message);
@@ -738,7 +740,7 @@ const toTicket = (row): Ticket => {
     return {
         ...rest,
         date: date.toJSON(),
-        playid: row.playid.toString(),
+        eventid: row.eventid.toString(),
         ticket_price: parseMoneyString(row.ticket_price),
         concession_price: parseMoneyString(row.concession_price),
     }
@@ -746,7 +748,7 @@ const toTicket = (row): Ticket => {
 
 interface TicketState {byId: {[key: number]: Ticket}, allIds: number[]}
 const reduceToTicketState = (res, t: Ticket) => {
-    const id = t.eventid
+    const id = t.event_instance_id
     const {byId, allIds} = res
     return (allIds.includes(id))
         ? res
@@ -758,8 +760,8 @@ app.get('/api/tickets', async (req, res) => {
     try {
         const qs =
             `SELECT
-                sh.id AS eventid,
-                playid,
+                ei.id AS event_instance_id,
+                eventid,
                 eventdate,
                 starttime,
                 totalseats,
@@ -767,11 +769,11 @@ app.get('/api/tickets', async (req, res) => {
                 tt.name AS admission_type,
                 price AS ticket_price,
                 concessions AS concession_price
-            FROM showtimes sh
-                JOIN linkedtickets lt ON sh.id=lt.showid
+            FROM event_instances ei
+                JOIN linkedtickets lt ON ei.id=lt.event_instance_id
                 JOIN tickettype tt ON lt.ticket_type=tt.id
             WHERE salestatus=true AND isseason=false AND availableseats > 0
-            ORDER BY playid, eventid;`
+            ORDER BY ei.id, event_instance_id;`
         const query_res = await pool.query(qs)
         res.json(
             query_res.rows

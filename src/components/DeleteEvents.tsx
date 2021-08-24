@@ -26,9 +26,9 @@ export default function DeleteEvents() {
 
     // Create columns that appears in data
     const columns = [
-        { field: "id", headerName: "Showtime ID", width: 100},
-        { field: "playname", headerName: "Play", width: 150},
-        { field: "playdescription", headerName: "Play Description", width: 150},
+        { field: "id", headerName: "Event Instance ID", width: 100},
+        { field: "eventname", headerName: "Event", width: 150},
+        { field: "eventdescription", headerName: "Event Description", width: 150},
         { field: "eventdate", headerName: "Date", width: 150},
         { field: "starttime", headerName: "Time", width: 100},
         { field: "Delete", headerName: "Delete", width: 150, renderCell: (params: any) => (
@@ -39,7 +39,7 @@ export default function DeleteEvents() {
     const [eventList, setEventList] = useState([]);
     const getEvents = async () => {
         try {
-            const response = await fetch("/api/event-list");
+            const response = await fetch("/api/active-event-instance-list");
             const jsonData = await response.json();
             Object.keys(jsonData).forEach(function(key) {
                 jsonData[key].eventdate = dayMonthDate(jsonData[key].eventdate);

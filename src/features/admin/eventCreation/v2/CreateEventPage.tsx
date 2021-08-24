@@ -1,18 +1,18 @@
 import { useEffect, useState } from 'react'
 import { useAppDispatch } from '../../../../app/hooks'
 import { fetchTicketingData } from '../../../ticketing/ticketingSlice'
-import { fetchEventData } from '../../../events/eventsSlice'
+import { fetchEventInstanceData } from '../../../events/eventsSlice'
 import { openSnackbar } from '../../../snackbarSlice'
 
 import EventForm, { NewEventData } from './EventForm'
 import { Typography } from '@material-ui/core'
 import { format } from 'date-fns'
 
-const formatShowingData = (playid: number) => (data: any) => {
+const formatShowingData = (eventid: number) => (data: any) => {
     const {DateTime, totalseats, ticketTypeId} = data
     const eventdate = format(DateTime, 'yyyy-MM-dd')
     const starttime = format(DateTime, 'HH:mm:00')
-    return {playid, eventdate, starttime, totalseats, tickettype: ticketTypeId}
+    return {eventid, eventdate, starttime, totalseats, tickettype: ticketTypeId}
 }
 
 export default function CreateEventPage() {
@@ -28,38 +28,38 @@ export default function CreateEventPage() {
         fetchTicketTypes()
     }, [])
     
-    // TODO: create endpoint that combines /api/create-play & /api/create-showings
+    // TODO: create endpoint that combines /api/create-event & /api/create-showings
     const onSubmit = async (formData: NewEventData) => {
-        const {image_url, playname, playdescription, showings} = formData
+        const {image_url, eventname, eventdescription, showings} = formData
         
-        const createPlayRes = await fetch('/api/create-play', {
+        const createPlayRes = await fetch('/api/create-event', {
             credentials: 'include',
             headers: { 'Content-Type': 'application/json' },
             method: 'POST',
-            body: JSON.stringify({playname, playdescription, image_url})
+            body: JSON.stringify({eventname, eventdescription, image_url})
         })
 
         if (createPlayRes.ok) {
-            const playData = await createPlayRes.json()
-            const { id } = playData.rows[0]
+            const eventData = await createPlayRes.json()
+            const { id } = eventData.rows[0]
             const showingdata = showings.map(formatShowingData(id))
 
-            const postShowings = await fetch('/api/create-showings', {
+            const postShowings = await fetch('/api/create-event-instances', {
                 credentials: 'include',
                 headers: { 'Content-Type': 'application/json' },
                 method: 'POST',
-                body: JSON.stringify({showings: showingdata})
+                body: JSON.stringify({instances: showingdata})
             })
             // update Redux state with new event & available tickets
             if (postShowings.ok) {
                 console.log('dispatch')
-                dispatch(fetchEventData())
+                dispatch(fetchEventInstanceData())
                 dispatch(fetchTicketingData())
                 dispatch(openSnackbar('New Event Created'))
             }
         }   
         else {
-            console.error('New play creation failed', createPlayRes.statusText)
+            console.error('New event creation failed', createPlayRes.statusText)
         }
     }
 

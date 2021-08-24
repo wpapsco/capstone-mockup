@@ -3,12 +3,12 @@ import { Grid, Fab, RadioGroup, FormControl } from "@material-ui/core";
 import AddIcon from "@material-ui/icons/Add";
 import CalendarTable from "./CalendarTable";
 import EventTimePicker from "./EventTimePicker";
-import ShowTimeListing from "./ShowTimeListing";
+import EventInstanceListing from "./EventInstanceListing";
 
-interface EventDetails {
+interface EventInstanceDetails {
     id: number,
-    playid: number,
-    showid: number,
+    eventid: number,
+    eventInstanceid: number,
     eventName: string,
     eventDate: Date,
     eventTime: string,
@@ -16,29 +16,29 @@ interface EventDetails {
     price: number,
 }
 
-type ShowTimesProps = {
+type EventInstanceProps = {
     eventTitle: string,
-    eventDetails: EventDetails[],
+    eventInstanceDetails: EventInstanceDetails[],
 }
 
-interface ShowTimeSelector {
+interface EventInstanceSelector {
     id: number,
     time: string,
     seats: number,
     current: boolean,
 }
 
-export default function EventTimes({ eventTitle, eventDetails } : ShowTimesProps) {
+export default function EventInstanceTimes({ eventTitle, eventInstanceDetails } : EventInstanceProps) {
     const [calendarMonth, setCalendarMonth] = useState(new Date().getMonth());
     const [calendarYear, setCalendarYear] = useState(new Date().getFullYear());
     // We need at least one
-    const [showTimes, setShowTimes] = useState<ShowTimeSelector[]>([]);
+    const [eventInstances, setEventInstances] = useState<EventInstanceSelector[]>([]);
     // TODO: Change this v
     const colors = ["aqua", "crimson", "forestgreen", "blue", "deeppink", "greenyellow", "indigo", "maroon", "steelblue"];
 
     const setUpTimes = () => {
-        let times: ShowTimeSelector[] = [];
-        eventDetails.forEach((val) => {
+        let times: EventInstanceSelector[] = [];
+        eventInstanceDetails.forEach((val) => {
             console.log('Found!')
             const found = times.find(ele => ele.time === val.eventTime);
             if (!found) {
@@ -49,14 +49,14 @@ export default function EventTimes({ eventTitle, eventDetails } : ShowTimesProps
         if (times.length === 0) {
             times.push({ id: 0, time: "", seats: 0, current: true });
         }
-        setShowTimes(times);
+        setEventInstances(times);
 
-        console.log("Times: " + times.length + " Event: " + eventDetails.length)
+        console.log("Times: " + times.length + " Event: " + eventInstanceDetails.length)
     }
  
     useEffect(() => {
        setUpTimes();
-    }, [eventDetails])
+    }, [eventInstanceDetails])
 
     // Increment the calendar month
     const onMonthIncr = () => {
@@ -100,46 +100,46 @@ export default function EventTimes({ eventTitle, eventDetails } : ShowTimesProps
         if (fullDate !== null) {
             // Get the currently selected time information
             let i = 0;
-            for (; i < showTimes.length; i++) {
-                if (showTimes[i].current)
+            for (; i < eventInstances.length; i++) {
+                if (eventInstances[i].current)
                     break;
             }
-            console.log('Date is: ' + fullDate + ' time is :' + showTimes[i].time);
+            console.log('Date is: ' + fullDate + ' time is :' + eventInstances[i].time);
         }
     }
 
     // Add a show time to the list
-    const onNewShowTimes = () => {
-        let st = showTimes.slice();
-        let id = showTimes.length;
+    const onNewEventInstances = () => {
+        let st = eventInstances.slice();
+        let id = eventInstances.length;
         st.push({id: id, time: "", seats: 0, current: false});
-        setShowTimes(st);
-        console.log('Setting showtimes: ' + showTimes.length);
+        setEventInstances(st);
+        console.log('Setting eventinstances: ' + eventInstances.length);
     }
 
     // Change one of the current show times on the list
-    const onAddShowTime = (time: string, seats: number, index: number) => {
-        console.log("Time: " + time + " seats: " + seats + " id: " + index + ' Length: ' + showTimes.length);
-        let times = showTimes.slice();
+    const onAddEventInstance = (time: string, seats: number, index: number) => {
+        console.log("Time: " + time + " seats: " + seats + " id: " + index + ' Length: ' + eventInstances.length);
+        let times = eventInstances.slice();
         times[index] = {id: times[index].id, time: time, seats: seats, current: times[index].current};
-        setShowTimes(times);
+        setEventInstances(times);
 
     }
 
     // TODO: What if the currently selected show time is the one being deleted?
     // We need to change that. 
-    const onRemoveShowTime = (index: number) => {
-        let showTime = showTimes.slice();
+    const onRemoveEventInstance = (index: number) => {
+        let showTime = eventInstances.slice();
         showTime.splice(index, 1);
-        setShowTimes(showTime);
+        setEventInstances(showTime);
     }
 
     // Called when the user selects a different time
     const onChangeSelectedTime = (index: number) => {
-        let st = showTimes.slice()
+        let st = eventInstances.slice()
         st.forEach(ele => ele.current = false);
         st[index].current = true;
-        setShowTimes(st);
+        setEventInstances(st);
     }
 
     return (
@@ -150,7 +150,7 @@ export default function EventTimes({ eventTitle, eventDetails } : ShowTimesProps
                 </Grid>
                 <Grid item xs={5}></Grid>
                 <Grid item xs={1}>
-                    <Fab size="small" onClick={onNewShowTimes}>
+                    <Fab size="small" onClick={onNewEventInstances}>
                         <AddIcon />
                     </Fab>
                 </Grid>
@@ -158,25 +158,25 @@ export default function EventTimes({ eventTitle, eventDetails } : ShowTimesProps
             <FormControl component="fieldset" fullWidth>
                 <RadioGroup name="radio-button-group">
                     {
-                        showTimes.map((value, index) => {
-                            return <EventTimePicker 
-                                key={ value.id } 
-                                id={ index } 
+                        eventInstances.map((value, index) => {
+                            return <EventTimePicker
+                                key={ value.id }
+                                id={ index }
                                 eventTime={ value.time }
                                 eventSeats={ value.seats }
                                 checked={ value.current }
-                                color={ colors[index] } 
-                                onAddTime={ onAddShowTime } 
-                                onRemoveTime={ onRemoveShowTime } 
+                                color={ colors[index] }
+                                onAddTime={ onAddEventInstance }
+                                onRemoveTime={ onRemoveEventInstance }
                                 onChangeTime={ onChangeSelectedTime }
                             />;
                         })
                     }
                 </RadioGroup>
             </FormControl>
-            <CalendarTable 
-                targetMonth={calendarMonth} 
-                targetYear={calendarYear} 
+            <CalendarTable
+                targetMonth={calendarMonth}
+                targetYear={calendarYear}
                 onSelectDaysOfWeek={onSelectDayOfWeek}
                 onSelectDay={onSelectDay}
                 onMonthDecr={onMonthDecr}
@@ -185,8 +185,8 @@ export default function EventTimes({ eventTitle, eventDetails } : ShowTimesProps
             />
             <div>
                 {
-                    eventDetails.length > 0 ? eventDetails.map((val, index) => {
-                        return <ShowTimeListing 
+                    eventInstanceDetails.length > 0 ? eventInstanceDetails.map((val, index) => {
+                        return <EventInstanceListing 
                             key={ index } 
                             id={ val.id } 
                             eventDate={ val.eventDate } 
