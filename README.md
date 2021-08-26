@@ -18,6 +18,7 @@ PGPASSWORD = ...
 PGDATABASE = ...
 ```
 You can find your Stripe API keys in the [developers section on the stripe website](https://dashboard.stripe.com/test/apikeys)
+
 6. Insert an admin into the `users` table using [bcrypt](https://bcrypt-generator.com/) to generate a password hash
 7. `npm run start`
 
