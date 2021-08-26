@@ -17,7 +17,14 @@ PGUSER = ...
 PGPASSWORD = ...
 PGDATABASE = ...
 ```
+You can find your Stripe API keys in the [developers section on the stripe website](https://dashboard.stripe.com/test/apikeys)
 6. Insert an admin user using [bcrypt](https://bcrypt-generator.com/) to generate a password hash
 7. `npm run start`
 
 Base project structure from [here](https://medium.com/@anwesha_das/a-strongly-typed-create-react-app-with-an-express-api-server-44e2334ccc71)
+
+## Connecting Stripe to hosted version of the app: 
+
+If this project is being hosted and has a working endpoint url, you can set up webhooks directly in your stripe account on the stripe website.
+Go to the [webhook section on the Stripe site](https://dashboard.stripe.com/test/webhooks/create) and fill out the requested information to have requests sent to the server whenever a selected event occurs.
+While testing, we listened for the events "payment_intent.succeeded" and "charge.refunded" for adding tickets to the db and initiating refunds.
