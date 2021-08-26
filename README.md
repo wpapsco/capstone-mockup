@@ -18,7 +18,7 @@ PGPASSWORD = ...
 PGDATABASE = ...
 ```
 You can find your Stripe API keys in the [developers section on the stripe website](https://dashboard.stripe.com/test/apikeys)
-6. Insert an admin user using [bcrypt](https://bcrypt-generator.com/) to generate a password hash
+6. Insert an admin into the `users` table using [bcrypt](https://bcrypt-generator.com/) to generate a password hash
 7. `npm run start`
 
 Base project structure from [here](https://medium.com/@anwesha_das/a-strongly-typed-create-react-app-with-an-express-api-server-44e2334ccc71)

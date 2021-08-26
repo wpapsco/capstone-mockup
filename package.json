@@ -59,7 +59,7 @@
     "stripe": "stripe.exe listen --forward-to localhost:5000/webhook",
     "start:server": "cd server && ts-node-dev ./server.ts --respawn --transpileOnly && wait-on tcp:5000",
     "start:app": "react-scripts start",
-    "start": "run-p --race start:server start:app"
+    "start": "run-p --race start:server start:app stripe"
   },
   "eslintConfig": {
     "extends": [
