@@ -6,7 +6,7 @@ Wonder Tix is an in-progress ticket sales software developed in collaboration wi
 2. `npm install`
 3. Create the PostgreSQL DB using the create statements in [`sql-scripts/create_tables.sql`](/sql-scripts/create_tables.sql)
 4. Download the [stripe cli](https://stripe.com/docs/stripe-cli) to the project root directory 
-	(change the command in [package.json](/package.json) if using linux/mac)
+	(change the `stripe` script in [package.json](/package.json) if using linux/mac)
 5. Create a `.env` file in the root directory and fill out the appropriate fields:
 ```
 PRIVATE_STRIPE_KEY = ...
