@@ -642,7 +642,7 @@ const fulfillOrder = async (session) => {
         {
             try {
                 const addedTicket = await pool.query(
-                `INSERT INTO tickets (eventid, custid, paid, payment_intent) 
+                `INSERT INTO tickets (eventinstanceid, custid, paid, payment_intent) 
                 values ($1, $2, $3, $4)`
                 ,[temp[counter].id, session.data.object.metadata.custid, true, session.data.object.id])
             } catch (error) {
